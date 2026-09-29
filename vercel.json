@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm run setup",
+  "buildCommand": "npm run build",
+  "outputDirectory": "projects/gallery/dist",
+  "headers": [
+    {"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Referrer-Policy","value":"strict-origin-when-cross-origin"}]},
+    {"source":"/downloads/(.*)","headers":[{"key":"X-Robots-Tag","value":"noindex"}]},
+    {"source":"/experiments/vendor/(.*)","headers":[{"key":"X-Robots-Tag","value":"noindex"}]},
+    {"source":"/media/(.*)","headers":[{"key":"Cache-Control","value":"public, max-age=86400, stale-while-revalidate=604800"}]}
+  ]
+}

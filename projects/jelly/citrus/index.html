@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f3f1e8">
+<title>말랑한 귤 한 조각 · dani lab</title><meta name="description" content="손끝으로 당기고 놓아 보는 작은 젤리 실험실. 실제 입체 변형으로 움직이는 귤 한 조각.">
+<link rel="icon" href="../assets/paint.webp"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="../jelly-shared/native.css">
+<script type="importmap">{"imports":{"three":"../vendor/three.module.min.js"}}</script>
+</head><body>
+<main id="lab">
+<canvas id="scene" tabindex="0" aria-label="귤 젤리. 마우스나 손가락으로 잡아당기세요. 키보드 스페이스로 튕길 수 있습니다."></canvas>
+<header><a href="/" aria-label="dani 처음으로"><img src="../assets/dani-wordmark.png" alt="dani." width="96" height="48"></a><span class="edition">PLAY STUDIES / 002</span></header>
+<div class="title"><span class="eyebrow">A LITTLE SQUEEZE, A LITTLE WONDER</span><h1>말랑한<br>귤 한 조각<span>.</span></h1><p>쭉 당겼다가, 손을 놓아 보세요.<br>잡은 곳부터 말랑하게 움직입니다.</p></div>
+<aside class="controls" aria-label="젤리 조절">
+ <div class="panel-title"><span>손끝에 맞춰서</span><span class="small-orange" aria-hidden="true">◌</span></div>
+ <fieldset class="flavors"><legend class="sr-only">젤리 색</legend><button class="flavor orange" data-flavor="orange" aria-label="오렌지" aria-pressed="true"></button><button class="flavor grapefruit" data-flavor="grapefruit" aria-label="자몽" aria-pressed="false"></button><button class="flavor lime" data-flavor="lime" aria-label="라임" aria-pressed="false"></button></fieldset>
+ <label for="firmness"><span>단단함</span><output id="firmness-value">아주 말랑하게</output></label><input id="firmness" type="range" min="0" max="100" value="28">
+ <label for="damping"><span>흔들림 가라앉기</span><output id="damping-value">천천히</output></label><input id="damping" type="range" min="0" max="100" value="35">
+ <button class="nudge" id="nudge"><span aria-hidden="true">↟</span> 살짝 튕기기</button>
+ <div class="minor-actions"><button id="mesh" aria-pressed="false">구조 보기</button><button id="reset" aria-label="젤리를 처음 상태로">처음으로 ↺</button></div>
+</aside>
+<div class="readout" aria-label="실시간 물리 수치"><span class="live-dot"></span><div><small>부피 유지</small><strong id="volume">100.0<span>%</span></strong></div><div><small>움직임</small><strong id="motion">0.00</strong></div><div><small>들린 높이</small><strong id="lift">0.00</strong></div></div>
+<details id="technical"><summary>실험 정보</summary><p>사면체 XPBD · CPU 물리 / WebGL2 렌더링</p><p id="diagnostics"></p><p>자기 충돌은 미지원입니다. 재질의 투과와 두께는 근사 표현입니다.</p></details>
+<p id="status" role="status">작은 젤리 실험실을 준비하고 있습니다.</p>
+</main><script type="module" src="demo.js?v=no-bubbles-1"></script>
+</body></html>

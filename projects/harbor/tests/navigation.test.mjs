@@ -1,0 +1,11 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {createNavigation,navigable} from '../src/navigation.ts';
+const run=(n,seconds,input,hz=120)=>{for(let i=0;i<seconds*hz;i++)n.update(1/hz,input);};
+const forward={throttle:1,rudder:0},idle={throttle:0,rudder:0};
+test('helm takeover keeps the current pose; releasing throttle coasts',()=>{const n=createNavigation();run(n,10,idle);const old={...n.pose};n.takeHelm();assert.deepEqual(n.pose,old);run(n,3,forward);assert.ok(n.pose.speed>2.4);const x=n.pose.x,s=n.pose.speed;run(n,1,idle);assert.ok(n.pose.speed>0&&n.pose.speed<s);assert.ok(n.pose.x>x);});
+test('opposite rudders turn in opposite directions; reverse flips steering',()=>{for(const rudder of [-1,1]){const n=createNavigation();n.takeHelm();const heading=n.pose.heading;run(n,1,{throttle:1,rudder});assert.equal(Math.sign(n.pose.heading-heading),rudder);}const n=createNavigation();n.takeHelm();run(n,3,{throttle:-1,rudder:0});assert.ok(n.pose.speed<0);const h=n.pose.heading;run(n,.5,{throttle:-1,rudder:1});assert.ok(n.pose.heading<h);});
+test('integration stays equivalent across frame rates',()=>{const a=createNavigation(),b=createNavigation();a.takeHelm();b.takeHelm();run(a,2,{throttle:1,rudder:.5},30);run(b,2,{throttle:1,rudder:.5},120);assert.ok(Math.hypot(a.pose.x-b.pose.x,a.pose.z-b.pose.z)<1e-9);});
+test('speed cycles, pause is inert, reset restores autonomous drift',()=>{const n=createNavigation();n.takeHelm();n.cycleSpeed();assert.equal(n.gear,2);n.cycleSpeed();assert.equal(n.gear,0);n.cycleSpeed();assert.equal(n.gear,1);const old={...n.pose};n.update(0,forward);assert.deepEqual(n.pose,old);n.reset();assert.equal(n.piloted,false);assert.equal(n.pose.x,3);});
+test('dock and sea boundary block travel; reversing releases a stopped hull',()=>{const n=createNavigation();n.takeHelm();Object.assign(n.pose,{x:0,z:10,heading:Math.PI});run(n,4,forward);assert.ok(navigable(n.pose.x,n.pose.z));assert.ok(n.pose.z>=7.6);assert.equal(n.pose.speed,0);run(n,2,{throttle:-1,rudder:0});assert.ok(n.pose.z>8);assert.equal(navigable(146,0),false);assert.equal(navigable(-21,-10),false);});
+test('autonomous route remains clear for takeover anywhere',()=>{const n=createNavigation();for(let i=0;i<260*30;i++){n.update(1/30,idle);assert.ok(navigable(n.pose.x,n.pose.z));}});

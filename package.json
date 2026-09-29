@@ -1,0 +1,15 @@
+{
+  "name": "vote.aib.wonderworks",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "setup": "npm ci --prefix projects/fish && node scripts/link-tools.mjs",
+    "dev": "npm run dev --prefix projects/gallery",
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "preview": "npm run preview --prefix projects/gallery"
+  }
+}

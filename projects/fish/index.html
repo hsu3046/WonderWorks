@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#096074" />
+    <meta name="description" content="6,144 fish swimming through light and water. An interactive WebGPU ocean." />
+    <title>Ocean Shoal · WebGPU</title>
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <canvas id="ocean" aria-label="Ocean shoal. Move the pointer to scatter fish, click to create a ripple, and scroll to zoom." tabindex="0"></canvas>
+    <section id="hud" aria-label="About this scene">
+      <h1>OCEAN SHOAL</h1>
+      <p>Move or swipe to scatter fish · Click for a ripple</p>
+      <p class="meta"><span id="count">6144</span> fish · WebGPU compute</p>
+      <p class="zoom-hint">Scroll to zoom · Drag to look around</p>
+    </section>
+    <details id="settings">
+      <summary>Scene settings (H to hide)</summary>
+      <div class="settings-body">
+        <label>Light rays <input id="rays" type="range" min="0" max="1.6" step="0.05" value="1.6" /></label>
+        <label>Caustics <input id="caustics" type="range" min="0" max="2" step="0.05" value="1.35" /></label>
+        <label>Water haze <input id="fog" type="range" min="0.015" max="0.09" step="0.001" value="0.032" /></label>
+        <label>Swim speed <input id="speed" type="range" min="0.25" max="2" step="0.05" value="2" /></label>
+        <label>Exposure <input id="exposure" type="range" min="0.5" max="1.6" step="0.05" value="0.95" /></label>
+        <div class="actions"><button id="reset" type="button">Reset view</button><button id="pause" type="button" aria-pressed="false">Pause</button></div>
+        <div class="actions"><button id="cinema" type="button" aria-pressed="false">Auto camera: Off</button></div>
+        <small>Scroll / + − to zoom · Drag for manual control<br />C auto camera · R reset · Space pause</small>
+      </div>
+    </details>
+    <div id="loading" role="status" aria-live="polite">
+      <div class="loading-body"><span class="water-mark" aria-hidden="true"></span><p id="status">Diving in</p><small id="status-detail">Preparing the light and the shoal</small><button id="retry" type="button" hidden>Reload</button></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

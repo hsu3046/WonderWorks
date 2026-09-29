@@ -1,0 +1,170 @@
+{
+  "source": "User-provided しゃぼん玉日和 (Copy).zip",
+  "archiveSha256": "746eadbece38e7b1d130f7adb1f21baa17b744d10810db7aa955053a506a8155",
+  "files": {
+    "index.html": {
+      "bytes": 9640,
+      "sha256": "1489a30c24d196dd64dab82e42863d22fd39e5b2fb9aa7bc2af98e1f9a688bf2"
+    },
+    "assets/leaves.png": {
+      "bytes": 3761598,
+      "sha256": "0530d1c5155b1ecf4bc3d4c24e6862057d1ff382931f2549fba1d45a00f834c8"
+    },
+    "src/audio/ambient.js": {
+      "bytes": 20641,
+      "sha256": "4932ad274dca51c7e4bf27cee6a5a119f58de923a2299de81f726f77c0f98cbc"
+    },
+    "src/main.js": {
+      "bytes": 39322,
+      "sha256": "4db6769b475f5b307ffb75442b78bfbe45164d9ef631aa9a11b441b925340c1a"
+    },
+    "src/render/birds.js": {
+      "bytes": 3654,
+      "sha256": "8a75cb0324bfcf42b1005a2b8603013157d905e9cdd8a40f0e7bd1555f19c5c6"
+    },
+    "src/render/bubbles.js": {
+      "bytes": 29389,
+      "sha256": "365e44287413b9a1c424b241e1aa2bcd5838743b06e7dfdf61a1f4103ce62dee"
+    },
+    "src/render/buildings.js": {
+      "bytes": 135419,
+      "sha256": "17ae6588c9a55cce63151030d4691118a0f22e04fa993ee957cdd41a980a56ae"
+    },
+    "src/render/butterflies.js": {
+      "bytes": 21829,
+      "sha256": "3b08e2a338c9ca4358a1ab76ceffc499a7ea65de67a33736e05fb008ed02b604"
+    },
+    "src/render/cliff.js": {
+      "bytes": 49241,
+      "sha256": "84f611826f1be0d8293d5ad90230ea0d79b64db5223456ec5090a428d1138e60"
+    },
+    "src/render/clouds.js": {
+      "bytes": 14847,
+      "sha256": "3124eb1e09a32e274ec74e519d805ea931e09b79f975479965fe64558ecc0b96"
+    },
+    "src/render/creatures.js": {
+      "bytes": 29080,
+      "sha256": "2fdcff91d622daf62ac3bf8aa74e2da0ad8c56a43c9101f9c66dc4e1c482d164"
+    },
+    "src/render/creatures_base.js": {
+      "bytes": 9619,
+      "sha256": "9783685d722419e81fe05cabc464b9448abefa32501a282275fbddec07e2d64c"
+    },
+    "src/render/glsl.js": {
+      "bytes": 7052,
+      "sha256": "c228036bfe8fbb21fb9ec469926f6caa7f9cb7e8654b97fab470f6eb316f2fe3"
+    },
+    "src/render/grass.js": {
+      "bytes": 71148,
+      "sha256": "82e24f4958860eb8825c9604d150aeebccbc405568c69d4f03c0c45dd2b447e4"
+    },
+    "src/render/koinobori.js": {
+      "bytes": 14167,
+      "sha256": "1f6960eb456d793ba2313f34d02364c879634e7690c74b9e04c7569f4f29e9d1"
+    },
+    "src/render/leaves.js": {
+      "bytes": 34201,
+      "sha256": "0b672427084eacc3ce8f4452fe46dfd80773d785c5282d8548532fa89817de2a"
+    },
+    "src/render/particles.js": {
+      "bytes": 18488,
+      "sha256": "670cbbc3d5b4f2c70dee7647db6a7c307a925efe2f36dbdcfe5fdba986a08fc5"
+    },
+    "src/render/post.js": {
+      "bytes": 29054,
+      "sha256": "f8a7033e6137c44e815cc717b6cae751a22c795398977434fd34d5c3acdc9376"
+    },
+    "src/render/profiler.js": {
+      "bytes": 1273,
+      "sha256": "ac914aa48ca652d706c8ed3d153a5d0b2fde4d89d1400e6b359195f24b964ab8"
+    },
+    "src/render/rocks.js": {
+      "bytes": 20023,
+      "sha256": "bf4600a6664afba73e484dc79251027a5f491474eb4d97220ac277a52752e680"
+    },
+    "src/render/shadows.js": {
+      "bytes": 4672,
+      "sha256": "09c29642531c05d0cea35d8dfabea0388341490d861095a9b581d32c0b1c66a2"
+    },
+    "src/render/sky.js": {
+      "bytes": 8443,
+      "sha256": "948f7efe0e0be4cdea706da51739990e28470602ab01e795002254aaf61a274c"
+    },
+    "src/render/species.js": {
+      "bytes": 66595,
+      "sha256": "eca0cb57b2707ab8fe3e1090312126f2596ec33a76c067336a4d3e4c33d24b5c"
+    },
+    "src/render/species_birds.js": {
+      "bytes": 69961,
+      "sha256": "1c2c70aca3da01b6f29a0dd3d18bef3735069fe624412105b5522bcc63b0532d"
+    },
+    "src/render/species_more.js": {
+      "bytes": 86140,
+      "sha256": "8bca2dd291c966ab638417a15401d0fcc5ba076cbf7f853989ce93379473b980"
+    },
+    "src/render/terrain.js": {
+      "bytes": 58363,
+      "sha256": "e2a2d425c4514cdb145987de52b2c693b0b75c63142d1d9a3bf8400a7eea20e4"
+    },
+    "src/render/treegeo.js": {
+      "bytes": 68543,
+      "sha256": "9c1f95cb86bcaef7e9418047393084ffe9ae68c82d30c8aff2aa1bf0b232cbef"
+    },
+    "src/render/trees.js": {
+      "bytes": 32839,
+      "sha256": "4b42f8d461b7593ebfee08b89b9bc6ae0ccf5d60134536353cc238e0b7c95c53"
+    },
+    "src/render/wand.js": {
+      "bytes": 6533,
+      "sha256": "d4618085fe2e81ad3fd4c8d6c8b362a22b43758fdac02550978b906fa107a988"
+    },
+    "src/render/water.js": {
+      "bytes": 51446,
+      "sha256": "df5e36c8d1a7ffe78e1f563021c7e2578362933eb7ec86bf5d6f316a8eeedbd5"
+    },
+    "src/render/waterfall.js": {
+      "bytes": 11124,
+      "sha256": "383f2f8ccfece8ef4afacf931caaac05fa517b5cad7bf3ffd073507927e411f8"
+    },
+    "src/render/worldtex.js": {
+      "bytes": 17075,
+      "sha256": "0fa56768f33418f685f7e77f015370af9cab78db53a008ae6e1bfd88dda61d40"
+    },
+    "src/sim/director.js": {
+      "bytes": 29719,
+      "sha256": "b907f4f176d5ddf2ea574c8abe7d0435d95e2e441f1abf91b591998f9c4936cc"
+    },
+    "src/sim/fauna.js": {
+      "bytes": 45486,
+      "sha256": "c00778f064854d0a722f85459dbf27b7934ffdaea46311f83e28ef8cb021b321"
+    },
+    "src/sim/fauna_birds.js": {
+      "bytes": 71417,
+      "sha256": "83344b0162821f89f3378a59a580efe75aa4e94d27ab23b766606ae6fb0a85d9"
+    },
+    "src/sim/fauna_more.js": {
+      "bytes": 48280,
+      "sha256": "e6c99495cd290e0abf481db277ff6af875946c3e5a3035b8d14587aa8f609b24"
+    },
+    "src/sim/flight.js": {
+      "bytes": 9439,
+      "sha256": "30a4d4321ebcc73f22aa61d396406d47930830658a0bc3026883d0429e827690"
+    },
+    "src/sim/wind.js": {
+      "bytes": 2570,
+      "sha256": "4fc385c1400aac069e7979d155c9f7107c21e72bf4690ba8c54955c2ff672e95"
+    },
+    "src/util/noise.js": {
+      "bytes": 6016,
+      "sha256": "6424fdb07a4fdbe8a003070394b58c4dfa47aee7e235b4c47c9f35dea63a2f2b"
+    },
+    "src/world/gen.js": {
+      "bytes": 52809,
+      "sha256": "73a407f4e8df34686ed235e34f435783508afee4db06cb7c4893b84ef7142d86"
+    },
+    "src/world/layout.js": {
+      "bytes": 11016,
+      "sha256": "663db32db8aa3b68656dd739f88a443267c2a1170b7cc5d2a79c476d0abdf07d"
+    }
+  }
+}

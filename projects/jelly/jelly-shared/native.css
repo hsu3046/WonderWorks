@@ -1,0 +1,7 @@
+/* Native controls own safe-area placement. Web canvas fills its full backing view. */
+html[data-native],html[data-native] body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+html[data-native] #lab{height:100%;min-height:0;width:100%;overflow:hidden}
+html[data-native] #scene{touch-action:none;outline:none;-webkit-user-select:none;user-select:none}
+html[data-native] header,html[data-native] .title,html[data-native] .controls,
+html[data-native] .readout,html[data-native] #technical{display:none}
+html[data-native] #feedback{bottom:calc(env(safe-area-inset-bottom) + 104px);pointer-events:none}

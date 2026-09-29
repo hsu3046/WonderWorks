@@ -1,0 +1,1 @@
+{"name":"vote.aib.wonderworks-pond","version":"0.1.0","private":true,"type":"module","license":"GPL-3.0-only","scripts":{"dev":"vite --host 127.0.0.1 --port 4179 --strictPort","check":"tsc --noEmit","build":"tsc --noEmit && vite build --base=./"},"dependencies":{"three":"0.186.0"},"devDependencies":{"@types/three":"0.186.0","typescript":"7.0.2","vite":"8.3.1"}}

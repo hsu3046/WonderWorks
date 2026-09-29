@@ -1,0 +1,26 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules
+dist/
+__pycache__/
+*.pyc
+.venv/
+test-results/
+playwright-report/
+
+# Local authoring, reference footage and validation captures are not release inputs.
+.Codex/
+.codex/
+.vercel/
+/assets/
+docs/validation/
+docs/references/
+docs/reference/
+*.blend1
+projects/harbor/blender/Untitled.blend
+# Recreated from source by npm run build.
+projects/gallery/public/experiments/
+projects/gallery/public/downloads/
+.vercel

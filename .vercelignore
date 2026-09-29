@@ -1,0 +1,15 @@
+.git
+.Codex
+.codex
+.vercel
+/assets/
+docs/validation
+docs/references
+docs/reference
+**/node_modules
+**/dist
+**/.DS_Store
+**/*.blend1
+projects/harbor/blender/Untitled.blend
+projects/gallery/public/experiments
+projects/gallery/public/downloads
