@@ -37,3 +37,31 @@ export function createMeadow(root:T.Group){
  }fallen.receiveShadow=true;root.add(fallen);
  return {dandelions:flowers.count,fallenPetals:fallen.count};
 }
+
+/** Low tufts give the painted outer meadow a silhouette from ground-level cameras. */
+export function createOuterGroundcover(root:T.Group){
+ const random=rng(915),vertices:number[]=[],indices:number[]=[],dummy=new T.Object3D();
+ for(let blade=0;blade<6;blade++){
+  const angle=blade*tau/6,rx=Math.cos(angle),rz=Math.sin(angle),height=.055+random()*.08;
+  const base=vertices.length/3,width=.004+random()*.003,reach=.035+random()*.055;
+  vertices.push(-rz*width,0,rx*width,rz*width,0,-rx*width,
+   rx*reach*.45-rz*width*.6,height*.6,rz*reach*.45+rx*width*.6,
+   rx*reach*.45+rz*width*.6,height*.6,rz*reach*.45-rx*width*.6,
+   rx*reach,height,rz*reach);
+  indices.push(base,base+1,base+2,base+1,base+3,base+2,base+2,base+3,base+4);
+ }
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));geometry.setIndex(indices);geometry.computeVertexNormals();
+ // Dark root / lighter tip variation keeps tiny blades legible without flat bright wedges.
+ const shades:number[]=[];
+ for(let i=0;i<vertices.length;i+=3){const t=Math.min(vertices[i+1]!/.13,1),shade=.55+t*.45;shades.push(shade*.86,shade,shade*.72);}
+ geometry.setAttribute('color',new T.Float32BufferAttribute(shades,3));
+ const material=new T.MeshStandardMaterial({color:'#b4c690',vertexColors:true,roughness:1,envMapIntensity:.08,side:T.DoubleSide});
+ const tufts=new T.InstancedMesh(geometry,material,8000);tufts.name='Outer meadow low groundcover';
+ for(let i=0;i<tufts.count;i++){
+  const angle=random()*tau,radius=Math.sqrt(1.6*1.6+random()*(4.8*4.8-1.6*1.6));
+  dummy.position.set(Math.cos(angle)*10.5*radius,.253,Math.sin(angle)*8*radius);
+  dummy.rotation.set(0,random()*tau,0);dummy.scale.setScalar(.7+random()*.65);dummy.updateMatrix();tufts.setMatrixAt(i,dummy.matrix);
+  tufts.setColorAt(i,new T.Color().setHSL(.23+random()*.07,.30+random()*.20,.25+random()*.10));
+ }
+ tufts.receiveShadow=true;root.add(tufts);return tufts.count;
+}

@@ -3,6 +3,7 @@ import * as T from 'three';
 import {random,climate,smooth,type Settings} from './state.ts';
 import type {LivingUniforms} from './tree';
 import {createForest} from './forest';
+import {createHorizon} from './horizon';
 const meadowNoise=`
 float meadowHash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.54);}
 float meadowNoise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(meadowHash(i),meadowHash(i+vec2(1,0)),f.x),mix(meadowHash(i+vec2(0,1)),meadowHash(i+vec2(1,1)),f.x),f.y);}
@@ -10,7 +11,7 @@ float meadowFbm(vec2 p){return meadowNoise(p)*.57+meadowNoise(p*2.13+7.2)*.28+me
 `;
 
 
-export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUniforms,renderer:T.WebGLRenderer,hero:T.Group){
+export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUniforms,renderer:T.WebGLRenderer,hero:T.Group,invalidate:()=>void,onError:(message:string)=>void){
  const rng=random(319),resources:{dispose():void}[]=[];
  const skyUniforms={uTime:u.time,uDay:{value:1},uSunset:{value:0},uCloud:{value:0},uFlash:{value:0}};
  const skyMat=new T.ShaderMaterial({side:T.BackSide,depthWrite:false,uniforms:skyUniforms,vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:`varying vec3 vP;uniform float uTime,uDay,uSunset,uCloud,uFlash;
@@ -32,29 +33,50 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
  const hemi=new T.HemisphereLight('#a9d8f3','#655935',2.5);scene.add(hemi);
  const moonlight=new T.DirectionalLight('#97bbf5',0);moonlight.position.set(-12,16,-8);scene.add(moonlight);
  const sun=new T.DirectionalLight('#ffe2a3',3.1);sun.position.set(10,11,8);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-11;sun.shadow.camera.right=11;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-8;sun.shadow.camera.far=50;sun.shadow.normalBias=.04;sun.shadow.bias=-.0003;sun.shadow.radius=3;scene.add(sun,sun.target);
- const groundMat=new T.MeshStandardMaterial({color:'#829855',roughness:1});
+ // Illustrated ground carries the fine vegetation; only nearby silhouettes need blades.
+ let disposed=false;
+ const meadow=new T.TextureLoader().load('./landscape/meadow-ground-v1.webp',texture=>{
+  if(disposed){texture.dispose();return;}invalidate();
+ },undefined,error=>{if(!disposed){console.error('Meadow illustration could not load',error);onError('The meadow illustration could not load. Reload to restore ground detail.');}});
+ meadow.colorSpace=T.SRGBColorSpace;meadow.wrapS=meadow.wrapT=T.MirroredRepeatWrapping;
+ meadow.anisotropy=Math.min(16,renderer.capabilities.getMaxAnisotropy());resources.push(meadow);
+ const autumnMap=new T.TextureLoader().load('./landscape/foliage-autumn-ground-v1.webp',texture=>{
+  if(disposed){texture.dispose();return;}invalidate();
+ },undefined,error=>{if(!disposed){console.error('Autumn ground could not load',error);onError('The autumn ground could not load. Reload to restore seasonal detail.');}});
+ autumnMap.colorSpace=T.SRGBColorSpace;autumnMap.wrapS=autumnMap.wrapT=T.MirroredRepeatWrapping;
+ autumnMap.anisotropy=meadow.anisotropy;resources.push(autumnMap);
+ const groundMat=new T.MeshStandardMaterial({color:'white',map:meadow,roughness:1});
  groundMat.onBeforeCompile=shader=>{
-  shader.uniforms.uSnow=u.snow;shader.uniforms.uYear=u.year;shader.uniforms.uDay=skyUniforms.uDay;
+  shader.uniforms.uAutumnMap={value:autumnMap};shader.uniforms.uSnow=u.snow;shader.uniforms.uYear=u.year;shader.uniforms.uDay=skyUniforms.uDay;
   shader.vertexShader='varying vec3 vGround;\n'+shader.vertexShader;
   shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvGround=position;');
-  shader.fragmentShader=meadowNoise+'uniform float uSnow,uYear,uDay;varying vec3 vGround;\n'+shader.fragmentShader;
-  shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
+  shader.fragmentShader=meadowNoise+'uniform sampler2D uAutumnMap;uniform float uSnow,uYear,uDay;varying vec3 vGround;\n'+shader.fragmentShader;
+  shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
    float n=meadowFbm(vGround.xz*.34),fine=meadowNoise(vGround.xz*9.);
-   diffuseColor.rgb=mix(vec3(.19,.25,.055),vec3(.37,.43,.13),n)*(.91+fine*.12);
-   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.28,.23,.08),smoothstep(.7,.94,uYear)*.4);
-   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.83,.9,.94),uSnow*.96);`);
+   float spring=1.-smoothstep(.32,.47,uYear);
+   float autumn=smoothstep(.64,.87,uYear);
+   vec3 summerTint=mix(vec3(.65,.79,.48),vec3(.98,1.03,.68),n);
+   vec3 springTint=mix(vec3(.92,1.13,.64),vec3(1.2,1.23,.86),n);
+   vec3 meadowColor=diffuseColor.rgb*mix(summerTint,springTint,spring);
+   vec3 litter=texture2D(uAutumnMap,vGround.xz*.34).rgb;
+   // Uneven leaf cover accumulates across the grass instead of a global brown tint.
+   float cover=smoothstep(.12,.88,autumn+(n-.5)*.32);
+   diffuseColor.rgb=mix(meadowColor,litter,cover);
+   float snowCover=smoothstep(.02,.98,uSnow+(n-.5)*.22);
+   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.83,.9,.94)*(.95+fine*.05),snowCover);`);
   shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(.22,.24,.26)*uSnow*uDay;');
  };
  const groundGeo=new T.PlaneGeometry(200,200,80,80).rotateX(-Math.PI/2),gp=groundGeo.getAttribute('position');
  const groundY=(x:number,z:number)=>smooth(10,35,-z)*(Math.sin(x*.11+1)*2+Math.cos(z*.12)*1.4+2);
- for(let i=0;i<gp.count;i++)gp.setY(i,groundY(gp.getX(i),gp.getZ(i))-.03);groundGeo.computeVertexNormals();
+ const groundUv=groundGeo.getAttribute('uv');
+ for(let i=0;i<gp.count;i++){gp.setY(i,groundY(gp.getX(i),gp.getZ(i))-.03);groundUv.setXY(i,gp.getX(i)*.34,gp.getZ(i)*.34);}groundGeo.computeVertexNormals();
  const ground=new T.Mesh(groundGeo,groundMat);ground.receiveShadow=true;scene.add(ground);resources.push(groundGeo,groundMat);
- // Five curved blades share each irregular tuft; density eases into the distant meadow.
+ // Preserve wind and foreground depth in a compact ring; painted hills need no blades.
  const grassGeo=new T.InstancedBufferGeometry(),base=new T.PlaneGeometry(1,1,1,4).translate(0,.5,0);grassGeo.index=base.index;grassGeo.attributes=base.attributes;
- const blades=160000,origins=new Float32Array(blades*4);
+ const blades=32000,origins=new Float32Array(blades*4);
  let tuftX=0,tuftZ=0;
  for(let i=0;i<blades;i++){
-  if(i%5===0){const distant=rng()<.25;tuftX=(rng()-.5)*(distant?140:48);tuftZ=distant?-18-rng()*48:(rng()-.5)*48;}
+  if(i%5===0){const angle=rng()*Math.PI*2,radius=Math.sqrt(rng())*23;tuftX=Math.cos(angle)*radius;tuftZ=Math.sin(angle)*radius;}
   const angle=rng()*Math.PI*2,r=rng()*.19,x=tuftX+Math.cos(angle)*r,z=tuftZ+Math.sin(angle)*r;
   origins.set([x,groundY(x,z),z,rng()],i*4);
  }
@@ -62,12 +84,13 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
  const grassMat=new T.MeshStandardMaterial({color:'white',side:T.DoubleSide,roughness:.94});
  grassMat.onBeforeCompile=shader=>{
   Object.assign(shader.uniforms,{uTime:u.time,uWind:u.wind,uSnow:u.snow,uYear:u.year});
-  shader.vertexShader=meadowNoise+`uniform float uTime,uWind,uSnow;attribute vec4 blade;varying float vBlade,vHeight,vPatch;
+  shader.vertexShader=meadowNoise+`uniform float uTime,uWind,uSnow,uYear;attribute vec4 blade;varying float vBlade,vHeight,vPatch;
    vec3 grassPoint(vec3 p,float t){
     float seed=blade.w,angle=seed*47.,density=meadowFbm(blade.xz*.42);
-    float edge=(1.-smoothstep(55.,70.,abs(blade.x)))*(1.-smoothstep(50.,66.,-blade.z));
+    float edge=1.-smoothstep(15.,23.,length(blade.xz));
     float root=smoothstep(.55,1.45,length(blade.xz));
-    float h=(.16+seed*.24)*( .65+density*.8)*edge*root*(1.-uSnow*.96);
+    float seasonalHeight=mix(.62,1.,smoothstep(.23,.48,uYear))*(1.-smoothstep(.66,.92,uYear)*.34);
+    float h=(.16+seed*.24)*( .65+density*.8)*edge*root*(1.-uSnow*.96)*seasonalHeight;
     float width=(.05+seed*.048)*(1.-t*.96)*edge;
     float bend=(.16+seed*.42)*h*t*t;
     float gust=sin(uTime*1.25+blade.x*.26+blade.z*.19)*(.035+uWind*.16)*t*t;
@@ -84,11 +107,13 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
   shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
    vec3 green=mix(vec3(.16,.245,.042),vec3(.36,.44,.13),vPatch*.55+vBlade*.25+vHeight*.2);
    diffuseColor.rgb=green*(.78+vHeight*.22);
-   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.36,.29,.12),smoothstep(.72,.95,uYear)*.48);
+   diffuseColor.rgb*=mix(vec3(1.15,1.12,.85),vec3(.86,1.,.78),smoothstep(.3,.5,uYear));
+   diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.32,.18,.058),smoothstep(.65,.88,uYear)*.85);
    diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.8,.87,.89),uSnow*(.92+.08*vHeight));`);
   shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=diffuseColor.rgb*.1*vHeight;');
  };
  const grass=new T.Mesh(grassGeo,grassMat);grass.receiveShadow=true;grass.frustumCulled=false;scene.add(grass);resources.push(grassGeo,grassMat);
+ const horizon=createHorizon(u,invalidate,onError);scene.add(horizon.mesh);resources.push(horizon);
  const forest=createForest(renderer,hero,u,groundY);scene.add(forest.mesh);resources.push(forest);
  const rainCount=6500,rainGeo=new T.BufferGeometry(),rainP=new Float32Array(rainCount*6),rainSeed=new Float32Array(rainCount*2),rainEnd=new Float32Array(rainCount*2);
  for(let i=0;i<rainCount;i++){const x=(rng()-.5)*45,y=rng()*23,z=(rng()-.5)*40;rainP.set([x,y,z,x,y,z],i*6);rainEnd[i*2+1]=1;rainSeed[i*2]=rainSeed[i*2+1]=rng();}
@@ -172,7 +197,7 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
   rainU.uPixel.value=Math.min(devicePixelRatio,2);rainU.uStrength.value=T.MathUtils.damp(rainU.uStrength.value,storm?1:0,2,dt);
   snowU.uOpacity.value=T.MathUtils.damp(snowU.uOpacity.value,settings.weather==='snow'?.95:0,2,dt);snow.visible=snowU.uOpacity.value>.005;snowU.uPixel.value=Math.min(devicePixelRatio,2);
   const natural=climate(settings.year).snow,target=Math.max(natural,settings.weather==='snow'?.85:0);u.snow.value=T.MathUtils.damp(u.snow.value,target,.5,dt);grass.visible=u.snow.value<.985;
-  forest.update(settings,day,cloud,flash);
+  forest.update(settings,day,cloud,flash);horizon.update(settings,day,cloud,flash);
  }
- return {update,dispose(){resources.forEach(r=>r.dispose());sun.shadow.dispose();}};
+ return {update,counts:{grassBlades:blades,forestCards:forest.mesh.count},dispose(){disposed=true;resources.forEach(r=>r.dispose());sun.shadow.dispose();}};
 }

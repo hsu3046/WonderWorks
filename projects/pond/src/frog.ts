@@ -7,7 +7,8 @@ import {frogPose,frogTiming} from './frog-pose';
 export async function createFrog(scene:T.Scene,pads:T.Group[],ripple:(x:number,z:number,strength?:number)=>void){
  const pad=pads[0]!;
  const asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/montane-frog-hopping.glb`);
- const root=asset.scene;root.scale.setScalar(.72);root.position.y=.009;
+ const frogScale=.36;
+ const root=asset.scene;root.scale.setScalar(frogScale);root.position.y=.0045;
  // Face the lily viewpoint independently of the pad's random rotation.
  root.rotation.y=.60;const hopper=new T.Group();scene.add(hopper);hopper.add(root);hopper.position.copy(pad.position);
  // Source: ffish.asia / floraZia.com, CC BY 4.0; see model attribution.
@@ -39,10 +40,10 @@ export async function createFrog(scene:T.Scene,pads:T.Group[],ripple:(x:number,z
  const ctx=ground.getContext('2d')!,gradient=ctx.createRadialGradient(32,32,4,32,32,31);
  gradient.addColorStop(0,'rgba(18,26,8,.32)');gradient.addColorStop(.55,'rgba(18,26,8,.17)');gradient.addColorStop(1,'rgba(18,26,8,0)');ctx.fillStyle=gradient;ctx.fillRect(0,0,64,64);
  const map=new T.CanvasTexture(ground);map.colorSpace=T.SRGBColorSpace;
- const shadow=new T.Mesh(new T.PlaneGeometry(.80,.65),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.065;scene.add(shadow);
+ const shadow=new T.Mesh(new T.PlaneGeometry(.40,.325),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.065;scene.add(shadow);
  let lastTime=0,padIndex=0,nextPad=0,started=-100,nextIdle=13,hops=0,lastReason='rest',hovered=false;
  let startYaw=.60,endYaw=.60;const start=new T.Vector3(),end=new T.Vector3(),center=new T.Vector3();
- const hitSphere=new T.Sphere(center,.65),hit=new T.Vector3();
+ const hitSphere=new T.Sphere(center,.325),hit=new T.Vector3();
  const random=()=>{const n=Math.sin(hops*73.15+19.8)*43758.5;return n-Math.floor(n);};
  function hop(time:number,reason:string){
   if(time-started<2)return false;
@@ -53,7 +54,7 @@ export async function createFrog(scene:T.Scene,pads:T.Group[],ripple:(x:number,z
   started=time;hops++;lastReason=reason;nextIdle=time+14+random()*17;return true;
  }
  return {react(ray:T.Ray,time:number,force:boolean){
-  center.copy(hopper.position);center.y+=.22;
+  center.copy(hopper.position);center.y+=.11;
   const near=ray.intersectSphere(hitSphere,hit)!==null;
   const entered=near&&!hovered;hovered=near;
   return near&&(force||entered)?hop(time,force?'tap':'pointer'):false;
@@ -71,7 +72,7 @@ export async function createFrog(scene:T.Scene,pads:T.Group[],ripple:(x:number,z
    if(age<frogTiming.end)squash=1-.09*Math.sin((age-frogTiming.landing)/(frogTiming.end-frogTiming.landing)*Math.PI);
    root.rotation.x=Math.sin(time*.63)*.007;
   }
-  root.scale.set(.72/Math.sqrt(squash),.72*squash,.72/Math.sqrt(squash));
+  root.scale.set(frogScale/Math.sqrt(squash),frogScale*squash,frogScale/Math.sqrt(squash));
   if(body)body.scale.y=1+Math.sin(time*2.25)*.008;
   shadow.position.set(hopper.position.x,.064,hopper.position.z);shadow.scale.setScalar(1+height*.3);shadow.material.opacity=1-height*.8;
  }};

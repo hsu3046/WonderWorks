@@ -46,7 +46,7 @@ export function createLilies(scene:T.Scene){
   const material=new T.MeshStandardMaterial({...maps,color:new T.Color().setHSL(.23+r()*.035,.12,.83+r()*.06),bumpScale:.010,roughness:.48,metalness:0,side:T.DoubleSide});
   const leaf=new T.Mesh(g,material);leaf.receiveShadow=true;pad.add(leaf);
   if(index!==2&&index!==5)return;
-  const flower=new T.Group();flower.position.set(.02,.025,.02);flower.rotation.y=.3;pad.add(flower);
+  const flower=new T.Group();flower.position.set(.02,.025,.02);flower.rotation.y=.3;flower.scale.setScalar(.6);pad.add(flower);
   // Thin lanceolate surfaces in staggered whorls replace thick ellipsoid petals.
   for(let ring=0;ring<3;ring++){
    const parts:T.BufferGeometry[]=[],count=[16,12,9][ring]!,length=[.35,.27,.18][ring]!,rise=[.14,.23,.27][ring]!;

@@ -12,7 +12,7 @@ The user expanded the scope to all four seasons, snow, rain, wind, thunder/light
 
 - `state.ts`: finite URL parsing, seeded random generation, season/growth/snow/blossom envelopes, leaf flight state. Calendar year normalized to 0–1.
 - `tree.ts`: merged tapering curved branch geometry; 26,000 leaf instances sharing a GPU deformation kernel with their shadow-depth material. Seasonal colour, leaf veins, growth, wind/flutter, release and settling. Maple, ginkgo, cherry blossom, aspen and Japanese maple foliage on a shared branch scaffold.
-- `environment.ts`: procedural sky/clouds/stars, solar/ambient lighting, atmosphere, 160,000 instanced grass blades, 700 alpha-tested forest billboards using an original generated texture, 6,500 rain segments, 4,000 snow particles, snow accumulation tint and lightning with a light flash.
+- `environment.ts`: procedural sky/clouds/stars, solar/ambient lighting, atmosphere, 32,000 nearby instanced grass blades over an illustrated meadow, 240 alpha-tested forest cards using the hero-tree atlas, 6,500 rain segments, 4,000 snow particles, snow accumulation tint and lightning with a light flash.
 - `scene.ts`: one WebGL renderer and RAF owner, OrbitControls, bounded DPR/pixel budget, resize, pause, hidden, context loss and snapshots.
 - `audio.ts`: opt-in synthesized wind/rain noise and delayed filtered thunder. No source-video audio is copied.
 - `main.ts` / `style.css`: full-screen observatory with botanical labels, species selectors, live counters, seasonal timeline, weather/time controls and mobile layout.
@@ -30,3 +30,20 @@ The visual system is a procedural approximation of a natural landscape. Snow is 
 - Seasonal leaf thinning, autumn color, winter branches, snow tint, light/weather response and gentle crown sway use shared uniforms. Atlas is based on the initial hero species; later foreground species selection does not rebake the woodland.
 - Restores renderer target, viewport, scissor, clear state, shadows and hero uniforms after baking; atlas resources dispose independently of shared hero geometry/materials.
 - Strict build + existing 10 tests passed. Summer, winter, camera orbit and mobile checked; no new console errors. Local 2.001-second desktop sample: 120 frames (~60fps), not a cross-device guarantee. Evidence: docs/validation/foliage/distant-forest/.
+
+### Illustrated terrain and reduced forest overlap — 2026-09-30
+
+- Reuse the original Stillwater meadow WebP (685224 bytes) on the existing opaque 200 × 200 terrain. Metric UVs at .34 cycles/unit, mirrored repeat, mipmaps and hardware-capped anisotropy16. Ground remains actual terrain receiving shadows; no horizon skirt replaces navigable ground.
+- Keep 32,000 animated grass blades within radius23, fading in height/width from radius15. Previously 160,000 covered foreground and distant hills. Hero tree/leaves, weather and camera unchanged.
+- Distant forest was already image-based. Retain its separate wood/leaf atlas for bare winter branches, but replace 1100 randomly overlapping cards with 240 in three staggered 360° rings (radii42/63/84). Same one draw, 480 rather than 2200 triangles, fewer overlapping image samples. Eight startup atlas renders remain unchanged.
+- Ground season adjustment runs after texture sampling: summer greens, autumn dry color, snow covering the illustration. Existing physical lighting/fog handle day/rain/night. Load completion invalidates the existing loop (including paused mode); failure reports a user-facing message; disposal handles late loads.
+- Same local desktop default camera, summer year .54, hour14, clear, 1280 × 720 CSS: renderer triangles 2,302,776 → 1,277,056 (-44.54%), draws8 →8. Grass instances -80%; forest cards -78.18%. Renderer totals are submitted geometry (including renderer passes), not measured GPU time/FPS/power. Added image decoded/mipmap memory is a tradeoff for fewer blades.
+- Strict build and 10 state tests passed. Browser checked summer/winter/autumn/spring, opposite orbit, rain/evening and pause, with no console errors. No production deployment.
+
+### Distinct seasonal ground and distant mountains — 2026-09-30
+
+- User requested clearer seasonal ground and a real distant landscape beyond the billboard trees. Added two original built-in imagegen assets: autumn litter and a transparent mountain/forest panorama. Prompts, paths, sizes and provenance: `projects/foliage/public/landscape/SEASONS.md`.
+- Ground now blends actual maple-litter imagery in autumn, light new-growth green in spring and deeper summer grass. Grass height follows spring growth/autumn thinning. Snow coverage hides ground detail with uneven accumulation edges. Existing fallen hero leaves remain animated.
+- `horizon.ts`: single BackSide cylinder radius122, height80, centerY23, 128 segments/256 triangles. Mirrored panorama ×4 covers 360°. Transparent sky shows the existing live sky. Shader receives year, snow, day, cloud, sunset and lightning. No extra RAF, shadows or geometry forests; texture lifecycle follows environment disposal.
+- Local clear autumn renderer stats: 9 calls / 1277312 triangles vs previous8 /1277056. Additional runtime imagery929260 bytes. Image memory is exchanged for a low-geometry distant landscape; FPS/GPU timing not measured.
+- Build and ten state tests passed, no console errors in seasonal visual checks. Local only.

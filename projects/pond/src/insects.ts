@@ -3,8 +3,10 @@ import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {rng,tau} from './shared';
 import {createStriders} from './striders';
+import {createMonarchs} from './monarch';
 
-export function createInsects(scene:T.Scene){
+export async function createInsects(scene:T.Scene,pads:T.Group[]){
+ const monarchs=await createMonarchs(scene,pads);
  const random=rng(489),sphere=new T.SphereGeometry(1,8,6),dark=new T.MeshStandardMaterial({color:'#242b20',roughness:.65});
  function ellipsoid(parent:T.Group,m:T.Material,x:number,y:number,z:number,sx:number,sy:number,sz:number){const mesh=new T.Mesh(sphere,m);mesh.position.set(x,y,z);mesh.scale.set(sx,sy,sz);parent.add(mesh);return mesh;}
  const wingMaterial=new T.MeshStandardMaterial({color:'#cfe8dc',transparent:true,opacity:.32,roughness:.48,side:T.DoubleSide,depthWrite:false});
@@ -34,14 +36,15 @@ export function createInsects(scene:T.Scene){
  const shape=new T.Shape();shape.moveTo(0,0);shape.bezierCurveTo(.1,.08,.20,.26,.31,.17);shape.bezierCurveTo(.38,.08,.30,-.02,.20,-.025);shape.bezierCurveTo(.34,-.20,.17,-.26,.065,-.11);shape.lineTo(0,0);
  const butterflyWing=new T.ShapeGeometry(shape,18);const uv=butterflyWing.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)/.38,(uv.getY(i)+.26)/.52);butterflyWing.rotateX(-Math.PI/2);
  const butterflies=Array.from({length:7},(_,i)=>{
-  const root=new T.Group();scene.add(root);root.scale.setScalar(.40+random()*.14);ellipsoid(root,dark,0,0,0,.015,.018,.10);
+  const root=new T.Group();scene.add(root);root.scale.setScalar(.26+random()*.06);ellipsoid(root,dark,0,0,0,.015,.018,.10);
   const material=new T.MeshStandardMaterial({map:wingMaps[i]!,color:'#ffffff',side:T.DoubleSide,roughness:.85});
   const wings=[-1,1].map(side=>{const pivot=new T.Group();root.add(pivot);const mesh=new T.Mesh(butterflyWing,material);mesh.scale.x=side;pivot.add(mesh);return pivot;});
   const antenna=new T.LineSegments(new T.BufferGeometry().setAttribute('position',new T.Float32BufferAttribute([0,0,-.06,-.034,.04,-.14,0,0,-.06,.034,.04,-.14],3)),new T.LineBasicMaterial({color:'#38352b'}));root.add(antenna);
   return {root,wings,phase:random()*tau,cx:(random()-.5)*11,cz:(random()-.5)*7};
  });
  const striders=createStriders(scene);
- return {counts:{dragonflies:dragonflies.length,butterflies:butterflies.length,striders:striders.count},diagnostics:striders.diagnostics,update(dt:number,time:number,breeze:number){
+ return {counts:{dragonflies:dragonflies.length,butterflies:butterflies.length+monarchs.count,monarchs:monarchs.count,striders:striders.count},diagnostics:striders.diagnostics,monarchDiagnostics:monarchs.diagnostics,update(dt:number,time:number,breeze:number){
+  monarchs.update(time,breeze);
   dragonflies.forEach(({root,wings,phase},i)=>{
    const a=time*(.22+i*.013)+phase;root.position.set(Math.sin(a)*5,.55+Math.sin(time*.9+phase)*.19+Math.sin(time*.3+phase)*.17,Math.sin(a*.73+phase)*3);root.rotation.y=Math.atan2(-Math.cos(a),-Math.cos(a*.73+phase)*.44);
    wings.forEach((w,j)=>w.rotation.z=Math.sin(time*96+phase+(j%2)*.6)*(j<2?1:-1)*.22);

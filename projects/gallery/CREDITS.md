@@ -19,3 +19,10 @@ Stillwater directly uses Jikin, Tosakin, Ryukin and Shubunkin fish models/textur
 Stillwater’s Montane Brown Frog model/textures are by [ffish.asia / floraZia.com](https://sketchfab.com/ffishAsia-and-floraZia), CC BY 4.0, from the user-supplied rigged derivative. See the model attribution for conversion details and derivative provenance.
 
 Stillwater garden textures: [Poly Haven](https://polyhaven.com), CC0. Individual artists and texture sources are listed in `public/textures/ATTRIBUTION.md`.
+
+
+## Supplied monarch butterfly — 2026-09-30
+
+`monarch-butterfly.glb` is the user-supplied `monarch butterfly 3d model.glb`, copied byte-for-byte. The embedded generator is Tripo; the file does not contain an author or license declaration. This model is not covered by the application's GPL grant or the other animal models' CC BY notices. Provenance/redistribution terms remain to be supplied before public distribution.
+
+AIB runtime work: normalize the pitched +X body to -Z forward, retain the original UV/color/normal/roughness maps, and apply weighted wing rotation with matching normals. Two small instances share one geometry and the texture maps, with independent wing strokes, gliding intervals and flight paths. The source file has no rig or animation clips; web motion is authored by AIB Inc.

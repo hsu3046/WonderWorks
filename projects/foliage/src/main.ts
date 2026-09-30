@@ -41,6 +41,6 @@ $('#reset').onclick=()=>scene.resetView();$('#hide').onclick=()=>document.body.c
 $('#save').onclick=async()=>{try{const blob=await scene.snapshot(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`foliage-${s.species}-${seasonAt(s.year).toLowerCase()}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1200);}catch{status('The frame could not be saved. Please try again.');}};
 addEventListener('keydown',e=>{if(e.target instanceof HTMLInputElement||e.target instanceof HTMLButtonElement)return;if(e.code==='Space'){e.preventDefault();$('#pause').click();}if(e.key.toLowerCase()==='h')$('#hide').click();});
 addEventListener('pagehide',()=>scene.setActive(false));addEventListener('pageshow',()=>scene.setActive(true));
-Object.defineProperty(window,'foliageDiagnostics',{value:()=>({frames:scene.frames,time:scene.time,settings:{...s},counts:scene.counts()})});
+Object.defineProperty(window,'foliageDiagnostics',{value:()=>({frames:scene.frames,time:scene.time,settings:{...s},counts:scene.counts(),rendering:scene.rendering})});
 if(preview){document.body.classList.add('preview');s.paused=true;scene.pause();addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==parent)return;if(e.data?.type==='wonderworks:play'){s.paused=false;scene.pause();}if(e.data?.type==='wonderworks:pause'){s.paused=true;scene.pause();}});}
 sync();

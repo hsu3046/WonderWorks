@@ -11,7 +11,7 @@ export function createScene(canvas:HTMLCanvasElement,s:Settings,onTick:()=>void,
  const camera=new T.PerspectiveCamera(38,1,.1,230);camera.position.set(12,7.3,24);
  const controls=new OrbitControls(camera,canvas);controls.target.set(0,4.25,0);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=7;controls.maxDistance=36;controls.maxPolarAngle=Math.PI*.48;controls.minPolarAngle=.5;controls.autoRotateSpeed=.3;controls.update();
  const u:LivingUniforms={time:{value:0},flightTime:{value:0},year:{value:s.year},wind:{value:s.wind},snow:{value:climate(s.year).snow},species:{value:0}};
- const tree=createTree(s,u);world.add(tree.group);tree.update();const environment=createEnvironment(world,s,u,renderer,tree.group),sound=createSound();
+ const tree=createTree(s,u);world.add(tree.group);tree.update();const environment=createEnvironment(world,s,u,renderer,tree.group,invalidate,onError),sound=createSound();
  let raf=0,last=0,frames=0,disposed=false,active=true,uiTime=0,previousYear=s.year,previousWind=s.wind,previousAuto=s.auto,releaseEpoch=0;
  function draw(dt:number){
   if(!s.paused){u.time.value+=dt;if(s.auto)s.year=(s.year+dt/seasonDuration(s.year)*s.speed)%1;if(s.dayCycle)s.hour=(s.hour+dt*.08)%24;}
@@ -29,7 +29,7 @@ export function createScene(canvas:HTMLCanvasElement,s:Settings,onTick:()=>void,
  const ro=new ResizeObserver(()=>{const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setPixelRatio(Math.min(devicePixelRatio,1.8,Math.sqrt(2200000/(w*h))));renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=w/h<.8?60:38;camera.updateProjectionMatrix();invalidate();});ro.observe(canvas);
  const visibility=()=>{stop();if(document.hidden){void sound.enable(false).catch(()=>onError('Audio could not be suspended. Toggle sound off.'));}else{if(s.sound)void sound.enable(true).catch(()=>onError('Sound could not resume. Toggle sound to try again.'));invalidate();}};document.addEventListener('visibilitychange',visibility);
  const lost=(event:Event)=>{event.preventDefault();stop();active=false;onError('Graphics were interrupted. Reload to restore the landscape.');};canvas.addEventListener('webglcontextlost',lost);
- return {update:invalidate,counts:tree.counts,get frames(){return frames;},get time(){return u.time.value;},
+ return {update:invalidate,counts:tree.counts,get rendering(){return {...renderer.info.render,...environment.counts};},get frames(){return frames;},get time(){return u.time.value;},
   setActive(value:boolean){active=value;stop();if(value)invalidate();},
   pause(){stop();invalidate();if(s.paused)void sound.enable(false);else if(s.sound)void sound.enable(true).catch(()=>onError('Sound could not start.'));},
   async setSound(value:boolean){await sound.enable(value);},

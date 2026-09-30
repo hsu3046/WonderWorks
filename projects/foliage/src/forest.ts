@@ -3,7 +3,7 @@ import * as T from 'three';
 import {random,smooth,type Settings} from './state';
 import type {LivingUniforms} from './tree';
 
-const variants=4,tileSize=512,treeCount=1100;
+const variants=4,tileSize=512,treeCount=240;
 
 /** Bake the actual hero tree once; distant trees only draw camera-facing cards. */
 function bakeTree(renderer:T.WebGLRenderer,hero:T.Group,u:LivingUniforms){
@@ -86,9 +86,11 @@ export function createForest(renderer:T.WebGLRenderer,hero:T.Group,u:LivingUnifo
  geometry.setAttribute('forestData',new T.InstancedBufferAttribute(variation,4));
  const mesh=new T.InstancedMesh(geometry,material,treeCount);
  for(let i=0;i<treeCount;i++){
-  const angle=rng()*Math.PI*2,radius=38+Math.sqrt(rng())*58;
+  // Three staggered 360° rows avoid random holes with far fewer overlapping cards.
+  const row=Math.floor(i/80),angle=((i%80)+row*.37+(rng()-.5)*.55)/80*Math.PI*2;
+  const radius=42+row*21+(rng()-.5)*7;
   const x=Math.sin(angle)*radius,z=Math.cos(angle)*radius;
-  const scale=.55+rng()*.63;
+  const scale=.72+rng()*.50;
   matrix.position.set(x,groundY(x,z)-.11,z);matrix.scale.set(scale*(.83+rng()*.32),scale,1);matrix.updateMatrix();mesh.setMatrixAt(i,matrix.matrix);
   variation.set([Math.floor(rng()*variants),rng(),.8+rng()*.25,0],i*4);
  }

@@ -4,9 +4,11 @@ import {rng,tau,uTime} from './shared';
 
 /** Hair-thin legs, six contact dimples, and paired capillary waves left at each rowing stroke. */
 export function createStriders(scene:T.Scene){
- const random=rng(829),size=.20,count=6,wind={value:.35},dummy=new T.Object3D(),up=new T.Vector3(0,1,0),a=new T.Vector3(),b=new T.Vector3(),delta=new T.Vector3(),direction=new T.Vector3();
- const material=new T.MeshStandardMaterial({color:'#8eaaa0',transparent:true,opacity:.38,roughness:.38,depthWrite:false});
- const bodies=new T.InstancedMesh(new T.SphereGeometry(1,8,6),material,count);
+ const random=rng(829),size=.23,count=6,wind={value:.35},dummy=new T.Object3D(),up=new T.Vector3(0,1,0),a=new T.Vector3(),b=new T.Vector3(),delta=new T.Vector3(),direction=new T.Vector3();
+ const material=new T.MeshStandardMaterial({color:'#738d82',transparent:true,opacity:.46,roughness:.38,depthWrite:false});
+ // A darker body stays readable without thickening the translucent hair-thin legs.
+ const bodyMaterial=new T.MeshStandardMaterial({color:'#455e54',transparent:true,opacity:.68,roughness:.4,depthWrite:false});
+ const bodies=new T.InstancedMesh(new T.SphereGeometry(1,8,6),bodyMaterial,count);
  // World-space tapered cylinders avoid WebGL's minimum one-pixel opaque line width.
  const legs=new T.InstancedMesh(new T.CylinderGeometry(.65,1,1,3),material,count*12);scene.add(bodies,legs);
  const waveCount=48,births=new Float32Array(waveCount).fill(-100),waveGeometry=new T.PlaneGeometry(1,1).rotateX(-Math.PI/2);
@@ -25,14 +27,14 @@ export function createStriders(scene:T.Scene){
    float crest=1.-smoothstep(aa,aa*2.5,abs(r-.76));
    float inner=1.-smoothstep(aa,aa*2.,abs(r-.51));
    float rear=mix(.30,1.,smoothstep(-.8,.55,p.y));
-   float alpha=(crest+inner*.34)*rear*.26*(1.-smoothstep(.1,1.45,vAge));
+   float alpha=(crest+inner*.34)*rear*.36*(1.-smoothstep(.1,1.45,vAge));
    gl_FragColor=vec4(mix(vec3(.24,.36,.28),vec3(.80,.88,.72),crest),alpha);
    #include <tonemapping_fragment>
    #include <colorspace_fragment>
   }`});
  const wakes=new T.InstancedMesh(waveGeometry,wakeMat,waveCount);wakes.frustumCulled=false;wakes.renderOrder=2;scene.add(wakes);
  // Dimples follow the tarsi; travelling waves keep their original world-space contact point.
- const contactMaterial=new T.MeshBasicMaterial({color:'#adc5b1',transparent:true,opacity:.15,side:T.DoubleSide,depthWrite:false});
+ const contactMaterial=new T.MeshBasicMaterial({color:'#adc5b1',transparent:true,opacity:.23,side:T.DoubleSide,depthWrite:false});
  const contacts=new T.InstancedMesh(new T.RingGeometry(.62,1,16).rotateX(-Math.PI/2),contactMaterial,count*6);contacts.renderOrder=2;scene.add(contacts);
  const states=Array.from({length:count},()=>({phase:random()*tau,x:(random()-.5)*10,z:(random()-.5)*6,heading:random()*tau,target:random()*tau,until:0,stroke:0}));
  let cursor=0,emitted=0;

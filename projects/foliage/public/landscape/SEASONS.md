@@ -1,0 +1,14 @@
+## Seasonal ground and mountain panorama — 2026-09-30
+
+Both assets were created with the built-in image generation tool; original PNGs are in `assets/`, runtime WebP conversion quality88 (no cropping or image manipulation). © 2026 AIB Inc., GNU GPL v3.
+
+- `foliage-mountain-v1.webp`: 2172×724 RGBA, 208606 bytes; original `assets/foliage-mountain-v1.png`. Transparent sky preserved. Mapped onto a 122-unit radius, 80-unit-high cylinder (256 triangles), mirrored four repeats around 360°. Original sky remains visible through alpha. Existing scene updates drive spring/autumn/snow/day/sunset/rain/lightning shading. No shadows or extra animation loop.
+- `foliage-autumn-ground-v1.webp`: 1254×1254 RGB, 720654 bytes; original `assets/foliage-autumn-ground-v1.png`. Same metric UVs as meadow, autumn blending with patch variation; spring/summer use separate tints and blade growth. Snow overlays both textures.
+
+### Mountain generation prompt
+
+Use case: stylized-concept. Asset type: wide seamless distant landscape matte for a 360-degree Three.js seasonal maple meadow. Create a beautifully painted animated-film background: layers of hazy blue sage mountains and distant forested ridgelines. Very wide panoramic strip, 3:1. Mountain silhouette varied with rounded peaks, forest detail extremely fine and distant, predominantly muted blue gray and desaturated sage, atmospheric perspective. Top 30 percent is genuinely transparent sky, with a clean natural mountain silhouette against alpha; no painted sky. Bottom portion is continuous densely wooded hills in muted sage fading into soft neutral gray sage at bottom edge. No foreground trees, no big individual leaves, no ground plane, no water, buildings, people, sun, text or frame. Broad soft ambient daylight without strong cast shadows. Painterly realism, delicate brush texture, calm elegant depth. Horizontal left and right borders should join naturally; landscape fills width edge to edge. Output transparent background with actual alpha.
+
+### Autumn generation prompt
+
+Use case: stylized-concept. Asset type: seamless square ground albedo tile for an autumn maple meadow in a beautiful animated-film landscape. Perfect overhead orthographic view, densely scattered small fallen sugar maple leaves mixed with fine dry meadow grass and subtle moss, covering all edges. Many overlapping delicate five-lobed maple leaves in muted ochre, amber, terracotta, faded russet and warm tan, small size consistent across tile, hundreds of leaves, intricate veins and soft painterly organic detail. Some olive moss and brown grass visible between leaves. Natural elegant restrained saturation, diffuse neutral ambient illumination, no large directional shadows. No perspective, horizon, trees, rocks, objects, text or border. Seamless repeat on all four edges, evenly distributed details without obvious centerpiece. Opaque square texture, approximately 1024x1024.

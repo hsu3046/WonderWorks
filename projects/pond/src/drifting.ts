@@ -29,7 +29,7 @@ export function createDrifting(scene:T.Scene){
    }`});
   const geometry=seed?new T.PlaneGeometry(1,1):petalGeometry;
   const phases=new Float32Array(count),sizes=new Float32Array(count),mesh=new T.InstancedMesh(geometry,material,count),matrix=new T.Matrix4();
-  for(let i=0;i<count;i++){matrix.makeTranslation((r()-.5)*30,r()*10,(r()-.5)*22);mesh.setMatrixAt(i,matrix);phases[i]=r()*tau;sizes[i]=seed?.19+r()*.19:.055+r()*.06;}
+  for(let i=0;i<count;i++){matrix.makeTranslation((r()-.5)*30,r()*10,(r()-.5)*22);mesh.setMatrixAt(i,matrix);phases[i]=r()*tau;sizes[i]=seed?.095+r()*.095:.055+r()*.06;}
   geometry.setAttribute('aPhase',new T.InstancedBufferAttribute(phases,1));geometry.setAttribute('aSize',new T.InstancedBufferAttribute(sizes,1));mesh.frustumCulled=false;scene.add(mesh);
  }
  add(760,false);add(140,true);

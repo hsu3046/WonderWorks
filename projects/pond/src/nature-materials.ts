@@ -40,7 +40,16 @@ export async function createNatureMaterials(){
  stone.color.set('#acafa0');
  bark.color.set('#b3ae9a');bark.normalScale.setScalar(.65);
  soil.color.set('#8b9876');soil.normalScale.setScalar(.45);
- return {stone,bark,soil};
+ let meadowMap:T.Texture;
+ try{meadowMap=await loader.loadAsync(`${import.meta.env.BASE_URL}landscape/meadow-ground-v1.webp`);}
+ catch(cause){throw new Error('The meadow texture could not load. Please reload the garden.',{cause});}
+ meadowMap.colorSpace=T.SRGBColorSpace;
+ meadowMap.wrapS=meadowMap.wrapT=T.MirroredRepeatWrapping;meadowMap.anisotropy=16;
+ // Painted groundcover fills the gaps beneath the existing grass instances.
+ // Keep the pond's soil maps separate; their roots/stone normals do not match leaves.
+ const meadow=new T.MeshStandardMaterial({map:meadowMap,bumpMap:meadowMap,bumpScale:.018,
+  color:'#ced6b5',roughness:.98,envMapIntensity:.12});
+ return {stone,bark,soil,meadow};
 }
 
 /** Thin leaves retain their silhouette, with a midrib, finer veins and uneven pigment. */

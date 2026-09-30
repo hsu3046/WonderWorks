@@ -11,9 +11,15 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
  fragmentShader:`uniform float uTime;uniform sampler2D uReflection;uniform sampler2D uRefraction;uniform vec2 uResolution;uniform float uClarity;uniform float uBreeze;uniform vec3 uSun;uniform vec3 uSunColor;uniform float uUnder;uniform vec4 uRings[10];varying vec3 vWorld;varying vec4 vReflect;${noiseGLSL}
  void main(){vec2 p=vWorld.xz;float t=uTime;vec2 slope=vec2(cos(p.x*1.7+p.y*.7+t*.8)*.024+cos(p.x*.8-p.y*2.1-t*1.1)*.011,cos(p.x*1.7+p.y*.7+t*.8)*.011-cos(p.x*.8-p.y*2.1-t*1.1)*.022)*(.4+uBreeze);slope+=vec2(noise2(p*5.+t*.2),noise2(p*5.-t*.17))*.024-.012;
  float rippleLight=0.;for(int i=0;i<10;i++){float age=t-uRings[i].z;vec2 q=p-uRings[i].xy;float d=length(q);float envelope=exp(-pow(d-age*1.5,2.)*4.)*exp(-max(age,0.)*.75)*uRings[i].w*step(0.,age);slope+=normalize(q+.0001)*cos((d-age*1.5)*13.)*envelope*.19;rippleLight+=pow(max(0.,cos((d-age*1.5)*13.)),6.)*envelope*.09;}
- vec3 n=normalize(vec3(-slope.x,1.,-slope.y));vec3 viewDir=normalize(cameraPosition-vWorld);float fresnel=.035+.92*pow(1.-abs(dot(n,viewDir)),4.5);vec2 uv=gl_FragCoord.xy/uResolution;vec2 bend=slope*.06;vec3 bed=texture2D(uRefraction,clamp(uv+bend,vec2(.002),vec2(.998))).rgb;vec2 ruv=vReflect.xy/vReflect.w*.5+.5;vec3 reflected=texture2D(uReflection,clamp(ruv+slope*.065,vec2(.003),vec2(.997))).rgb;
- vec3 tint=vec3(.055,.24,.16);bed=mix(bed,tint,(1.-uClarity)*.6+.06);vec3 col=mix(bed,reflected,fresnel*.85);vec3 halfVec=normalize(normalize(uSun)+viewDir);float glint=pow(max(0.,dot(n,halfVec)),240.)*2.1+pow(max(0.,dot(n,halfVec)),32.)*.12;col+=uSunColor*glint+vec3(.7,.9,.72)*rippleLight;
- if(uUnder>.5){col=mix(bed,vec3(.11,.35,.29),.24);col+=vec3(.1,.2,.14)*pow(max(0.,dot(-n,viewDir)),8.);}
+ vec3 n=normalize(vec3(-slope.x,1.,-slope.y));vec3 viewDir=normalize(cameraPosition-vWorld);float viewCos=clamp(abs(dot(n,viewDir)),0.,1.);float fresnel=.0204+.9796*pow(1.-viewCos,5.);vec2 uv=gl_FragCoord.xy/uResolution;vec2 bend=slope*.06;vec3 bed=texture2D(uRefraction,clamp(uv+bend,vec2(.002),vec2(.998))).rgb;vec2 ruv=vReflect.xy/vReflect.w*.5+.5;vec3 reflected=texture2D(uReflection,clamp(ruv+slope*.065,vec2(.003),vec2(.997))).rgb;
+ // Absorption preserves pigment contrast; only suspended particles add a color veil.
+ float murk=1.-uClarity;
+ // A grazing ray travels farther through water; Schlick reflection reaches 100% at the horizon.
+ float opticalPath=.12+murk*1.8+(.045+murk*.18)*(1./max(viewCos,.025)-1.);
+ vec3 transmission=exp(-vec3(.22,.065,.11)*opticalPath);
+ bed=bed*transmission+vec3(.025,.10,.065)*(murk*murk*.5);
+ vec3 col=mix(bed,reflected,fresnel);vec3 halfVec=normalize(normalize(uSun)+viewDir);float glint=pow(max(0.,dot(n,halfVec)),240.)*2.1+pow(max(0.,dot(n,halfVec)),32.)*.12;col+=uSunColor*glint+vec3(.7,.9,.72)*rippleLight;
+ if(uUnder>.5){col=mix(bed,vec3(.045,.15,.12),.045+murk*.16);col+=vec3(.1,.2,.14)*pow(max(0.,dot(-n,viewDir)),8.);}
  gl_FragColor=vec4(col,1.);#include <tonemapping_fragment>\n#include <colorspace_fragment>
  }`.replace(';#include',';\n#include')});
  const g=new T.CircleGeometry(1,128,0,Math.PI*2); // Subdivided grid gives rings a real surface displacement.
