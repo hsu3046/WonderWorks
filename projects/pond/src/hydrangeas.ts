@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createModelLoader} from './model-loader';
+import {deferredFlower} from './near-flower';
 import {rng,tau,uTime} from './shared';
 
 /** Keep the central architecture and the front camera approach open. */
@@ -14,11 +15,13 @@ const sway=`vec3 anchor=(instanceMatrix*vec4(0.,0.,0.,1.)).xyz;
  float tip=smoothstep(.06,.92,position.y);
  transformed.x+=sin(uHydTime*1.15+anchor.x*.48+anchor.z*.29)*.014*tip*tip;
  transformed.z+=sin(uHydTime*.83+anchor.x*.31)*.011*tip*tip;`;
-export async function createHydrangeas(root:T.Group,shrubs:readonly {x:number;z:number;r:number;y:number;ry:number}[]){
+export async function createHydrangeas(root:T.Object3D,shrubs:readonly {x:number;z:number;r:number;y:number;ry:number}[],onChange:()=>void,onError:(message:string)=>void){
  let asset;
- try{asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/hydrangea-garden-v1.glb`);}
+ try{asset=await createModelLoader().loadAsync(`${import.meta.env.BASE_URL}models/hydrangea-far-v2.glb`);}
  catch(cause){throw new Error('The hydrangea flowers could not load. Please reload the garden.',{cause});}
- const near=asset.scene.getObjectByName('HydrangeaNear'),far=asset.scene.getObjectByName('HydrangeaFar');
+ const far=asset.scene.getObjectByName('HydrangeaFar');
+ if(!(far instanceof T.Mesh))throw new Error('Missing distant flowers');
+ const near=new T.Mesh(far.geometry.clone(),far.material);
  if(!(near instanceof T.Mesh)||!(far instanceof T.Mesh)||!(near.material instanceof T.MeshStandardMaterial))throw new Error('The hydrangea model is incomplete.');
  const sourceMaterial=near.material,material=sourceMaterial.clone();
  material.roughness=.9;material.metalness=0;material.normalScale.setScalar(.38);material.envMapIntensity=.32;
@@ -59,18 +62,22 @@ export async function createHydrangeas(root:T.Group,shrubs:readonly {x:number;z:
  }
  const meshes=[near,far].map((source,index)=>{
   const g=source.geometry.clone();g.setAttribute('aHydTint',new T.InstancedBufferAttribute(new Float32Array(specimens.length*3),3).setUsage(T.DynamicDrawUsage));
-  const mesh=new T.InstancedMesh(g,material,specimens.length);mesh.name=index===0?'Hydrangea close flowers':'Hydrangea distant flowers';mesh.userData.waterAbove=true;mesh.castShadow=mesh.receiveShadow=true;mesh.customDepthMaterial=depth;mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(mesh);return mesh;
+  const mesh=new T.InstancedMesh(g,material,specimens.length);mesh.name=index===0?'Hydrangea close flowers':'Hydrangea distant flowers';mesh.userData.waterAbove=true;mesh.castShadow=mesh.receiveShadow=true;mesh.customDepthMaterial=depth;mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;mesh.visible=false;root.add(mesh);return mesh;
  });
  near.geometry.dispose();far.geometry.dispose();sourceMaterial.dispose();
  const previous=new T.Vector3(Infinity,Infinity,Infinity);let initialized=false;
  const counts=[0,0];
+ const nearAsset=deferredFlower('hydrangea-near-v2','HydrangeaNear',g=>{
+  g.setAttribute('aHydTint',meshes[0]!.geometry.getAttribute('aHydTint'));
+  meshes[0]!.geometry.dispose();meshes[0]!.geometry=g;meshes[0]!.boundingBox=null;meshes[0]!.boundingSphere=null;initialized=false;onChange();
+ },onError);
  function update(camera:T.Camera){
   if(initialized&&previous.distanceToSquared(camera.position)<.04)return;
   previous.copy(camera.position);let changed=!initialized;
-  for(const s of specimens){const d=s.position.distanceToSquared(camera.position),next=d<(s.near?25:16);changed ||=next!==s.near;s.near=next;}
+  for(const s of specimens){const d=s.position.distanceToSquared(camera.position),wanted=d<(s.near?25:16);if(wanted)nearAsset.request();const next=wanted&&nearAsset.ready;changed ||=next!==s.near;s.near=next;}
   if(!changed)return;initialized=true;counts.fill(0);
   for(const s of specimens){const batch=s.near?0:1,index=counts[batch]!,mesh=meshes[batch]!;counts[batch]=index+1;mesh.setMatrixAt(index,s.matrix);(mesh.geometry.getAttribute('aHydTint') as T.InstancedBufferAttribute).setXYZ(index,s.color.r,s.color.g,s.color.b);}
   meshes.forEach((mesh,i)=>{mesh.count=counts[i]!;mesh.visible=mesh.count>0;mesh.instanceMatrix.needsUpdate=true;(mesh.geometry.getAttribute('aHydTint') as T.InstancedBufferAttribute).needsUpdate=true;if(mesh.count){mesh.computeBoundingSphere();mesh.boundingSphere!.radius+=.04;}});
  }
- return {update,diagnostics:()=>({beds:shrubs.length,headsPerShrub,heads:specimens.length,near:counts[0],far:counts[1],triangles:counts[0]!*47395+counts[1]!*12096})};
+ return {update,dispose:nearAsset.dispose,diagnostics:()=>({beds:shrubs.length,headsPerShrub,heads:specimens.length,near:counts[0],far:counts[1],nearAsset:nearAsset.state,triangles:meshes.reduce((sum,m)=>sum+m.count*(m.geometry.index?.count??m.geometry.attributes.position!.count)/3,0)})};
 }

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createModelLoader} from './model-loader';
+import {deferredFlower} from './near-flower';
 import {rng,uTime} from './shared';
 
 const sway=`vec3 anchor=(instanceMatrix*vec4(0.,0.,0.,1.)).xyz;
@@ -8,11 +9,13 @@ const sway=`vec3 anchor=(instanceMatrix*vec4(0.,0.,0.,1.)).xyz;
  transformed.x+=sin(uAzTime*1.15+anchor.x*.48+anchor.z*.29)*.012*tip;
  transformed.z+=sin(uAzTime*.83+anchor.x*.31)*.008*tip;`;
 /** Small authored flowering sprigs spread over the upper AND outer crown, not giant flower heads. */
-export async function createAzaleas(root:T.Group,crowns:readonly {x:number;z:number;r:number;y:number;ry:number}[]){
+export async function createAzaleas(root:T.Object3D,crowns:readonly {x:number;z:number;r:number;y:number;ry:number}[],onChange:()=>void,onError:(message:string)=>void){
  let asset;
- try{asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/azalea-garden-v1.glb`);}
+ try{asset=await createModelLoader().loadAsync(`${import.meta.env.BASE_URL}models/azalea-far-v2.glb`);}
  catch(cause){throw new Error('The azalea flowers could not load. Please reload the garden.',{cause});}
- const near=asset.scene.getObjectByName('AzaleaNear'),far=asset.scene.getObjectByName('AzaleaFar');
+ const far=asset.scene.getObjectByName('AzaleaFar');
+ if(!(far instanceof T.Mesh))throw new Error('Missing distant flowers');
+ const near=new T.Mesh(far.geometry.clone(),far.material);
  if(!(near instanceof T.Mesh)||!(far instanceof T.Mesh)||!(near.material instanceof T.MeshStandardMaterial))throw new Error('The azalea model is incomplete.');
  const material=near.material.clone();material.roughness=.88;material.metalness=0;material.normalScale.setScalar(.30);material.envMapIntensity=.30;
  material.side=T.DoubleSide;material.forceSinglePass=true;
@@ -48,20 +51,24 @@ export async function createAzaleas(root:T.Group,crowns:readonly {x:number;z:num
   const color=new T.Color(palette[(i+bed)%palette.length]!);color.offsetHSL((random()-.5)*.014,0,(random()-.5)*.025);
   specimens.push({matrix:dummy.matrix.clone(),position:p,color,near:false});
  }
- const triangleCounts:number[]=[];
+
  const meshes=[near,far].map((source,i)=>{
   const g=source.geometry.clone();g.translate(0,-.50,0);
   g.setAttribute('aAzTint',new T.InstancedBufferAttribute(new Float32Array(specimens.length*3),3).setUsage(T.DynamicDrawUsage));
-  triangleCounts.push((g.index?.count??g.attributes.position!.count)/3);
+
   const mesh=new T.InstancedMesh(g,material,specimens.length);mesh.name=i===0?'Azalea close blossoms':'Azalea distant blossoms';mesh.userData.waterAbove=true;
-  mesh.castShadow=mesh.receiveShadow=true;mesh.customDepthMaterial=depth;mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(mesh);return mesh;
+  mesh.castShadow=mesh.receiveShadow=true;mesh.customDepthMaterial=depth;mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;mesh.visible=false;root.add(mesh);return mesh;
  });
  near.geometry.dispose();far.geometry.dispose();near.material.dispose();
  const previous=new T.Vector3(Infinity,Infinity,Infinity),counts=[0,0];let initialized=false;
+ const nearAsset=deferredFlower('azalea-near-v2','AzaleaNear',g=>{
+  g.translate(0,-.50,0);g.setAttribute('aAzTint',meshes[0]!.geometry.getAttribute('aAzTint'));
+  meshes[0]!.geometry.dispose();meshes[0]!.geometry=g;meshes[0]!.boundingBox=null;meshes[0]!.boundingSphere=null;initialized=false;onChange();
+ },onError);
  function update(camera:T.Camera){
   if(initialized&&previous.distanceToSquared(camera.position)<.04)return;
   previous.copy(camera.position);let changed=!initialized;
-  for(const s of specimens){const next=s.position.distanceToSquared(camera.position)<(s.near?20.25:12.25);changed ||= next!==s.near;s.near=next;}
+  for(const s of specimens){const wanted=s.position.distanceToSquared(camera.position)<(s.near?20.25:12.25);if(wanted)nearAsset.request();const next=wanted&&nearAsset.ready;changed ||= next!==s.near;s.near=next;}
   if(!changed)return;initialized=true;counts.fill(0);
   for(const s of specimens){const batch=s.near?0:1,index=counts[batch]!,mesh=meshes[batch]!;counts[batch]=index+1;
    mesh.setMatrixAt(index,s.matrix);(mesh.geometry.getAttribute('aAzTint') as T.InstancedBufferAttribute).setXYZ(index,s.color.r,s.color.g,s.color.b);}
@@ -69,5 +76,5 @@ export async function createAzaleas(root:T.Group,crowns:readonly {x:number;z:num
    (mesh.geometry.getAttribute('aAzTint') as T.InstancedBufferAttribute).needsUpdate=true;
    if(mesh.count){mesh.computeBoundingSphere();mesh.boundingSphere!.radius+=.04;}});
  }
- return {update,diagnostics:()=>({shrubs:crowns.length,sprigsPerShrub,sprigs:specimens.length,openFlowers:specimens.length*3,near:counts[0],far:counts[1],triangles:counts[0]!*triangleCounts[0]!+counts[1]!*triangleCounts[1]!})};
+ return {update,dispose:nearAsset.dispose,diagnostics:()=>({shrubs:crowns.length,sprigsPerShrub,sprigs:specimens.length,openFlowers:specimens.length*3,near:counts[0],far:counts[1],nearAsset:nearAsset.state,triangles:meshes.reduce((sum,m)=>sum+m.count*(m.geometry.index?.count??m.geometry.attributes.position!.count)/3,0)})};
 }

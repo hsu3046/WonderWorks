@@ -1,14 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 // PBR photographs: Poly Haven, CC0. See public/textures/ATTRIBUTION.md.
 import * as T from 'three';
+import {settleAll} from './task-pool';
 import {noiseGLSL,uTime} from './shared';
 import {causticGLSL,waterUniforms} from './water-field';
 
 export async function createNatureMaterials(){
- const loader=new T.TextureLoader();
- const sets=await Promise.all(['rock_boulder_dry','bark_brown_02','forest_ground_04'].map(async name=>{
-  const maps=await Promise.all(['diff','nor_gl','rough'].map(async kind=>{
-   const t=await loader.loadAsync(`${import.meta.env.BASE_URL}textures/${name}_${kind}_1k.jpg`);
+ const loader=new T.TextureLoader(),loadedTextures:T.Texture[]=[];
+ const load=async(url:string)=>{const texture=await loader.loadAsync(url);loadedTextures.push(texture);return texture;};
+ const meadowTask=load(`${import.meta.env.BASE_URL}landscape/meadow-ground-v1.webp`);
+ // Attach rejection immediately while the independent material maps load.
+ const meadowResult=meadowTask.then(value=>({value}),cause=>({cause}));
+ try{
+ const sets=await settleAll(['rock_boulder_dry','bark_brown_02','forest_ground_04'].map(async name=>{
+  const maps=await settleAll(['diff','nor_gl','rough'].map(async kind=>{
+   const t=await load(`${import.meta.env.BASE_URL}textures/${name}_${kind}_1k-v2.webp`);
    t.wrapS=t.wrapT=T.RepeatWrapping;t.anisotropy=8;
    if(kind==='diff')t.colorSpace=T.SRGBColorSpace;
    return t;
@@ -43,7 +49,7 @@ export async function createNatureMaterials(){
  bark.color.set('#b3ae9a');bark.normalScale.setScalar(.65);
  soil.color.set('#8b9876');soil.normalScale.setScalar(.45);
  let meadowMap:T.Texture;
- try{meadowMap=await loader.loadAsync(`${import.meta.env.BASE_URL}landscape/meadow-ground-v1.webp`);}
+ try{const result=await meadowResult;if('cause' in result)throw result.cause;meadowMap=result.value;}
  catch(cause){throw new Error('The meadow texture could not load. Please reload the garden.',{cause});}
  meadowMap.colorSpace=T.SRGBColorSpace;
  meadowMap.wrapS=meadowMap.wrapT=T.MirroredRepeatWrapping;meadowMap.anisotropy=16;
@@ -52,6 +58,7 @@ export async function createNatureMaterials(){
  const meadow=new T.MeshStandardMaterial({map:meadowMap,bumpMap:meadowMap,bumpScale:.018,
   color:'#ced6b5',roughness:.98,envMapIntensity:.12});
  return {stone,bark,soil,meadow};
+ }catch(cause){await meadowResult;loadedTextures.forEach(t=>t.dispose());throw new Error("The garden textures could not load. Please reload.",{cause});}
 }
 
 /** Thin leaves retain their silhouette, with a midrib, finer veins and uneven pigment. */

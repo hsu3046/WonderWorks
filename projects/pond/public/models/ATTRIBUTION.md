@@ -77,3 +77,9 @@ AIB web modifications: Blender geometry reduction into close/distant levels, smo
 `azalea-garden-v1.glb` derives from the user-supplied `assets/pink azalea 3d model.glb`. Embedded generator: Tripo; original creator and redistribution license are unspecified. This asset is separate from the application's GPL grant and other models' CC BY notices.
 
 AIB web modifications: isolated Blender reduction to near/far meshes, normalized sprig scale, preserved source UV/pigment detail, padded color/normal atlases, WebP packing, instanced shrub placement, restrained petal tint variation and GPU sway. Original source GLB unchanged. Reference photograph by Anncy on Crowdpic was used for arrangement inspiration only and is not included. Details: `docs/pond/AZALEA.md`.
+
+## Loading derivatives — 2026-09-30
+
+The `*-packed-v1.glb` files retain their corresponding source assets' authors and licenses above. AIB Inc. applied lossless Meshopt geometry compression and high-quality WebP image encoding. Authored names, material groups, geometry, UVs, and frog morph targets are retained; normal/data maps and AIB eye/pigment images retain lossless image samples when converted.
+
+`hydrangea-far-v2.glb` / `azalea-far-v2.glb` are reduced distant meshes (2,800 / 999 triangles), retaining the original material atlases. `hydrangea-near-v2.glb` / `azalea-near-v2.glb` contain the unchanged original close geometry without duplicate textures, downloaded on approach. Placement, flower count and coloring remain runtime AIB work. Source files are preserved. Preparation: `scripts/optimize-loading.mjs`; no license grants are expanded by this conversion.

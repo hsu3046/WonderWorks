@@ -24,8 +24,12 @@ function fadeMeadowGround(material:T.MeshStandardMaterial){
  return material;
 }
 export async function createGarden(scene:T.Scene){
- const {stone,bark,soil,meadow:meadowMaterial}=await createNatureMaterials();
- const r=rng(337),root=new T.Group();scene.add(root);
+ const root=new T.Group();scene.add(root);
+ const results=await Promise.allSettled([createNatureMaterials(),createArchitecture(root)]);
+ const failed=results.find(r=>r.status==='rejected');if(failed?.status==='rejected')throw failed.reason;
+ const {stone,bark,soil,meadow:meadowMaterial}=(results[0] as PromiseFulfilledResult<Awaited<ReturnType<typeof createNatureMaterials>>>).value;
+ const architecture=(results[1] as PromiseFulfilledResult<Awaited<ReturnType<typeof createArchitecture>>>).value;
+ const r=rng(337);
  const batches=new Map<T.Material,T.BufferGeometry[]>();
  function batch(g:T.BufferGeometry,m:T.Material,p:T.Vector3,scale=new T.Vector3(1,1,1),q=new T.Quaternion()){g.applyMatrix4(new T.Matrix4().compose(p,q,scale));const list=batches.get(m)||[];list.push(g);batches.set(m,list);}
  function box(w:number,h:number,d:number,x:number,y:number,z:number,m:T.Material){batch(new T.BoxGeometry(w,h,d),m,new T.Vector3(x,y,z));}
@@ -45,13 +49,12 @@ export async function createGarden(scene:T.Scene){
  for(let i=0;i<140;i++){const a=r()*tau,rad=Math.sqrt(r())*.92;const x=Math.cos(a)*9.5*rad,z=Math.sin(a)*6.7*rad;batch(rockBase.clone(),stone,new T.Vector3(x,-1.55+Math.pow(rad,5)*1.5,z),new T.Vector3(.035+r()*.13,.03+r()*.065,.04+r()*.1));}
  for(const [x,z,s] of [[5.7,2.3,1.25],[-6.3,-1.7,1.1],[8,-3.6,1.4],[-8,4.5,.8]]){batch(rockBase.clone(),stone,new T.Vector3(x,-.4,z),new T.Vector3(s,s*1.2,s*.8));batch(rockBase.clone(),stone,new T.Vector3(x+.45,.12,z+.1),new T.Vector3(s*.65,s*.38,s*.5));}
  // Supplied refined timber models replace the procedural bridge and pavilion.
- const architecture=await createArchitecture(root);
+
  // Lanterns have carved feet and a warm paper chamber.
  const lanternGlow=new T.MeshStandardMaterial({color:'#ffe0a0',emissive:'#ffc469',emissiveIntensity:.7,roughness:.6});
  for(const [x,z] of [[-5.4,-5.5],[6.3,-6.1]]){box(.85,.18,.85,x,.47,z,stone);branch(new T.Vector3(x,.5,z),new T.Vector3(x,1.75,z),.2,.17,stone);box(.65,.2,.65,x,1.8,z,stone);box(.46,.6,.46,x,2.15,z,lanternGlow);batch(new T.ConeGeometry(.66,.38,4),stone,new T.Vector3(x,2.63,z));}
  const planting=createPlanting(root,bark),dummy=new T.Object3D();
- const hydrangeas=await createHydrangeas(root,planting.clusters);
- const azaleas=await createAzaleas(root,planting.azaleaClusters);
+
  const reedMat=new T.MeshStandardMaterial({color:'#607a3d',roughness:1});
  for(let i=0;i<230;i++){
   const a=r()*tau;if(a>.3&&a<2.8&&r()<.7)continue;
@@ -77,5 +80,5 @@ export async function createGarden(scene:T.Scene){
  for(const [m,geometries] of batches){const merged=mergeGeometries(geometries.map(g=>g.index?g.toNonIndexed():g),false);if(!merged)throw Error('Garden geometry could not be assembled');
  // Preserve cylindrical bark UVs; stone uses its own triplanar projection.
  const mesh=new T.Mesh(merged,m);mesh.castShadow=true;mesh.receiveShadow=true;root.add(mesh);geometries.forEach(g=>g.dispose());}
- const meadow=createMeadow(root);const groundcover=createOuterGroundcover(root);rockBase.dispose();return {root,architecture,hydrangeas,azaleas,leaves:planting.leaves,planting:{trees:planting.trees,shrubs:planting.shrubs,triangles:planting.triangles},meadow:{...meadow,grass:grass.count,groundcover}};
+ const meadow=createMeadow(root);const groundcover=createOuterGroundcover(root);rockBase.dispose();return {root,architecture,loadHydrangeas:(target:T.Object3D,changed:()=>void,error:(s:string)=>void)=>createHydrangeas(target,planting.clusters,changed,error),loadAzaleas:(target:T.Object3D,changed:()=>void,error:(s:string)=>void)=>createAzaleas(target,planting.azaleaClusters,changed,error),leaves:planting.leaves,planting:{trees:planting.trees,shrubs:planting.shrubs,triangles:planting.triangles},meadow:{...meadow,grass:grass.count,groundcover}};
 }

@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {settleAll} from './task-pool';
+import {createModelLoader} from './model-loader';
 
 /** Preserve authored proportions, UVs and material groups; place each model by its bounds. */
 export async function createArchitecture(parent:T.Group){
- const loader=new GLTFLoader();
+ const loader=createModelLoader();
  // The smaller bridge footings sit in the near-side pond bed rather than on the surface.
  const specs=[
-  {name:'bridge',file:'wooden-bridge-refined-v1',axis:'x' as const,size:6.6,base:-1.5,z:-5.7},
-  {name:'gazebo',file:'wooden-gazebo-refined-v1',axis:'y' as const,size:7.2,base:.25,z:-11.3},
+  {name:'bridge',file:'wooden-bridge-refined-v1-packed-v1',axis:'x' as const,size:6.6,base:-1.5,z:-5.7},
+  {name:'gazebo',file:'wooden-gazebo-refined-v1-packed-v1',axis:'y' as const,size:7.2,base:.25,z:-11.3},
  ];
- return Promise.all(specs.map(async spec=>{
+ return settleAll(specs.map(async spec=>{
   let asset;
   try{asset=await loader.loadAsync(`${import.meta.env.BASE_URL}models/${spec.file}.glb`);}
   catch{throw new Error(`The ${spec.name} model could not load. Please reload the garden.`);}

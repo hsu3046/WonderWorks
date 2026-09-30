@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 // Fish assets: somitsu (CC BY 4.0) and AIB Inc.; see public/models/ATTRIBUTION.md.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {settleAll} from './task-pool';
+import {disposeObjects} from './scene-resources';
+import {createModelLoader} from './model-loader';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {uTime} from './shared';
 import {causticGLSL,waterUniforms} from './water-field';
@@ -9,17 +11,17 @@ import {fishSpecies} from './fish-species';
 
 /** Blender-normalized assets share +X forward / +Y up, with independent GPU swim phases. */
 export async function createKoi(scene:T.Scene,seeds:Float32Array){
- const loader=new GLTFLoader();
- const assets=await Promise.all(fishSpecies.map(async({name})=>{
+ const loader=createModelLoader();
+ const completed:Awaited<ReturnType<typeof loader.loadAsync>>[]=[];
+ let assets:typeof completed;
+ try{assets=await settleAll(fishSpecies.map(async({name})=>{
   // Jikin's source export baked a one-sided rig pose; swim from its neutral bake.
   const file=name==='jikin'?'jikin-neutral-v1':name;
-  const asset=await loader.loadAsync(`${import.meta.env.BASE_URL}models/${file}.glb`);
-  if(name==='aib-goldfish-v5'){
-   const cornea=await loader.loadAsync(`${import.meta.env.BASE_URL}models/aib-goldfish-v5-cornea.glb`);
-   asset.scene.add(cornea.scene);
-  }
+  const files=[file,...(name==='aib-goldfish-v5'?['aib-goldfish-v5-cornea']:[])];
+  const parts=await settleAll(files.map(async f=>{const asset=await loader.loadAsync(`${import.meta.env.BASE_URL}models/${f}-packed-v1.glb`);completed.push(asset);return asset;}));
+  const asset=parts[0]!;if(parts[1])asset.scene.add(parts[1].scene);
   return asset;
- }));
+ }));}catch(cause){completed.forEach(asset=>disposeObjects(asset.scene));throw cause;}
  const speciesCount=assets.length;
  const batches:T.InstancedMesh[][]=assets.map(()=>[]);
  const swimAttributes:T.InstancedBufferAttribute[]=[];

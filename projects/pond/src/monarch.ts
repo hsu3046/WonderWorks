@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createModelLoader} from './model-loader';
 import {monarchBehavior} from './monarch-behavior';
 
 // The supplied mesh faces +X, with the body pitched up and its wings already raised.
@@ -11,7 +11,7 @@ const alignment=new T.Matrix4().makeRotationY(Math.PI/2)
 
 export async function createMonarchs(scene:T.Scene,pads:T.Group[]){
  let asset;
- try{asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/monarch-butterfly.glb`);}
+ try{asset=await createModelLoader().loadAsync(`${import.meta.env.BASE_URL}models/monarch-butterfly-packed-v1.glb`);}
  catch(cause){throw new Error('The monarch butterfly could not load. Please reload the garden.',{cause});}
  const meshes:T.Mesh<T.BufferGeometry,T.MeshStandardMaterial>[]=[];
  asset.scene.updateMatrixWorld(true);

@@ -10,12 +10,16 @@ import {rng,tau,uTime} from './shared';
 export async function createLife(scene:T.Scene,ripple:(x:number,z:number,strength?:number)=>void){
  const r=rng(928),count=fishSpecies.length,seeds=new Float32Array(count);
  for(let i=0;i<count;i++){seeds[i]=r()*tau;}
- const fish=await createKoi(scene,seeds);
+ const pads=createLilies(scene);
+ const loaded=await Promise.allSettled([createKoi(scene,seeds),createFrog(scene,pads,ripple),createInsects(scene,pads)]);
+ const failed=loaded.find(r=>r.status==='rejected');if(failed?.status==='rejected')throw failed.reason;
+ const fish=(loaded[0] as PromiseFulfilledResult<Awaited<ReturnType<typeof createKoi>>>).value;
+ const frog=(loaded[1] as PromiseFulfilledResult<Awaited<ReturnType<typeof createFrog>>>).value;
+ const insects=(loaded[2] as PromiseFulfilledResult<Awaited<ReturnType<typeof createInsects>>>).value;
  const sizes=Array.from({length:count},(_,i)=>{const [min,max]=fishSpecies[i%fishSpecies.length]!.scale;return T.MathUtils.lerp(min,max,r());});
  const motion=createFishMotion(seeds,sizes),positions=motion.states.map(s=>s.position),d=new T.Object3D(),feed=new T.Vector3();let fedAt=-100;
  const pellets=new T.InstancedMesh(new T.SphereGeometry(.026,6,4),new T.MeshStandardMaterial({color:'#c68d45',roughness:.75}),45);scene.add(pellets);pellets.visible=false;
- const pads=createLilies(scene);
- const frog=await createFrog(scene,pads,ripple),insects=await createInsects(scene,pads);
+
  return {fish,positions,frog,diagnostics(){return {fish:motion.snapshot().map((state,i)=>({...state,species:fishSpecies[i]!.name,scale:sizes[i]})),frog:frog.diagnostics(),insects:insects.counts,monarchs:insects.monarchDiagnostics(),striders:insects.diagnostics()};},feed(x:number,z:number){feed.set(x,-.2,z);fedAt=uTime.value;ripple(x,z,1);pellets.visible=true;},update(dt:number,activity:number,breeze:number){const time=uTime.value;
  motion.update(dt,time,activity,time-fedAt<12?feed:null);
  motion.states.forEach((s,i)=>{fish.setMotionAt(i,s.stroke,s.effort,s.bank);d.position.copy(s.position);d.rotation.order='YXZ';d.rotation.set(s.bank*.12,-s.yaw,T.MathUtils.clamp(s.pitch,-.4,.4));d.scale.setScalar(sizes[i]!);d.updateMatrix();fish.setMatrixAt(i,d.matrix);});fish.updateInstances();

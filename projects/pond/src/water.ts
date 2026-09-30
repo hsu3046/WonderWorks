@@ -56,11 +56,11 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
  const look=new T.Vector3(),up=new T.Vector3(),aboveObjects:{object:T.Object3D;visible:boolean}[]=[];
  let classified=false,skipped=0;const passCounts={reflection:0,refraction:0,main:0};
  function classify(){
-  const box=new T.Box3();garden.traverse(o=>{if(!(o instanceof T.Mesh))return;
+  aboveObjects.length=0;const box=new T.Box3();garden.traverse(o=>{if(!(o instanceof T.Mesh))return;
    box.setFromObject(o);if(o.userData.waterAbove===true||box.min.y>.12)aboveObjects.push({object:o,visible:o.visible});
   });classified=true;
  }
- return {surface,uniforms,ripple:field.splat,diagnostics:()=>({...field.diagnostics(),skippedAboveWater:skipped,passDraws:{...passCounts}}),
+ return {invalidateGarden(){classified=false;},surface,uniforms,ripple:field.splat,diagnostics:()=>({...field.diagnostics(),skippedAboveWater:skipped,passDraws:{...passCounts}}),
   resize(w:number,h:number){refraction.setSize(w,h);reflection.setSize(Math.max(1,Math.round(w*.6)),Math.max(1,Math.round(h*.6)));uniforms.uResolution.value.set(w,h);},
   render(dt=0){
    uniforms.uClarity.value=s.clarity;waterUniforms.uWaterTime.value=uTime.value;waterUniforms.uWaterBreeze.value=s.breeze;
