@@ -30,3 +30,13 @@ test('gentle autumn limits simultaneous airborne leaves without slowing the rest
  let air=0;for(let i=0;i<26000;i++){const f=leafStage(.79,(i+.5)/26000,.28).flight;if(f>0&&f<1)air++;}
  assert.ok(air>300&&air<1100,`airborne count ${air}`);
 });
+
+test('cached leaf counts match individual stages across species, seasons and fall time',async()=>{
+ const {createLeafCounter,species}=await import('../src/state.ts');
+ const seeds=Float32Array.from({length:1000},(_,i)=>((i+1)*.61803398875)%1),count=createLeafCounter(seeds);
+ for(const kind of species)for(let date=0;date<=100;date++)for(const elapsed of [0,7,120]){
+  const year=date/100,expected={attached:0,air:0,ground:0};
+  for(const seed of seeds){const p=leafStage(year,seed,.28,elapsed,kind);if(p.visible)expected[p.flight===0?'attached':p.flight<1?'air':'ground']++;}
+  assert.deepEqual(count(year,.28,elapsed,kind),expected);
+ }
+});

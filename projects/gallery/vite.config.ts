@@ -7,8 +7,8 @@ import {renderCards,renderIndex,renderCredits,escapeHTML} from './src/render.ts'
 
 const origin=(process.env.PUBLIC_SITE_URL||(process.env.VERCEL_PROJECT_PRODUCTION_URL?`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`:'http://127.0.0.1:4175')).replace(/\/$/,'');
 const canonical=(path:string)=>new URL(path,origin).href;
-const title='Wonderworks — Interactive 3D Experiments by AIB Inc.';
-const description='Explore interactive 3D worlds, water gardens, ocean shoals, soft-body fruit and generative motion. Play with each experiment and explore its source code.';
+const title='Wonderworks — An Open Library of Interactive Worlds';
+const description='Inspired by remarkable creations on X. A free, open-source library of interactive worlds and creative web experiments. Explore, learn, remix, and build your own.';
 function meta(pageTitle:string,summary:string,url:string,image:string){return `<meta name="description" content="${escapeHTML(summary)}"><link rel="canonical" href="${url}"><meta property="og:type" content="website"><meta property="og:site_name" content="Wonderworks"><meta property="og:locale" content="en_US"><meta property="og:title" content="${escapeHTML(pageTitle)}"><meta property="og:description" content="${escapeHTML(summary)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${canonical(image)}"><meta property="og:image:alt" content="${escapeHTML(pageTitle)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHTML(pageTitle)}"><meta name="twitter:description" content="${escapeHTML(summary)}"><meta name="twitter:image" content="${canonical(image)}">`;}
 function inject(html:string,pageTitle:string,summary:string,url:string,image:string){return html.replace(/<title>[\s\S]*?<\/title>/i,()=>`<title>${escapeHTML(pageTitle)}</title>`).replace(/<meta\s+name=["']description["'][^>]*>/gi,'').replace('</head>',()=>meta(pageTitle,summary,url,image)+'</head>');}
 export default defineConfig({plugins:[{
@@ -19,7 +19,7 @@ export default defineConfig({plugins:[{
    {'@type':'WebSite','@id':canonical('/#website'),url:canonical('/'),name:'Wonderworks',publisher:{'@id':'https://www.aib.vote/#organization'}},
    {'@type':'CollectionPage','@id':canonical('/#collection'),url:canonical('/'),name:title,description,inLanguage:'en',isPartOf:{'@id':canonical('/#website')},mainEntity:{'@type':'ItemList',itemListElement:projects.map((p,i)=>({'@type':'ListItem',position:i+1,url:canonical(p.variants[0]!.path),name:p.title}))}}
   ]};
-  return inject(html,title,description,canonical('/'),'/media/og-wonderworks.jpg')
+  return inject(html,title,description,canonical('/'),'/media/og-wonderworks-v2.jpg')
    .replace('<div id="projects" class="project-grid"></div>',()=>`<div id="projects" class="project-grid">${renderCards(projects)}</div>`)
    .replace('<div class="hero-bottom" id="project-index" role="group" aria-label="Experiment index"></div>',()=>`<div class="hero-bottom" id="project-index" role="group" aria-label="Experiment index">${renderIndex(projects)}</div>`)
    .replace('<dl id="project-credits" class="project-credits" aria-label="Project inspirations and original code credits"></dl>',()=>`<dl id="project-credits" class="project-credits" aria-label="Project inspirations and original code credits">${renderCredits(projects)}</dl>`)

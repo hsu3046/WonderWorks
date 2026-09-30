@@ -2,6 +2,7 @@
 // PBR photographs: Poly Haven, CC0. See public/textures/ATTRIBUTION.md.
 import * as T from 'three';
 import {noiseGLSL,uTime} from './shared';
+import {causticGLSL,waterUniforms} from './water-field';
 
 export async function createNatureMaterials(){
  const loader=new T.TextureLoader();
@@ -17,11 +18,12 @@ export async function createNatureMaterials(){
  const [stone,bark,soil]=sets as [T.MeshStandardMaterial,T.MeshStandardMaterial,T.MeshStandardMaterial];
  // World-space triplanar mapping keeps merged, rotated boulders free from stretched UVs.
  stone.onBeforeCompile=shader=>{
+  Object.assign(shader.uniforms,waterUniforms);
   shader.uniforms.uNatureTime=uTime;
   shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vStoneP;varying vec3 vStoneN;')
    .replace('#include <begin_vertex>','#include <begin_vertex>\nvStoneP=(modelMatrix*vec4(position,1.)).xyz;vStoneN=mat3(modelMatrix)*normal;');
   shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
-   varying vec3 vStoneP;varying vec3 vStoneN;uniform float uNatureTime;${noiseGLSL}
+   varying vec3 vStoneP;varying vec3 vStoneN;uniform float uNatureTime;${noiseGLSL}${causticGLSL}
    vec3 stoneWeights(){vec3 w=pow(abs(normalize(vStoneN)),vec3(4.));return w/(w.x+w.y+w.z);}
    vec4 stoneSample(sampler2D tex){vec3 p=vStoneP*.72,w=stoneWeights();return texture2D(tex,p.yz)*w.x+texture2D(tex,p.xz)*w.y+texture2D(tex,p.xy)*w.z;}`)
    .replace('#include <map_fragment>',`diffuseColor*=stoneSample(map);
@@ -34,7 +36,7 @@ export async function createNatureMaterials(){
     vec3 nx=texture2D(normalMap,p.yz).xyz*2.-1.,ny=texture2D(normalMap,p.xz).xyz*2.-1.,nz=texture2D(normalMap,p.xy).xyz*2.-1.;
     vec3 detail=normalize(vec3(nx.z*sgn.x,nx.x,nx.y)*w.x+vec3(ny.x,ny.z*sgn.y,ny.y)*w.y+vec3(nz.x,nz.y,nz.z*sgn.z)*w.z);
     normal=normalize(mat3(viewMatrix)*normalize(mix(normalize(vStoneN),detail,.56)));`)
-   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=vec3(.025,.038,.020)*caustic(vStoneP.xz*3.,uNatureTime)*wet;');
+   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\ntotalEmissiveRadiance+=diffuseColor.rgb*vec3(.15,.18,.13)*causticLight(vStoneP)*wet;');
  };
  stone.customProgramCacheKey=()=> 'pond-rock-triplanar-v1';
  stone.color.set('#acafa0');

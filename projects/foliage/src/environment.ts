@@ -85,24 +85,29 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
  grassMat.onBeforeCompile=shader=>{
   Object.assign(shader.uniforms,{uTime:u.time,uWind:u.wind,uSnow:u.snow,uYear:u.year});
   shader.vertexShader=meadowNoise+`uniform float uTime,uWind,uSnow,uYear;attribute vec4 blade;varying float vBlade,vHeight,vPatch;
-   vec3 grassPoint(vec3 p,float t){
-    float seed=blade.w,angle=seed*47.,density=meadowFbm(blade.xz*.42);
+   vec3 grassPoint(vec3 p,float t,vec4 shape){
+    float seed=blade.w,angle=seed*47.,h=shape.x,edge=shape.y;
+    float width=(.05+seed*.048)*(1.-t*.96)*edge;
+    float bend=(.16+seed*.42)*h*t*t;
+    float gust=shape.z*t*t;
+    return vec3(p.x*width*cos(angle)+sin(angle)*bend+gust,t*h-bend*.24,p.x*width*sin(angle)-cos(angle)*bend+gust*.45);
+   }
+   vec4 grassShape(){
+    float seed=blade.w,density=meadowFbm(blade.xz*.42);
     float edge=1.-smoothstep(15.,23.,length(blade.xz));
     float root=smoothstep(.55,1.45,length(blade.xz));
     float seasonalHeight=mix(.62,1.,smoothstep(.23,.48,uYear))*(1.-smoothstep(.66,.92,uYear)*.34);
     float h=(.16+seed*.24)*( .65+density*.8)*edge*root*(1.-uSnow*.96)*seasonalHeight;
-    float width=(.05+seed*.048)*(1.-t*.96)*edge;
-    float bend=(.16+seed*.42)*h*t*t;
-    float gust=sin(uTime*1.25+blade.x*.26+blade.z*.19)*(.035+uWind*.16)*t*t;
-    return vec3(p.x*width*cos(angle)+sin(angle)*bend+gust,t*h-bend*.24,p.x*width*sin(angle)-cos(angle)*bend+gust*.45);
+    float gust=sin(uTime*1.25+blade.x*.26+blade.z*.19)*(.035+uWind*.16);
+    return vec4(h,edge,gust,density);
    }
 `+shader.vertexShader;
   // Normals follow the same bent blade as its vertices, avoiding flat black bristles.
-  shader.vertexShader=shader.vertexShader.replace('#include <beginnormal_vertex>',`float tGrass=uv.y;
-   vec3 tangent=grassPoint(vec3(0.),tGrass+.01)-grassPoint(vec3(0.),tGrass);
+  shader.vertexShader=shader.vertexShader.replace('#include <beginnormal_vertex>',`float tGrass=uv.y;vec4 shapeGrass=grassShape();
+   vec3 tangent=grassPoint(vec3(0.),tGrass+.01,shapeGrass)-grassPoint(vec3(0.),tGrass,shapeGrass);
    vec3 across=vec3(cos(blade.w*47.),0.,sin(blade.w*47.));
    vec3 objectNormal=normalize(cross(across,tangent));`);
-  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`vec3 transformed=grassPoint(position,uv.y)+blade.xyz;vBlade=blade.w;vHeight=uv.y;vPatch=meadowFbm(blade.xz*.42);`);
+  shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',`vec3 transformed=grassPoint(position,uv.y,shapeGrass)+blade.xyz;vBlade=blade.w;vHeight=uv.y;vPatch=shapeGrass.w;`);
   shader.fragmentShader='uniform float uSnow,uYear;varying float vBlade,vHeight,vPatch;\n'+shader.fragmentShader;
   shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
    vec3 green=mix(vec3(.16,.245,.042),vec3(.36,.44,.13),vPatch*.55+vBlade*.25+vHeight*.2);
@@ -177,6 +182,7 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
   const g=new T.BufferGeometry().setFromPoints(points);resources.push(g);lightning.add(new T.Line(g,boltMat));
  }
  let flash=0,thunderId=-1,stormAge=0;
+ const warmSun=new T.Color('#ffaa65'),cloudSky=new T.Color('#798b9f'),sunsetFog=new T.Color('#b9a086'),cloudFog=new T.Color('#74828d'),nightFog=new T.Color('#142031'),fogColor=new T.Color();
  function update(dt:number,onThunder:()=>void){
   const day=smooth(5,8,settings.hour)*(1-smooth(18.5,21,settings.hour));
   const sunset=(smooth(15.5,18.5,settings.hour)*(1-smooth(19.5,21,settings.hour))+smooth(4.5,6,settings.hour)*(1-smooth(7,9,settings.hour)))*day;
@@ -188,10 +194,10 @@ export function createEnvironment(scene:T.Scene,settings:Settings,u:LivingUnifor
   lightning.visible=flash>0;lightningLight.intensity=flash*7;skyUniforms.uFlash.value=flash;
   const h=settings.hour/24*Math.PI*2-Math.PI/2;
   sun.position.set(Math.cos(h)*-13,Math.max(3,Math.sin(h)*16),10);sun.intensity=(.12+day*3.1)*(1-cloud*.8);
-  sun.color.set('#ffdc9d').lerp(new T.Color('#ffaa65'),sunset*.6);
+  sun.color.set('#ffdc9d').lerp(warmSun,sunset*.6);
   moonlight.intensity=.9*(1-day)*(1-cloud*.65);
-  hemi.intensity=.35+day*(1.6-cloud*.5);hemi.color.set('#c2d9ed').lerp(new T.Color('#798b9f'),cloud);
-  const fogColor=new T.Color('#b5bea7').lerp(new T.Color('#b9a086'),sunset*.5).lerp(new T.Color('#74828d'),cloud).lerp(new T.Color('#142031'),1-day);
+  hemi.intensity=.35+day*(1.6-cloud*.5);hemi.color.set('#c2d9ed').lerp(cloudSky,cloud);
+  fogColor.set('#b5bea7').lerp(sunsetFog,sunset*.5).lerp(cloudFog,cloud).lerp(nightFog,1-day);
   (scene.fog as T.FogExp2).color.copy(fogColor);(scene.fog as T.FogExp2).density=.013+cloud*.01;
   rainU.uOpacity.value=T.MathUtils.damp(rainU.uOpacity.value,wet?storm?.44:.28:0,2,dt);rain.visible=rainU.uOpacity.value>.005;spray.visible=rain.visible;
   rainU.uPixel.value=Math.min(devicePixelRatio,2);rainU.uStrength.value=T.MathUtils.damp(rainU.uStrength.value,storm?1:0,2,dt);

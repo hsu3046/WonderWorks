@@ -27,17 +27,13 @@ await cp(new URL('./preview-runtime.js',import.meta.url),path.join(output,'previ
 await patch('shabon/src/main.js',
  "const dprEff = () => (CAPTURE ? 1 : Math.min(window.devicePixelRatio || 1, 1.25));",
  "const dprEff = () => (params.has('preview') ? Math.min(2, Math.sqrt(1600000 / (innerWidth * innerHeight))) : CAPTURE ? 1 : Math.min(window.devicePixelRatio || 1, 1.25));\n  if (params.has('preview')) { q.scale = 1; q.auto = false; }");
-await patch('shabon/src/main.js',
- 'const frame = () => {\n    requestAnimationFrame(frame);',
- 'let previewRaf = 0, previewHeld = false;\n  const frame = () => {\n    previewRaf = 0;\n    if (previewHeld) return;\n    previewRaf = requestAnimationFrame(frame);');
 await patch('shabon/src/main.js', 'else frame();', `else frame();
   if (params.has('preview')) {
     setMuted(true); director.click();
     window.dispatchEvent(new CustomEvent('wonderworks:register', {detail: {
       canvas, ready: () => app.frames > 12 && loadingEl.hidden && director.state === 'ride' && director.t > 1, frames: () => app.frames, draw: render,
       setActive(active) {
-        previewHeld = !active; cancelAnimationFrame(previewRaf); previewRaf = 0; last = performance.now();
-        if (active) previewRaf = requestAnimationFrame(frame);
+        app.setActive(active);
       }
     }}));
   }`);

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
 import {rng,tau,uTime} from './shared';
+import {waterFieldGLSL,waterUniforms} from './water-field';
 
 /** Hair-thin legs, six contact dimples, and paired capillary waves left at each rowing stroke. */
 export function createStriders(scene:T.Scene){
@@ -13,28 +14,29 @@ export function createStriders(scene:T.Scene){
  const legs=new T.InstancedMesh(new T.CylinderGeometry(.65,1,1,3),material,count*12);scene.add(bodies,legs);
  const waveCount=48,births=new Float32Array(waveCount).fill(-100),waveGeometry=new T.PlaneGeometry(1,1).rotateX(-Math.PI/2);
  waveGeometry.setAttribute('aBirth',new T.InstancedBufferAttribute(births,1));
- const surfaceVertex=`uniform float uTime,uWind;varying vec2 vUv;varying float vAge;
+ const surfaceVertex=`uniform float uTime;varying vec2 vUv;varying float vAge;
+ ${waterFieldGLSL}
  ${'attribute float aBirth;'}
  void main(){vUv=uv;vAge=uTime-aBirth;vec3 p=position;
- p*=.10+max(0.,vAge)*.23;
+ p*=.07+max(0.,vAge)*.12;
  vec4 world=modelMatrix*instanceMatrix*vec4(p,1.);
- world.y=.006+(sin(world.x*1.7+world.z*.7+uTime*.8)*.012+sin(world.x*.8-world.z*2.1-uTime*1.1)*.009)*(.4+uWind);
+ // Keep the small capillary highlight on the actual displaced surface.
+ vec2 shift;world.y=.003+waterField(world.xz,shift).x;
  gl_Position=projectionMatrix*viewMatrix*world;}`;
- const wakeMat=new T.ShaderMaterial({uniforms:{uTime,uWind:wind},transparent:true,depthWrite:false,side:T.DoubleSide,vertexShader:surfaceVertex,
+ const wakeMat=new T.ShaderMaterial({uniforms:{uTime,...waterUniforms},transparent:true,depthWrite:false,side:T.DoubleSide,vertexShader:surfaceVertex,
   fragmentShader:`varying vec2 vUv;varying float vAge;
-  void main(){if(vAge<0.||vAge>1.45||cameraPosition.y<.02)discard;
-   vec2 p=(vUv-.5)*2.;float r=length(p*vec2(1.,.82));float aa=max(fwidth(r),.018);
+  void main(){if(vAge<0.||vAge>.95||cameraPosition.y<.02)discard;
+   vec2 p=(vUv-.5)*2.;float r=length(p*vec2(1.,.82));float aa=max(fwidth(r),.06);
    float crest=1.-smoothstep(aa,aa*2.5,abs(r-.76));
-   float inner=1.-smoothstep(aa,aa*2.,abs(r-.51));
    float rear=mix(.30,1.,smoothstep(-.8,.55,p.y));
-   float alpha=(crest+inner*.34)*rear*.36*(1.-smoothstep(.1,1.45,vAge));
-   gl_FragColor=vec4(mix(vec3(.24,.36,.28),vec3(.80,.88,.72),crest),alpha);
+   float alpha=crest*rear*.075*smoothstep(0.,.10,vAge)*(1.-smoothstep(.1,.95,vAge));
+   gl_FragColor=vec4(vec3(.45,.56,.48),alpha);
    #include <tonemapping_fragment>
    #include <colorspace_fragment>
   }`});
  const wakes=new T.InstancedMesh(waveGeometry,wakeMat,waveCount);wakes.frustumCulled=false;wakes.renderOrder=2;scene.add(wakes);
  // Dimples follow the tarsi; travelling waves keep their original world-space contact point.
- const contactMaterial=new T.MeshBasicMaterial({color:'#adc5b1',transparent:true,opacity:.23,side:T.DoubleSide,depthWrite:false});
+ const contactMaterial=new T.MeshBasicMaterial({color:'#adc5b1',transparent:true,opacity:.08,side:T.DoubleSide,depthWrite:false});
  const contacts=new T.InstancedMesh(new T.RingGeometry(.62,1,16).rotateX(-Math.PI/2),contactMaterial,count*6);contacts.renderOrder=2;scene.add(contacts);
  const states=Array.from({length:count},()=>({phase:random()*tau,x:(random()-.5)*10,z:(random()-.5)*6,heading:random()*tau,target:random()*tau,until:0,stroke:0}));
  let cursor=0,emitted=0;

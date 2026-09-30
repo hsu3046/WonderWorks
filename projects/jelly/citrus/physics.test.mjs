@@ -38,3 +38,14 @@ test('firmness changes deformation and damping removes internal motion independe
 test('invalid input, cancellation and reset preserve a valid fresh state',()=>{
  const b=new SoftBody();assert.equal(b.beginGrab([NaN,0,0]),false);b.beginGrab([0,.58,0]);b.moveGrab([Infinity,0,0]);advance(b,.1);b.endGrab();assert.equal(b.grab,null);b.nudge();b.reset();assert.deepEqual(b.p,b.rest);assert.ok(b.v.every(x=>x===0));assert.equal(b.metrics().inverted,0);assert.equal(b.metrics().lift,0);
 });
+
+test('allocation-free volume retains the reference triple-product arithmetic',()=>{
+ const sub=(p,a,b)=>[p[a*3]-p[b*3],p[a*3+1]-p[b*3+1],p[a*3+2]-p[b*3+2]];
+ const mesh=createCitrus();
+ for(let pose=0;pose<8;pose++){
+  const p=Float64Array.from(mesh.rest,(v,i)=>v+Math.sin(i*1.71+pose)*pose*.11);
+  for(const [a,b,c,d] of mesh.tets){const u=sub(p,b,a),v=sub(p,c,a),w=sub(p,d,a),n=[v[1]*w[2]-v[2]*w[1],v[2]*w[0]-v[0]*w[2],v[0]*w[1]-v[1]*w[0]];
+   assert.equal(signedVolume(p,a,b,c,d),(u[0]*n[0]+u[1]*n[1]+u[2]*n[2])/6);
+  }
+ }
+});

@@ -26,3 +26,22 @@ test('feeding changes destinations once, zero dt preserves all simulation state'
  const choices=motion.states.map(s=>s.choices);motion.update(.016,2,1,new T.Vector3(0,-.5,0));
  motion.states.forEach((s,i)=>{assert.equal(s.choices,choices[i]!+1);assert.ok(Math.hypot(s.target.x,s.target.z)<1.11);});
 });
+
+
+test('propulsion and glide alternate independently without snapping effort or position',()=>{
+ const motion=createFishMotion(seeds,sizes),driven=Array(8).fill(0),coasts=Array(8).fill(0);
+ let mixed=false;
+ for(let frame=1;frame<=1800;frame++){
+  const prev=motion.states.map(s=>({effort:s.effort,speed:s.speed,position:s.position.clone()}));
+  motion.update(1/60,frame/60,1,null);
+  mixed ||= new Set(motion.states.map(s=>s.propelling)).size>1;
+  motion.states.forEach((s,i)=>{
+   if(s.propelling)driven[i]++;else coasts[i]++;
+   assert.ok(Math.abs(s.effort-prev[i]!.effort)<.065,'continuous tail amplitude');
+   assert.ok(Math.abs(s.speed-prev[i]!.speed)<.03,'continuous forward speed');
+   assert.ok(s.position.distanceTo(prev[i]!.position)<.02,'no movement jump');
+  });
+ }
+ assert.ok(mixed,'fish do not beat and rest in lockstep');
+ driven.forEach((n,i)=>{assert.ok(n>100);assert.ok(coasts[i]>100);});
+});

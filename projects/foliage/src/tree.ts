@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {random,type Settings,leafStage,leafFall,autumnSeconds} from './state.ts';
+import {random,type Settings,createLeafCounter,leafFall,autumnSeconds} from './state.ts';
 export const leafCount=26000;
 export interface LivingUniforms{time:{value:number};flightTime:{value:number};year:{value:number};wind:{value:number};snow:{value:number};species:{value:number};}
 const deform=`
@@ -179,7 +179,13 @@ export function createTree(settings:Settings,uniforms:LivingUniforms){
  const leaves=new T.Mesh(geometry,material);leaves.frustumCulled=false;leaves.castShadow=true;leaves.receiveShadow=true;leaves.customDepthMaterial=depth;group.add(leaves);
  let kind=0;
  function updateSpecies(){const next=['maple','ginkgo','cherry','aspen','japanese'].indexOf(settings.species);if(kind===next)return;kind=next;uniforms.species.value=kind;geometry.dispose();geometry=makeGeometry(kind);leaves.geometry=geometry;}
- function counts(){let attached=0,air=0,ground=0;for(let i=0;i<leafCount;i++){const p=leafStage(settings.year,data[i*4],uniforms.wind.value,uniforms.flightTime.value,settings.species);if(!p.visible)continue;if(p.flight===0)attached++;else if(p.flight<1)air++;else ground++;}return {attached,air,ground};}
- function update(){updateSpecies();}
+ const countLeaves=createLeafCounter(Float32Array.from({length:leafCount},(_,i)=>data[i*4]));
+ function counts(){return countLeaves(settings.year,uniforms.wind.value,uniforms.flightTime.value,settings.species);}
+ function update(){
+  updateSpecies();
+  // Every vertex has zero growth outside this interval, including cherry blossom.
+  // Skip the degenerate leaf and shadow draws instead of shading 26,000 collapsed leaves.
+  leaves.visible=settings.year>.20&&settings.year<1;
+ }
  return {group,update,counts,dispose(){barkGeometry.dispose();bark.dispose();geometry.dispose();material.dispose();depth.dispose();}};
 }

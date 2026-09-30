@@ -1,5 +1,14 @@
 # Animal model credits
 
+## Kiboon Momiji maple foliage
+
+The pond's maple foliage uses AIB Inc.'s original Blender-authored Momiji v7
+indexed mesh and vertex pigment from Kiboon, copied to `src/data/momiji-v7.json`.
+AIB adapted axes, size, wind coordinates and blade vein shading for the garden.
+© 2026 AIB Inc. https://www.aib.vote — GPL v3. No third-party model/photo texture.
+
+## Imported fish
+
 The four imported Jikin, Tosakin, Ryukin and Shubunkin fish models and textures are by **somitsu**, licensed separately from the application under **Creative Commons Attribution 4.0 International (CC BY 4.0)**.
 
 - Jikin goldfish: https://sketchfab.com/3d-models/jikin-goldfish-d0be1a7dd54143fab579d63e4f7cd4db
@@ -10,6 +19,11 @@ The four imported Jikin, Tosakin, Ryukin and Shubunkin fish models and textures 
 Source: the locally licensed Kiboon USDZ assets. Kiboon reduced the texture sizes to 1024 pixels. For Stillwater, AIB Inc. imported them into Blender, evaluated the rest meshes, normalized their axes and scale, and exported GLB. The original rig animation is not included in these web exports. Stillwater supplies its own GPU body/fin deformation and swimming paths, adjusts material normal strength/lighting/alpha, and omits the outer cornea during web rendering. No endorsement is implied.
 
 The fish assets retain CC BY 4.0. Application code remains GNU GPL v3 © 2026 AIB Inc. https://www.aib.vote.
+
+`jikin-neutral-v1.glb` is an additional AIB modification of the same somitsu Jikin
+asset: neutralized the baked lateral body/head rig pose, rebaked the weighted
+meshes, normalized orientation/size, and recalculated normals. Original texture
+bytes are preserved. This derivative also retains CC BY 4.0.
 
 ## Newly supplied fish
 
@@ -51,3 +65,15 @@ Eye repair: `aib-goldfish-v5-cornea.glb` restores the two original curved cornea
 `wooden-bridge-refined-v1.glb` and `wooden-gazebo-refined-v1.glb` are web derivatives of the user-supplied files in `assets/Wooden_Bridge_Refined` and `assets/Wooden_Gazebo_Refined`. The supplied GLBs identify Blender as exporter but do not embed original creator/license information. Their source rights are separate from the application GPL license.
 
 AIB web preparation retains geometry, UVs and material groups, resizes texture maps to 2048 pixels, embeds WebP textures, and adds placement, shadows and water reflections. Original Blender/GLB files are preserved.
+
+## Supplied hydrangea — 2026-09-30
+
+`hydrangea-garden-v1.glb` derives from the user-supplied `assets/hydrangea flower 3d model.glb`. Its embedded generator is Tripo; no creator or license declaration was supplied. This asset is not covered by the application's GPL grant or the animal models' CC BY notices. Original provenance and redistribution terms remain unspecified.
+
+AIB web modifications: Blender geometry reduction into close/distant levels, smooth normals, merged meshes, padded color/normal/roughness atlases, WebP packing, instanced garden placement, flower-only color variation and gentle GPU wind. Original GLB remains unchanged. Preparation scripts and details: `docs/pond/HYDRANGEA.md`.
+
+## Supplied pink azalea — 2026-09-30
+
+`azalea-garden-v1.glb` derives from the user-supplied `assets/pink azalea 3d model.glb`. Embedded generator: Tripo; original creator and redistribution license are unspecified. This asset is separate from the application's GPL grant and other models' CC BY notices.
+
+AIB web modifications: isolated Blender reduction to near/far meshes, normalized sprig scale, preserved source UV/pigment detail, padded color/normal atlases, WebP packing, instanced shrub placement, restrained petal tint variation and GPU sway. Original source GLB unchanged. Reference photograph by Anncy on Crowdpic was used for arrangement inspiration only and is not included. Details: `docs/pond/AZALEA.md`.

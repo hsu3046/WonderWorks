@@ -80,6 +80,8 @@ export function createScene(canvas:HTMLCanvasElement,s:Settings,onMode:(mode:Mod
   const material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,side:THREE.DoubleSide,uniforms:{uTime:{value:0},uAmp:{value:1},uTwist:{value:1},uKind:{value:0},uPhase:{value:0},uCap:{value:0},uSection:{value:new THREE.Vector2(0,1)},uGrain:{value:s.grain},uHue:{value:0},uWarm:{value:new THREE.Color()},uLight:{value:new THREE.Color()},uDeep:{value:new THREE.Color()},uAccent:{value:new THREE.Color()}}});
   const mesh=new THREE.Mesh(cylinder,material);mesh.visible=false;mesh.frustumCulled=false;meshes.push(mesh);group.add(mesh);
  }
+ let reportedMode:Mode|undefined;
+ function reportMode(){if(reportedMode!==mode){reportedMode=mode;onMode(mode);}}
  let time=0,frames=0,raf=0,last=0,paused=matchMedia('(prefers-reduced-motion:reduce)').matches,active=true,lost=false,disposed=false,mode:Mode='columns',width=0,height=0,pixelRatio=0;
  let yaw=0,pitch=0,pointer:number|null=null,px=0,py=0;
  function colors(){const c=palettes[s.palette];for(const m of meshes){const u=m.material.uniforms;['uWarm','uLight','uDeep','uAccent'].forEach((key,i)=>(u[key].value as THREE.Color).set(c[i]));
@@ -137,14 +139,14 @@ export function createScene(canvas:HTMLCanvasElement,s:Settings,onMode:(mode:Mod
   morph.group.visible=s.mode==='sequence';group.visible=s.mode!=='sequence';
   if(s.mode==='sequence'){
    const state=morph.update(t,(camera.right-camera.left)*1.06);
-   mode=state.blend<.5?state.from:state.to;onMode(mode);
+   mode=state.blend<.5?state.from:state.to;reportMode();
    // One camera and one depth-tested scene throughout the geometric handoff.
    const fromY=state.from==='ribbons'?0:1.4,toY=state.to==='ribbons'?0:1.4;
    camera.position.y=THREE.MathUtils.lerp(fromY,toY,state.blend);camera.lookAt(0,0,0);
    morph.group.rotation.set(pitch,yaw,0);morph.group.scale.setScalar(s.zoom);
    renderer.setRenderTarget(null);renderer.render(scene,camera);
   }else{
-   mode=s.mode;onMode(mode);renderStudy(mode,t,t,null);
+   mode=s.mode;reportMode();renderStudy(mode,t,t,null);
   }
   frames++;
  }

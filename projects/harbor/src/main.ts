@@ -21,7 +21,7 @@ let renderer:T.WebGLRenderer|undefined;
 async function start(){
  renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});const gpu=renderer;
  gpu.toneMapping=T.ACESFilmicToneMapping;gpu.toneMappingExposure=weather.sunset.exposure;gpu.outputColorSpace=T.SRGBColorSpace;gpu.shadowMap.enabled=true;gpu.shadowMap.type=T.PCFSoftShadowMap;gpu.shadowMap.autoUpdate=false;gpu.info.autoReset=false;
- const scene=new T.Scene(),camera=new T.PerspectiveCamera(44,1,.15,700);camera.position.set(22,12,29);
+ const scene=new T.Scene();scene.matrixWorldAutoUpdate=false;const camera=new T.PerspectiveCamera(44,1,.15,700);camera.position.set(22,12,29);
  const controls=new OrbitControls(camera,canvas);controls.target.set(-1,3,-2);controls.enableDamping=false;controls.maxPolarAngle=Math.PI*.485;controls.minDistance=4;controls.maxDistance=125;controls.enablePan=false;controls.update();
  const environment=createEnvironment(scene);addLandscape(scene);const wildlife=createWildlife(scene,environment.water);
  const models=await loadHarbor(scene,text=>{el('load-label').textContent=text;},environment.water.material);
@@ -31,9 +31,11 @@ async function start(){
  const previousBoat=new T.Vector3(navigation.pose.x,.16,navigation.pose.z),boatDelta=new T.Vector3();
  let width=0,height=0,dpr=0;const pos=new T.Vector3(),target=new T.Vector3(),wildlifeOffset=new T.Vector3(19,10.5,24);
  function clearInput(){keys.clear();pointers.clear();document.querySelectorAll('[data-helm]').forEach(b=>b.classList.remove('held'));}
- function held(code:string){return keys.has(code)||Array.from(pointers.values()).includes(code);}
+ function held(code:string){if(keys.has(code))return true;for(const value of pointers.values())if(value===code)return true;return false;}
  function helmInput(){return {throttle:Number(held('KeyW'))-Number(held('KeyS')),rudder:Number(held('KeyA'))-Number(held('KeyD'))};}
- function updateHelm(){const p=navigation.pose;el('boat-speed').textContent=(Math.abs(p.speed)*1.94384).toFixed(1);el('boat-heading').textContent=String(Math.round(((180-p.heading*180/Math.PI)%360+360)%360)%360).padStart(3,'0')+'°';el('speed-mode').textContent=speedModes[navigation.gear].name+' · Q';el('helm-state').textContent=navigation.piloted?'YOU HAVE THE HELM':'WASD TO TAKE THE HELM';}
+ const helmSpeed=el('boat-speed'),helmHeading=el('boat-heading'),helmGear=el('speed-mode'),helmState=el('helm-state');
+ function writeText(node:HTMLElement,text:string){if(node.textContent!==text)node.textContent=text;}
+ function updateHelm(){const p=navigation.pose;writeText(helmSpeed,(Math.abs(p.speed)*1.94384).toFixed(1));writeText(helmHeading,String(Math.round(((180-p.heading*180/Math.PI)%360+360)%360)%360).padStart(3,'0')+'°');writeText(helmGear,speedModes[navigation.gear].name+' · Q');writeText(helmState,navigation.piloted?'YOU HAVE THE HELM':'WASD TO TAKE THE HELM');}
  function takeHelm(){if(!active()||!el('settings').hidden)return false;if(mode!=='drift')setMode('drift');navigation.takeHelm();updateHelm();return true;}
 
  const pier=new T.CatmullRomCurve3([new T.Vector3(6.65,2.55,7),new T.Vector3(6.65,2.65,3.7),new T.Vector3(3,2.55,3.8),new T.Vector3(-3.3,2.55,3.8)]);
@@ -48,7 +50,7 @@ async function start(){
   else {const progress=(Math.sin(time*.035-Math.PI*.5)+1)*.5;pier.getPoint(progress,pos);target.set(-.5,2.7,1.8);}
   const k=instant?1:1-Math.exp(-dt*1.4);camera.position.lerp(pos,k);controls.target.lerp(target,k);controls.update();
  }
- function draw(dt:number){resize();navigation.update(active()?dt:0,mode==='drift'?helmInput():{throttle:0,rudder:0});models.update(time,wind,navigation.pose);boatDelta.copy(models.boatPoint).sub(previousBoat);previousBoat.copy(models.boatPoint);models.updateWake(time,navigation.pose);updateHelm();wildlife.update(time,navigation.pose);if(mode==='wildlife'&&!manual){const message=wildlife.status();if(el('camera-hint').textContent!==message)el('camera-hint').textContent=message;}environment.update(time,camera);cameraStep(active()?dt:0);if(frames===0||frames%120===0)gpu.shadowMap.needsUpdate=true;gpu.info.reset();composer.render();frames++;}
+ function draw(dt:number){resize();navigation.update(active()?dt:0,mode==='drift'?helmInput():{throttle:0,rudder:0});models.update(time,wind,navigation.pose);boatDelta.copy(models.boatPoint).sub(previousBoat);previousBoat.copy(models.boatPoint);models.updateWake(time,navigation.pose);updateHelm();wildlife.update(time,navigation.pose);if(mode==='wildlife'&&!manual){const message=wildlife.status();if(el('camera-hint').textContent!==message)el('camera-hint').textContent=message;}environment.update(time,camera);cameraStep(active()?dt:0);if(frames===0||frames%120===0)gpu.shadowMap.needsUpdate=true;gpu.info.reset();scene.updateMatrixWorld();composer.render();frames++;}
  function frame(now:number){raf=0;if(lost||document.hidden)return;const dt=last?Math.min((now-last)/1000,.05):0;last=now;if(active())time+=dt;draw(dt);if(active()&&!raf)raf=requestAnimationFrame(frame);}
  function invalidate(){if(!lost&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);}
  function syncLoop(){cancelAnimationFrame(raf);raf=0;last=0;if(active())invalidate();}

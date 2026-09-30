@@ -562,10 +562,10 @@ export class BubbleRenderer {
     this.povU = mat.uniforms;
   }
   // 環境図を焼く（毎フレーム呼ぶ。カメラが大きく動かなければ1コマおき）
-  probe(renderer, camera) {
+  probe(renderer, camera, hasBubbles = this.geo.instanceCount > 0) {
     // 泡がひとつもなく、泡の視点の膜も見えないときは焼かない（泡が現れたコマは render() の前に焼く）
     const pu = this.povU;
-    if (!this.geo.instanceCount && pu && pu.uFilm.value <= 0.001 && pu.uFlash.value <= 0.001 && pu.uPop.value < 0) {
+    if (!hasBubbles && pu && pu.uFilm.value <= 0.001 && pu.uFlash.value <= 0.001 && pu.uPop.value < 0) {
       this.envStale = true;
       return;
     }

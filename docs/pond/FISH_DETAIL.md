@@ -13,3 +13,27 @@ The initial fish had a bulbous generic body, flat polygon fins, embedded eyes an
 - Working Blender copy: `projects/pond/assets/stillwater-fish.blend`. CC BY credits, source URLs, modifications, and original license notices: `projects/pond/public/models/`.
 
 Validation and screenshots: `docs/validation/pond/fish-detail/`.
+
+## Jikin neutral-pose correction — 2026-09-30
+
+The original Jikin export was **not a neutral rest mesh**: its source armature had
+15°, 20°, 25° and 30° of cumulative lateral pose rotation on bones n33–n36.
+Increasing the runtime swim amplitude could not remove that baked C-shaped body.
+
+`jikin-neutral-v1.glb` now replaces Jikin alone at load time. In the isolated Blender
+scene `AI_Jikin_Neutral_20260930`, the original weighted source meshes from
+`assets/stillwater-fish.blend` were evaluated after zeroing the lateral Z rotation
+of n33–n36 and lateral Y rotation of n32/n84. Translation, scale, vertical posture
+and all fin poses were retained. The original source-to-web transform was recovered
+from matching body vertices (maximum fit error 1.54e-7). All ten parts were rebaked,
+aligned to +X forward, centered laterally, and normalized to the existing 2.2-unit
+length. Stale posed custom normals were reset to automatic smooth normals.
+
+Validation: body lateral midpoint error below 0.00042 normalized units across seven
+body slices; finite exported positions/normals; ten mesh parts retained; embedded
+texture bytes match the original GLB. Strict TypeScript/build and browser rendering
+passed without console errors. The existing swimming shader, species scale, colors
+and instance count remain unchanged; no new per-frame work. The original GLB and
+source Blender file are retained. The user's gazebo scene/view was restored.
+
+Screenshot: `docs/validation/pond/jikin-neutral/dive.png`.
