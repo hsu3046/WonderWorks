@@ -4,6 +4,7 @@ import {readFileSync,writeFileSync,existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {projects} from './src/catalog.ts';
 import {renderCards,renderIndex,renderCredits,escapeHTML} from './src/render.ts';
+import {crawlerApi} from '../crawler/server/plugin.mjs';
 
 const origin=(process.env.PUBLIC_SITE_URL||(process.env.VERCEL_PROJECT_PRODUCTION_URL?`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`:'http://127.0.0.1:4175')).replace(/\/$/,'');
 const canonical=(path:string)=>new URL(path,origin).href;
@@ -11,7 +12,7 @@ const title='Wonderworks — Interactive 3D Experiments by AIB Inc.';
 const description='Explore interactive 3D worlds, water gardens, ocean shoals, soft-body fruit and generative motion. Play with each experiment and explore its source code.';
 function meta(pageTitle:string,summary:string,url:string,image:string){return `<meta name="description" content="${escapeHTML(summary)}"><link rel="canonical" href="${url}"><meta property="og:type" content="website"><meta property="og:site_name" content="Wonderworks"><meta property="og:locale" content="en_US"><meta property="og:title" content="${escapeHTML(pageTitle)}"><meta property="og:description" content="${escapeHTML(summary)}"><meta property="og:url" content="${url}"><meta property="og:image" content="${canonical(image)}"><meta property="og:image:alt" content="${escapeHTML(pageTitle)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHTML(pageTitle)}"><meta name="twitter:description" content="${escapeHTML(summary)}"><meta name="twitter:image" content="${canonical(image)}">`;}
 function inject(html:string,pageTitle:string,summary:string,url:string,image:string){return html.replace(/<title>[\s\S]*?<\/title>/i,()=>`<title>${escapeHTML(pageTitle)}</title>`).replace(/<meta\s+name=["']description["'][^>]*>/gi,'').replace('</head>',()=>meta(pageTitle,summary,url,image)+'</head>');}
-export default defineConfig({plugins:[{
+export default defineConfig({plugins:[crawlerApi(),{
  name:'wonderworks-static-seo',
  transformIndexHtml(html){
   const graph={'@context':'https://schema.org','@graph':[

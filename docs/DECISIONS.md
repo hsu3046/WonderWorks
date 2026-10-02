@@ -93,3 +93,15 @@ Record native 1536×1024 (3:2) H.264 MP4 directly from each actual canvas at tar
 ### Stillwater pond study (2026-09-29)
 
 Recreate the supplied koi-garden composition as original procedural Three.js assets, with no dependency installation or redistribution of the reference recording. Preserve visible material detail: pebbles, bark grain, koi patterns/scales/eyes/translucent fins, rippling reflection/refraction and animated light. Add four viewpoints, food attraction and touch ripples. Use existing local tooling, strict TypeScript and GPL v3/AIB Inc. credits. Reference evidence and limitations are in docs/pond/.
+
+### Webcrawler semantic habitat (2026-10-02)
+
+Recreate the supplied clip's eight jointed wireframe legs and words lifting into the mouth using Canvas 2D over actual DOM word positions. Keep eaten spans in layout so leg contacts and neighboring words do not jump. Use original bilingual sample prose with an explicit sample label. Fetch one public page per user action and rebuild its semantic text; never embed the original site or execute source scripts. A bounded, DNS-pinned Node reader supports both local Vite and the Vercel Web Handler. Preserve the existing shared-toolchain and single-video gallery preview conventions. Credit AIB's implementation separately from the supplied reference, whose creator was not identified.
+
+### Preserve original page design (2026-10-03)
+
+The user approved adding original-design capture after finding the uniform reader insufficient. Supersedes the text-only display decision above: source JavaScript may run inside a separate capture browser, while only an inert static copy reaches the app. Preserve layout with computed styles and embedded image/font resources; use text ranges/highlights instead of wrapping source text. Keep the reader as automatic fallback and a selectable alternate view. Reuse an existing server Playwright installation via `.env.local`; no package installation or deployment was authorized or performed.
+
+### Curated random exploration (2026-10-03)
+
+Offer a random button next to the URL submit button, backed by 100 real reading-page URLs from 36 sources. Select for text density and successful static capture: 187 candidates were checked, and the final set showed no partial-capture flag, horizontal text clipping or large fixed overlays at 1060×534. Include 19 Korean and 81 English pages. Draw without replacement, avoid the current page and share the normal one-page load/error/cancellation flow. Keep the catalog local and perform no runtime discovery or bulk prefetch. Source rights stay with their authors; only URLs and titles ship. Details: `docs/crawler/RANDOM_PAGES.md`.

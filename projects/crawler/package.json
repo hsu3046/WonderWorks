@@ -1,0 +1,16 @@
+{
+  "name": "vote.aib.wonderworks-crawler",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4183 --strictPort",
+    "check": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "build": "tsc --noEmit && vite build --base=./",
+    "preview": "vite preview --host 127.0.0.1 --port 4183 --strictPort"
+  },
+  "devDependencies": { "typescript": "7.0.2", "vite": "8.3.1" }
+}

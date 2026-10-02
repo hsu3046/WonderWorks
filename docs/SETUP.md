@@ -58,3 +58,13 @@ npm run dev
 ## Harbor
 
 `cd projects/harbor && npm run dev` → http://127.0.0.1:4177 . Build harbor before gallery prepare:works. Details: `harbor/SETUP.md`.
+
+## Webcrawler
+
+`npm run dev --prefix projects/crawler` → [http://127.0.0.1:4183](http://127.0.0.1:4183). Reuses the repository's shared Vite/TypeScript installation; no added runtime package or API key. `npm run preview --prefix projects/crawler` also serves the reader API. The root build/check/source packaging includes the new study.
+
+User checks: open the sample, click a word, switch to sentence mode, add two more spiders, change speed, pause/resume, scroll to Korean text, restore the page, enter a public article URL, follow a discovered link, and open the original with ↗. Invalid/blocked addresses should show an error and retain the current page. Check touch scrolling, pause and portrait/landscape changes on a physical phone; desktop Chromium touch emulation does not verify native iOS behavior.
+
+Original-design capture optionally reuses an installed Playwright runtime and Chromium. In the crawler project, copy `.env.example` to `.env.local` and set `CRAWLER_PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs`. For gallery preview or a deployed Node process, set the same server environment variable there. It is never exposed to client code. No runtime is automatically installed; without it, live URLs fall back to reader view.
+
+Original-view checks: load a styled public page, inspect its image/font/layout, feed a word, scroll within the captured page, switch original/reader views and restore. Resizing scales the capture; reload the address to capture a different responsive width. Canvas/video/live interactions are outside this static-copy mode.
