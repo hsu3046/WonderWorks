@@ -272,10 +272,12 @@ export class SpiderWorld {
     this.stroke([this.local(spider, -16, 0), this.local(spider, -12, 0)], spider.color, 2);
     this.stroke([this.local(spider, -19, 0), this.local(spider, -42, 0)], '#85bfc999', 0.8);
     this.stroke([this.local(spider, 12, 0), this.local(spider, -8, 0)], '#c9f38a88', 0.8);
+    // Three quick open–close bites within the existing ~0.56-second meal pulse.
+    const bite = spider.pulse > 0 ? Math.sin((1 - spider.pulse) * Math.PI * 3) ** 2 : 0;
     for (const side of [-1, 1]) {
       const eye = this.local(spider, 12, side * 3.3);
       ctx.fillStyle = '#efffdc'; ctx.beginPath(); ctx.arc(eye.x, eye.y, 1.65, 0, Math.PI * 2); ctx.fill();
-      const mouth = this.local(spider, 20 + spider.pulse * 5, side * (3 + spider.pulse * 4));
+      const mouth = this.local(spider, 20 + bite * 5, side * (3 + bite * 4));
       this.stroke([this.local(spider, 16, side * 5), mouth, this.local(spider, 24, side * 1)], spider.color, 1);
     }
     ctx.shadowBlur = 0;

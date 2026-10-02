@@ -29,3 +29,7 @@ The user identified crossed rear legs. Reproduced analytically: the original sha
 - All twelve grouped browser scenarios passed again after the correction, including eating, pause, sentence mode, mobile layout, reduced motion and lifecycle cancellation; zero page errors.
 - Headless Chromium screenshots confirmed eight separate legs both at rest and while eating. Browser page errors: zero. Local evidence: `docs/validation/crawler/legs-before.png`, `legs-after-rest.png`, and `legs-after-walk.png`.
 - Gallery MP4 and its first-frame poster were re-recorded with the corrected anatomy. Root `npm run check` and `npm run build` passed, including the gallery and standalone source archives.
+
+## Faster mouth movement — 2026-10-02
+
+Each meal now has three open–close cycles in approximately 0.56 seconds at normal speed. Crawler TypeScript/production build passed. A headless Chromium probe measured the actual rendered mouth width across 68 frames during one meal and counted three peaks; one word was consumed and no page errors occurred. The probe used the active Vite module URL, including its HMR timestamp, to observe the running renderer.
