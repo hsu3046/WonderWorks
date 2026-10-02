@@ -33,3 +33,11 @@ The user identified crossed rear legs. Reproduced analytically: the original sha
 ## Faster mouth movement — 2026-10-02
 
 Each meal now has three open–close cycles in approximately 0.56 seconds at normal speed. Crawler TypeScript/production build passed. A headless Chromium probe measured the actual rendered mouth width across 68 frames during one meal and counted three peaks; one word was consumed and no page errors occurred. The probe used the active Vite module URL, including its HMR timestamp, to observe the running renderer.
+
+## Chew before consuming — 2026-10-02
+
+Separated arrival/chewing from consumption: words stay visible while the mouth moves three times, then consumption fragments and the counter/log update begin. Crawler TypeScript/production build and all eleven unit tests passed.
+
+The focused `tests/feeding.browser.mjs` suite passed four scenarios with zero page errors: three actual rendered mouth cycles before disappearance; pausing longer than the bite duration without hiding the word; cancelling an unfinished meal by clicking a different word; and restoring the page during chewing. The mouth-wave observation ignores repeated static frames while paused, which are not additional bites.
+
+The existing twelve grouped browser scenarios also passed, including sentence/three-spider feeding, completion, mobile controls and lifecycle cancellation, with zero page errors.

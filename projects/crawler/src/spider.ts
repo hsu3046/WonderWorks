@@ -6,7 +6,7 @@ import type { Meal, Point, Word } from './types';
 
 interface Crawler {
   id: number; x: number; y: number; angle: number; color: string;
-  legs: Leg[]; target: Word | null; wait: number; pulse: number; gaitGroup: number;
+  legs: Leg[]; target: Word | null; wait: number; pulse: number; chewing: boolean; gaitGroup: number;
 }
 interface Fragment { word: Word; x: number; y: number; angle: number; age: number; delay: number; spider: Crawler; }
 interface Silk { x: number; y: number; nextX: number; nextY: number; age: number; color: string; }
@@ -106,7 +106,7 @@ export class SpiderWorld {
     for (let i = this.spiders.length; i < this.count; i++) {
       const spider: Crawler = {
         id: i, x: this.width * (0.48 + i * 0.14), y: this.scroll + Math.min(this.height * 0.46 + i * 55, this.height - 75),
-        angle: -0.6 + i * 1.8, color: COLORS[i]!, legs: [], target: null, wait: i * 0.35 + 0.35, pulse: 0, gaitGroup: i % 2,
+        angle: -0.6 + i * 1.8, color: COLORS[i]!, legs: [], target: null, wait: i * 0.35 + 0.35, pulse: 0, chewing: false, gaitGroup: i % 2,
       };
       spider.legs = createLegs(spider, this.scale);
       this.spiders.push(spider);
@@ -141,6 +141,8 @@ export class SpiderWorld {
       spider.target.element.classList.remove('targeted');
     }
     spider.target = null;
+    spider.chewing = false;
+    spider.pulse = 0;
   }
 
   private aim(spider: Crawler, word: Word): void {
@@ -189,8 +191,8 @@ export class SpiderWorld {
     });
     this.eaten += meal.length;
     spider.target = null;
+    spider.chewing = false;
     spider.wait = this.mode === 'sentence' ? 1.7 : 0.72;
-    spider.pulse = 1;
     this.onMeal({ words: meal, text: meal.map(word => word.text).join(' '), color: spider.color }, this.eaten);
   }
 
@@ -200,6 +202,13 @@ export class SpiderWorld {
       spider.pulse = Math.max(0, spider.pulse - elapsed * 1.8);
       spider.wait -= elapsed;
       if (spider.target && (spider.target.eaten || spider.target.y < this.scroll || spider.target.y > this.scroll + this.height)) this.release(spider);
+      // Keep the reserved word visible until all three bites have finished.
+      // Use simulation time so pause, reset and retargeting cannot leave a late removal.
+      if (spider.chewing) {
+        if (spider.pulse === 0) this.eat(spider);
+        spider.gaitGroup = advanceLegs(spider.legs, spider, this.scale, elapsed, spider.gaitGroup);
+        continue;
+      }
       if (!spider.target && spider.wait <= 0) { this.choose(spider); if (!spider.target) spider.wait = 0.4; }
       let destination: Point | null = spider.target;
       // Scrolling carries the hunt into the newly visible habitat.
@@ -225,7 +234,10 @@ export class SpiderWorld {
             const tail = this.local(spider, -24, 0);
             this.silk.push({ x: tail.x - (spider.x - previousX) * 5, y: tail.y - (spider.y - previousY) * 5, nextX: tail.x, nextY: tail.y, age: 0, color: spider.color });
           }
-        } else if (destination === spider.target && spider.wait <= 0) this.eat(spider);
+        } else if (destination === spider.target && spider.wait <= 0) {
+          spider.chewing = true;
+          spider.pulse = 1;
+        }
       }
       spider.gaitGroup = advanceLegs(spider.legs, spider, this.scale, elapsed, spider.gaitGroup);
     }

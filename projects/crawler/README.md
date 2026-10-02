@@ -42,9 +42,12 @@ npm run build --prefix projects/crawler
 
 ```sh
 PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node projects/crawler/tests/browser.mjs
+PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node projects/crawler/tests/feeding.browser.mjs
 ```
 
 The suite tests actual fetching from example.com, untrusted HTML isolation, request races, frame stopping, preserved text layout, word/sentence meals, mobile taps, and reduced motion. `CRAWLER_URL` can override the local URL. Screenshots go to the Git-ignored `docs/validation/crawler/` directory.
+
+The focused feeding suite checks three rendered mouth movements before a word disappears, plus pause/resume, retargeting and reset during chewing. It uses the development server and sample page.
 
 ## Provenance
 
