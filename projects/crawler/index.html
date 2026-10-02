@@ -28,13 +28,13 @@
             <input id="url" name="url" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="https:// … 거미에게 웹사이트를 건네주세요" maxlength="2048" />
             <button type="submit" id="crawl-button">탐색 시작 <span aria-hidden="true">↗</span></button>
           </form>
-          <div class="source-shortcuts"><span>TRY A LITTLE TASTE</span><button type="button" id="demo-button">샘플 페이지</button><button type="button" data-url="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website ↗</button><span class="input-note">공개 페이지의 본문을 읽어옵니다.</span></div>
+          <div class="source-shortcuts"><span>TRY A LITTLE TASTE</span><button type="button" id="demo-button">샘플 페이지</button><button type="button" data-url="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website ↗</button><span class="input-note">공개 페이지의 원본 디자인을 불러옵니다.</span></div>
           <p id="error" class="error" role="alert" hidden></p>
           <p id="load-status" class="load-status" role="status" hidden></p>
         </section>
         <section class="studio" aria-label="Webcrawler 실험실">
           <div class="habitat">
-            <div class="browser-bar"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span id="source-address">wonderworks://field-notes</span><span class="source-kind" id="source-kind">SAMPLE</span><a id="original-link" target="_blank" rel="noopener noreferrer" aria-label="원본 페이지 열기" hidden>↗</a></div>
+            <div class="browser-bar"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span id="source-address">wonderworks://field-notes</span><button type="button" id="view-toggle" hidden title="보기를 바꾸면 탐색을 처음부터 시작합니다.">본문 보기</button><span class="source-kind" id="source-kind">SAMPLE</span><a id="original-link" target="_blank" rel="noopener noreferrer" aria-label="원본 페이지 열기" hidden>↗</a></div>
             <div class="scene" id="scene">
               <div id="viewport" class="viewport" tabindex="0" aria-label="거미가 탐색하는 본문. 스크롤하거나 단어를 클릭하세요.">
                 <div class="reader-metadata"><span id="document-label">FIELD NOTES / NO. 001</span><span id="document-detail">A PAGE FOR THE CURIOUS</span></div>

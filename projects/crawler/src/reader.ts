@@ -80,21 +80,33 @@ export function renderPage(page: PageContent, article: HTMLElement): Word[] {
   return words;
 }
 
-export function measureWords(words: Word[], viewport: HTMLElement): void {
+export function markTarget(word: Word, color: string | null): void {
+  if (word.visual) { word.visual.target(color); return; }
+  word.element.classList.toggle('targeted', color !== null);
+  if (color) word.element.style.setProperty('--prey-color', color);
+}
+
+export function hideWord(word: Word): void {
+  if (word.visual) word.visual.consume();
+  else word.element.classList.add('eaten');
+}
+
+export function measureWords(words: Word[], viewport: HTMLElement, frame?: HTMLIFrameElement | null): void {
   const bounds = viewport.getBoundingClientRect();
-  const scroll = viewport.scrollTop;
+  const scale = frame ? viewport.clientWidth / Number(frame.dataset.captureWidth) : 1;
+  const scroll = frame ? (frame.contentWindow?.scrollY ?? 0) * scale : viewport.scrollTop;
   const fonts = new Map<Element, string>();
   // One read batch on resize/content changes, never one layout read per frame.
   for (const word of words) {
-    const rect = word.element.getBoundingClientRect();
-    word.x = rect.left - bounds.left + rect.width / 2;
-    word.y = rect.top - bounds.top + scroll + rect.height / 2;
-    word.width = rect.width;
-    word.height = rect.height;
-    const parent = word.element.parentElement!;
+    const rect = word.range?.getBoundingClientRect() ?? word.element.getBoundingClientRect();
+    word.x = frame ? (rect.left + rect.width / 2) * scale : rect.left - bounds.left + rect.width / 2;
+    word.y = frame ? (rect.top + rect.height / 2) * scale + scroll : rect.top - bounds.top + scroll + rect.height / 2;
+    word.width = rect.width * scale;
+    word.height = rect.height * scale;
+    const parent = word.range ? word.element : word.element.parentElement!;
     if (!fonts.has(parent)) {
       const style = getComputedStyle(parent);
-      fonts.set(parent, `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`);
+      fonts.set(parent, `${style.fontStyle} ${style.fontWeight} ${parseFloat(style.fontSize) * scale}px ${style.fontFamily}`);
     }
     word.font = fonts.get(parent)!;
   }

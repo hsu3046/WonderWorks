@@ -97,3 +97,7 @@ Recreate the supplied koi-garden composition as original procedural Three.js ass
 ### Webcrawler semantic habitat (2026-10-02)
 
 Recreate the supplied clip's eight jointed wireframe legs and words lifting into the mouth using Canvas 2D over actual DOM word positions. Keep eaten spans in layout so leg contacts and neighboring words do not jump. Use original bilingual sample prose with an explicit sample label. Fetch one public page per user action and rebuild its semantic text; never embed the original site or execute source scripts. A bounded, DNS-pinned Node reader supports both local Vite and the Vercel Web Handler. Preserve the existing shared-toolchain and single-video gallery preview conventions. Credit AIB's implementation separately from the supplied reference, whose creator was not identified.
+
+### Preserve original page design (2026-10-03)
+
+The user approved adding original-design capture after finding the uniform reader insufficient. Supersedes the text-only display decision above: source JavaScript may run inside a separate capture browser, while only an inert static copy reaches the app. Preserve layout with computed styles and embedded image/font resources; use text ranges/highlights instead of wrapping source text. Keep the reader as automatic fallback and a selectable alternate view. Reuse an existing server Playwright installation via `.env.local`; no package installation or deployment was authorized or performed.

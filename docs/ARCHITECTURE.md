@@ -80,3 +80,7 @@ A separate strict TypeScript/WebGL2 effect studio lives in projects/chroma (4176
 ## Webcrawler (2026-10-02)
 
 `projects/crawler` (4183): public-page reader with procedural eight-legged wireframe spiders. Browser-native sentence/word segmentation, planted-foot inverse kinematics, stable document geometry during consumption, floating word fragments, one to three spiders, pause/speed/reset and discovered links. `server/crawl.mjs` is shared by Vite dev/preview and `api/crawl.mjs` on Vercel. Gallery remains statically built; only fetching external page text needs this bounded Node endpoint. [Crawler architecture](crawler/ARCHITECTURE.md) documents content isolation, request limits, lifecycle and unsupported sources.
+
+### Original-design capture (2026-10-03)
+
+Webcrawler now requests a bounded Playwright/Chromium capture before reader fallback. A script-disabled, network-disabled iframe preserves computed layout, images and fonts. DOM ranges and CSS Custom Highlights retain original line wrapping while words disappear. The shared API and gallery remain compatible without the optional browser runtime. See the crawler architecture for resource budgets, cancellation and limitations.

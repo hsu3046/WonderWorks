@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
-import { measureWords } from './reader';
+import { measureWords, markTarget, hideWord } from './reader';
 import { advanceLegs, createLegs, legJoints } from './legs';
 import type { Leg } from './legs';
 import type { Meal, Point, Word } from './types';
@@ -41,6 +41,8 @@ export class SpiderWorld {
   private resize: ResizeObserver;
   private intersection: IntersectionObserver;
   private listeners = new AbortController();
+  private surface: HTMLIFrameElement | null = null;
+  private surfaceListeners = new AbortController();
 
   constructor(private canvas: HTMLCanvasElement, private viewport: HTMLElement,
     private onMeal: (meal: Meal, total: number) => void,
@@ -73,6 +75,26 @@ export class SpiderWorld {
   get consumed(): number { return this.eaten; }
   get frameCount(): number { return this.ticks; }
 
+  private get surfaceScale(): number { return this.surface ? this.viewport.clientWidth / Number(this.surface.dataset.captureWidth) : 1; }
+  private readScroll(): number { return this.surface ? (this.surface.contentWindow?.scrollY ?? 0) * this.surfaceScale : this.viewport.scrollTop; }
+
+  setSurface(frame: HTMLIFrameElement | null): void {
+    this.surfaceListeners.abort(); this.surfaceListeners = new AbortController();
+    this.surface = frame;
+    if (!frame?.contentDocument || !frame.contentWindow) return;
+    const signal = this.surfaceListeners.signal;
+    frame.contentDocument.addEventListener('scroll', () => { this.scroll = this.readScroll(); this.dirty = true; this.invalidate(); }, { capture: true, passive: true, signal });
+    frame.contentDocument.addEventListener('click', event => {
+      event.preventDefault();
+      const x = event.clientX * this.surfaceScale, y = event.clientY * this.surfaceScale + this.readScroll();
+      const word = this.words.find(item => !item.eaten && Math.abs(item.x - x) <= item.width / 2 && Math.abs(item.y - y) <= item.height / 2);
+      if (word) this.offer(word.id);
+    }, { signal });
+    frame.contentDocument.addEventListener('keydown', event => {
+      if (event.code === 'Space') { event.preventDefault(); this.setRunning(!this.wanted); }
+    }, { signal });
+  }
+
   setWords(words: Word[]): void {
     this.words = words;
     this.fragments = [];
@@ -80,7 +102,7 @@ export class SpiderWorld {
     this.spiders = [];
     this.eaten = 0;
     this.complete = false;
-    this.scroll = this.viewport.scrollTop;
+    this.scroll = this.readScroll();
     this.dirty = true;
     this.measure();
     this.spawn();
@@ -123,7 +145,11 @@ export class SpiderWorld {
     this.width = this.viewport.clientWidth;
     this.height = this.viewport.clientHeight;
     this.scale = clamp(this.width / 750, 0.85, 1.6);
-    this.scroll = this.viewport.scrollTop;
+    this.scroll = this.readScroll();
+    if (this.surface) {
+      this.surface.style.height = `${this.height / this.surfaceScale}px`;
+      this.surface.style.transform = `scale(${this.surfaceScale})`;
+    }
     const dpr = Math.min(devicePixelRatio || 1, 2);
     const width = Math.round(this.width * dpr), height = Math.round(this.height * dpr);
     if (this.canvas.width !== width || this.canvas.height !== height) {
@@ -131,14 +157,14 @@ export class SpiderWorld {
       this.canvas.style.width = `${this.width}px`; this.canvas.style.height = `${this.height}px`;
     }
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    measureWords(this.words, this.viewport);
+    measureWords(this.words, this.viewport, this.surface);
     for (const spider of this.spiders) { this.release(spider); spider.x = clamp(spider.x, 65, this.width - 65); }
   }
 
   private release(spider: Crawler): void {
     if (spider.target && !spider.target.eaten) {
       spider.target.reserved = false;
-      spider.target.element.classList.remove('targeted');
+      markTarget(spider.target, null);
     }
     spider.target = null;
     spider.chewing = false;
@@ -149,8 +175,7 @@ export class SpiderWorld {
     this.release(spider);
     spider.target = word;
     word.reserved = true;
-    word.element.classList.add('targeted');
-    word.element.style.setProperty('--prey-color', spider.color);
+    markTarget(word, spider.color);
   }
 
   offer(id: number): void {
@@ -185,8 +210,8 @@ export class SpiderWorld {
     meal.forEach((word, index) => {
       word.eaten = true;
       word.reserved = false;
-      word.element.classList.remove('targeted');
-      word.element.classList.add('eaten');
+      markTarget(word, null);
+      hideWord(word);
       this.fragments.push({ word, x: word.x, y: word.y, angle: (word.id % 7 - 3) * 0.12, age: 0, delay: Math.min(index * 0.045, 0.8), spider });
     });
     this.eaten += meal.length;
@@ -361,6 +386,7 @@ export class SpiderWorld {
   dispose(): void {
     cancelAnimationFrame(this.raf); this.raf = 0;
     this.listeners.abort(); this.resize.disconnect(); this.intersection.disconnect();
+    this.surfaceListeners.abort();
     this.fragments = []; this.silk = []; this.spiders = []; this.words = [];
   }
 }

@@ -2,18 +2,22 @@
 
 © 2026 AIB Inc. — GNU GPL v3. Added 2026-10-02.
 
-`projects/crawler` is an independent Vite + strict TypeScript study, package `vote.aib.wonderworks-crawler`, development port **4183**. Its original 2D wireframe rendering follows the supplied clip's jointed legs and floating text fragments. No graphics or parser dependency was added.
+`projects/crawler` is an independent Vite + strict TypeScript study, package `vote.aib.wonderworks-crawler`, development port **4183**. Its original 2D wireframe rendering follows the supplied clip's jointed legs and floating text fragments. No graphics or parser dependency was added. Original-design capture optionally reuses a server-side Playwright/Chromium installation; reader and sample work without it.
 
 ## Data flow
 
-1. `src/main.ts` owns loading, controls, cancellation, reader replacement, activity log, and counters.
-2. The user submits a URL to same-origin `GET /api/crawl?url=…`.
-3. `server/crawl.mjs` validates the scheme/host/port, resolves public IPv4, pins the connection to the validated address, and repeats validation for each redirect. It requests HTML with an honest crawler User-Agent, no cookies, a 12-second total deadline, at most three redirects, and a 1.5 MB limit on decompressed content. Gzip, deflate, Brotli and declared text charsets are supported. IPv6-only destinations are deliberately unsupported.
-4. `src/reader.ts` parses HTML in an inert `<template>`, selects article/main content when available, and creates a fresh tree with textContent. Source scripts, event handlers, images, styles, forms, iframes and attributes are never adopted. Relative links resolve against the final response URL; source `<base>` tags have no authority. Unsafe link protocols and credential URLs are discarded.
-5. `Intl.Segmenter` maps sentences and words to spans while preserving punctuation and whitespace. Content is bounded to 120 blocks and 20,000 characters, with a visible truncation note.
-6. `src/spider.ts` measures word positions after content/viewport/font changes. One Canvas 2D loop draws the colony and fragments over the scrollable reader.
+1. `src/main.ts` owns loading, controls, cancellation, reader replacement, activity log, counters and original/reader switching.
+2. The app submits `GET /api/crawl?url=…&view=original&width=…&height=…`. Capture width determines the original responsive layout.
+3. `server/snapshot.mjs` opens the public page in a separate sandboxed Chromium process and waits for visible text and bounded font/image readiness. `server/freeze.mjs` copies visible DOM, computed styles, simple pseudo-elements and SVG geometry into an inert document. Images/fonts are embedded from resources already fetched. Video/canvas/subframes and live site behavior are not replayed.
+4. All capture resources use `server/crawl.mjs`'s public IPv4 / DNS-pinned transport, including redirected resources. Chromium has an unreachable proxy for unrouted traffic, blocked service workers/WebSockets/WebRTC, no forwarded cookies and GET-only requests. Limits: two capture processes, four concurrent resource fetches per capture, 120 requests, 3 MB per resource, 16 MB total downloaded bytes, 22 seconds, 3,000 DOM/text nodes, 12,000 vertical pixels and 18 MB serialized HTML. Memory is reserved before concurrent downloads. IPv6-only destinations are unsupported. Renderer absence, timeout or capture failure falls back to the 12-second / 1.5 MB HTML reader.
+5. Reader view uses `src/reader.ts` and an inert template, rebuilding article text into fresh elements. Source scripts/styles/media never mount in the reader. Relative links use the final URL, without trusting a source base element.
+6. Original view uses `src/snapshot.ts` and an iframe with `sandbox="allow-same-origin"`, with **no allow-scripts**. Executable/navigation attributes are removed. An initial CSP blocks scripts, connections, frames, objects, external images/fonts and forms. Only embedded image/font data and inline styles are allowed. Source styles cannot affect the surrounding application.
+7. `Intl.Segmenter` maps reader words to spans (120 blocks / 20,000 characters) or original-page words to `Range` objects (4,000 words). Text is grouped across inline/character spans before segmentation. CSS Custom Highlights tint/hide ranges without changing source DOM or line wrapping. Browsers without this API use reader view.
+8. `src/spider.ts` measures words after content, viewport, font or frame-scroll changes. One Canvas 2D loop draws either surface. Frame scrolling, pointer coordinates and capture scaling use the same coordinate system. Resizing scales the frozen capture; loading again captures the new responsive width.
 
-The API has a four-request in-process concurrency guard; it is not a distributed rate limiter. It returns JSON with no-store and no permissive CORS. No fetch history, credentials or page content are persisted. One explicit user action triggers one fetch operation; discovered links do not crawl automatically.
+The API has a four-request in-process concurrency guard; it is not a distributed rate limiter. It returns JSON with no-store and no permissive CORS. No fetch history, credentials or page content are persisted. One explicit user action triggers one bounded page capture (with its resources) or reader operation; discovered links do not crawl automatically.
+
+Capture intercepts requests through Chromium's CDP Fetch domain because Playwright's high-level routing automatically continues redirect hops. Each hop stays in the validated transport, preserves source CORS headers, and records original-to-final image/font aliases so `currentSrc` and CSS URLs still resolve to embedded assets. The browser retains the final document URL and normal relative-resource behavior.
 
 ## Movement and ownership
 
@@ -39,6 +43,6 @@ The initial reduced-motion preference pauses the simulation. A live change to re
 
 ## Boundaries and references
 
-This is a semantic reader, not a screenshot proxy, browser automation service, or full-site spider. JavaScript-only/login-required/bot-blocked sites can fail, and source images/design are not reproduced. The original website remains untouched. A static host without `/api/crawl` supports the sample only.
+Original view is a static copy of a public rendered page, with a semantic reader fallback. The source website remains untouched. Login-required/bot-blocked sites, POST-dependent content, canvas/video, nested frames and live interactions are unsupported or may be incomplete. Complex shadow DOM and generated CSS content are not guaranteed. Word fragments drawn on the parent canvas can use a fallback face when a captured custom font is scoped to the iframe. A static host without `/api/crawl` supports the sample only. Production capture needs an explicitly configured Playwright/Chromium runtime; Vercel deployment was not performed or verified.
 
 The Vercel adapter follows its [Web Handler API](https://vercel.com/docs/functions/functions-api-reference). The HTTP transport uses Node's [HTTPS request options](https://nodejs.org/api/https.html) and [DNS lookup](https://nodejs.org/api/dns.html) with a pinned lookup callback to keep validation and connection targets identical.

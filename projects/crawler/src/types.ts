@@ -8,12 +8,15 @@ export interface PageContent {
   links: PageLink[];
   source: 'demo' | 'live';
   truncated: boolean;
+  snapshot?: { html: string; width: number; height: number; partial: boolean };
 }
 export interface Word {
   id: number;
   sentence: number;
   text: string;
-  element: HTMLSpanElement;
+  element: HTMLElement;
+  range?: Range;
+  visual?: { target: (color: string | null) => void; consume: () => void };
   x: number;
   y: number;
   width: number;

@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import { handleCrawl } from './crawl.mjs';
+import { loadEnv } from 'vite';
 
 export function crawlerApi() {
-  const install = server => { server.middlewares.use(async (req, res, next) => {
+  const install = server => {
+    const env = loadEnv(server.config.mode, server.config.root, 'CRAWLER_');
+    server.middlewares.use(async (req, res, next) => {
     if (req.url?.split('?')[0] !== '/api/crawl') return next();
     const controller = new AbortController();
     const disconnect = () => { if (!res.writableEnded) controller.abort(); };
@@ -10,7 +13,10 @@ export function crawlerApi() {
     try {
       const headers = new Headers();
       for (const [key, value] of Object.entries(req.headers)) if (typeof value === 'string') headers.set(key, value);
-      const response = await handleCrawl(new Request(`http://localhost${req.url}`, { method: req.method, headers, signal: controller.signal }));
+      const response = await handleCrawl(new Request(`http://localhost${req.url}`, { method: req.method, headers, signal: controller.signal }), {
+        playwrightModule: env.CRAWLER_PLAYWRIGHT_MODULE,
+        onRenderError: error => server.config.logger.warn(`[crawler] ${error instanceof Error ? error.message : 'Original view unavailable'}`),
+      });
       res.statusCode = response.status;
       response.headers.forEach((value, key) => res.setHeader(key, value));
       res.end(await response.text());

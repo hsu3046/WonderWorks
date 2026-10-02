@@ -2,6 +2,7 @@
 import { parsePage, renderPage } from './reader';
 import { sample } from './sample';
 import { SpiderWorld } from './spider';
+import { mountSnapshot } from './snapshot';
 import type { Meal, PageContent, Word } from './types';
 
 function required<T extends HTMLElement>(selector: string): T {
@@ -28,6 +29,7 @@ let words: Word[] = [];
 let controller: AbortController | null = null;
 let resumeAfterLoad = false;
 let world: SpiderWorld;
+let originalFrame: HTMLIFrameElement | null = null;
 const lifetime = new AbortController();
 const previewMode = new URLSearchParams(location.search).has('preview');
 if (previewMode) document.body.classList.add('preview');
@@ -57,21 +59,29 @@ function updatePause(): void {
   document.body.classList.toggle('paused', !world.running);
 }
 
-function showPage(next: PageContent): void {
+function showPage(next: PageContent, original?: { frame: HTMLIFrameElement; words: Word[] }): void {
   page = next;
   viewport.scrollTop = 0;
-  words = renderPage(next, article);
+  world.setSurface(original?.frame ?? null);
+  if (originalFrame !== original?.frame) originalFrame?.remove();
+  originalFrame = original?.frame ?? null;
+  viewport.classList.toggle('snapshot-mode', !!original);
+  if (original) { article.replaceChildren(); original.frame.style.visibility = 'visible'; }
+  words = original?.words ?? renderPage(next, article);
   world.setWords(words);
   updateCounts(0);
   bites.replaceChildren();
   const empty = document.createElement('span'); empty.className = 'empty-bites'; empty.textContent = '첫 번째 한 입을 기다리는 중…'; bites.append(empty);
   required('#source-address').textContent = next.source === 'demo' ? next.url : new URL(next.url).host + new URL(next.url).pathname;
-  required('#source-kind').textContent = next.source === 'demo' ? 'SAMPLE' : 'LIVE PAGE';
+  required('#source-kind').textContent = next.source === 'demo' ? 'SAMPLE' : original ? 'ORIGINAL VIEW' : 'READER VIEW';
+  const viewToggle = required<HTMLButtonElement>('#view-toggle');
+  viewToggle.hidden = !next.snapshot;
+  viewToggle.textContent = original ? '본문 보기' : '원본 보기';
   required('#document-label').textContent = next.source === 'demo' ? 'FIELD NOTES / NO. 001' : new URL(next.url).hostname.toUpperCase();
   required('#document-detail').textContent = next.source === 'demo' ? 'A PAGE FOR THE CURIOUS' : 'READER VIEW / 본문 재구성';
-  const original = required<HTMLAnchorElement>('#original-link');
-  original.hidden = next.source !== 'live';
-  if (next.source === 'live') original.href = next.url; else original.removeAttribute('href');
+  const originalLink = required<HTMLAnchorElement>('#original-link');
+  originalLink.hidden = next.source !== 'live';
+  if (next.source === 'live') originalLink.href = next.url; else originalLink.removeAttribute('href');
   required('#page-limit').hidden = !next.truncated;
   const links = required('#links'); links.replaceChildren();
   for (const link of next.links.slice(0, 6)) {
@@ -88,12 +98,13 @@ function busy(value: boolean): void {
   crawlButton.disabled = value;
   pauseButton.disabled = value;
   resetButton.disabled = value;
+  required<HTMLButtonElement>('#view-toggle').disabled = value;
   crawlButton.replaceChildren(document.createTextNode(value ? '읽는 중…' : '탐색 시작 ↗'));
   required('#scene-loader').hidden = !value;
   required('#scene').setAttribute('aria-busy', String(value));
 }
 
-async function loadPage(input: string): Promise<void> {
+async function loadPage(input: string, cached?: PageContent, preferOriginal = true): Promise<void> {
   if (!input.trim()) { errorMessage.textContent = '거미가 탐색할 웹사이트 주소를 입력해 주세요.'; errorMessage.hidden = false; urlInput.focus(); return; }
   if (!controller) resumeAfterLoad = world.running;
   controller?.abort();
@@ -101,23 +112,44 @@ async function loadPage(input: string): Promise<void> {
   controller = request;
   world.setRunning(false);
   errorMessage.hidden = true;
-  loadStatus.textContent = '페이지의 본문과 링크를 읽고 있습니다…';
+  loadStatus.textContent = cached ? '화면을 다시 준비하고 있습니다…' : '원본 페이지의 배치·이미지·폰트를 불러오고 있습니다…';
   loadStatus.hidden = false;
   busy(true);
   try {
-    const response = await fetch(`/api/crawl?url=${encodeURIComponent(input.trim())}`, {
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(16_000)]),
-      headers: { Accept: 'application/json' },
-    });
-    if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('본문을 가져오는 서버에 연결되지 않았습니다. 샘플 페이지를 사용하거나 개발 서버를 실행해 주세요.');
-    const data: unknown = await response.json();
-    if (!data || typeof data !== 'object') throw new Error('페이지 응답을 읽을 수 없습니다.');
-    if ('error' in data && typeof data.error === 'string') throw new Error(data.error);
-    if (!response.ok || !('html' in data) || typeof data.html !== 'string' || !('url' in data) || typeof data.url !== 'string') throw new Error('페이지를 가져오지 못했습니다. 다른 주소를 입력해 주세요.');
-    const next = parsePage(data.html, data.url);
+    let next = cached;
+    let notice = '';
+    if (!next) {
+      const params = new URLSearchParams({ url: input.trim(), view: 'original', width: String(Math.round(viewport.getBoundingClientRect().width)), height: String(viewport.clientHeight) });
+      const response = await fetch(`/api/crawl?${params}`, {
+        signal: AbortSignal.any([request.signal, AbortSignal.timeout(38_000)]),
+        headers: { Accept: 'application/json' },
+      });
+      if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('본문을 가져오는 서버에 연결되지 않았습니다. 샘플 페이지를 사용하거나 개발 서버를 실행해 주세요.');
+      const data: unknown = await response.json();
+      if (!data || typeof data !== 'object') throw new Error('페이지 응답을 읽을 수 없습니다.');
+      if ('error' in data && typeof data.error === 'string') throw new Error(data.error);
+      if (!response.ok || !('html' in data) || typeof data.html !== 'string' || !('url' in data) || typeof data.url !== 'string') throw new Error('페이지를 가져오지 못했습니다. 다른 주소를 입력해 주세요.');
+      next = parsePage(data.html, data.url);
+      if ('notice' in data && typeof data.notice === 'string') notice = data.notice;
+      if ('view' in data && data.view === 'original' && 'width' in data && typeof data.width === 'number' && Number.isFinite(data.width) && data.width >= 360 && data.width <= 1600) {
+        next.snapshot = { html: data.html, width: data.width, height: viewport.clientHeight, partial: 'partial' in data && data.partial === true };
+        if ('links' in data && Array.isArray(data.links)) next.links = data.links.flatMap((link: unknown) => {
+          if (!link || typeof link !== 'object' || !('title' in link) || typeof link.title !== 'string' || !('url' in link) || typeof link.url !== 'string') return [];
+          try { const url = new URL(link.url); return ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password ? [{ title: link.title.slice(0, 70), url: url.href }] : []; } catch { return []; }
+        }).slice(0, 12);
+      }
+    }
     if (controller !== request) return;
-    showPage(next);
-    loadStatus.textContent = `${words.length.toLocaleString()}개의 단어를 찾았습니다. 새로운 탐색을 시작합니다.`;
+    let original: Awaited<ReturnType<typeof mountSnapshot>> | undefined;
+    if (next.snapshot && preferOriginal) {
+      try { original = await mountSnapshot(next, viewport, request.signal); }
+      catch (error) { request.signal.throwIfAborted(); notice = error instanceof Error ? `${error.message} 본문 보기로 표시합니다.` : '원본 화면을 표시하지 못해 본문 보기로 전환했습니다.'; }
+    }
+    if (controller !== request) { original?.frame.remove(); return; }
+    showPage(next, original);
+    loadStatus.textContent = notice || (original
+      ? `원본 디자인으로 ${words.length.toLocaleString()}개의 단어를 찾았습니다.${next.snapshot?.partial ? ' 일부 미디어나 긴 콘텐츠는 생략되었습니다.' : ''}`
+      : `${words.length.toLocaleString()}개의 단어를 찾았습니다. 새로운 탐색을 시작합니다.`);
   } catch (error) {
     if (controller !== request || request.signal.aborted) return;
     errorMessage.textContent = error instanceof Error && error.name === 'TimeoutError'
@@ -157,7 +189,8 @@ try {
     urlInput.value = button.dataset.url!; void loadPage(urlInput.value);
   }, { signal }));
   pauseButton.addEventListener('click', () => { world.setRunning(!world.running); updatePause(); }, { signal });
-  resetButton.addEventListener('click', () => { showPage(page); }, { signal });
+  resetButton.addEventListener('click', () => { void loadPage(page.url, page, !!originalFrame); }, { signal });
+  required('#view-toggle').addEventListener('click', () => { void loadPage(page.url, page, !originalFrame); }, { signal });
   document.querySelectorAll<HTMLButtonElement>('[data-mode]').forEach(button => button.addEventListener('click', () => {
     world.setMode(button.dataset.mode === 'sentence' ? 'sentence' : 'word');
     document.querySelectorAll('[data-mode]').forEach(item => { item.classList.toggle('selected', item === button); item.setAttribute('aria-pressed', String(item === button)); });
@@ -183,9 +216,9 @@ try {
     world.setRunning(false); updatePause();
   }, { signal });
   window.addEventListener('pageshow', event => { if (event.persisted) updatePause(); }, { signal });
-  if (import.meta.hot) import.meta.hot.dispose(() => { lifetime.abort(); controller?.abort(); world.dispose(); });
+  if (import.meta.hot) import.meta.hot.dispose(() => { lifetime.abort(); controller?.abort(); world.dispose(); originalFrame?.remove(); });
   // Read-only diagnostics are local-development only, never in the public build.
-  if (import.meta.env.DEV) Object.defineProperty(window, '__crawler', { configurable: true, get: () => ({ words: words.length, eaten: world.consumed, frames: world.frameCount, running: world.running, source: page.source }) });
+  if (import.meta.env.DEV) Object.defineProperty(window, '__crawler', { configurable: true, get: () => ({ words: words.length, eaten: world.consumed, frames: world.frameCount, running: world.running, source: page.source, view: originalFrame ? 'original' : 'reader' }) });
 } catch (error) {
   errorMessage.textContent = error instanceof Error ? error.message : '실험을 시작할 수 없습니다.';
   errorMessage.hidden = false;

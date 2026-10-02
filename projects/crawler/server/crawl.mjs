@@ -54,7 +54,8 @@ export async function resolvePublicAddress(hostname, resolver = lookup) {
   return records[0].address;
 }
 
-function requestPage(url, address, signal) {
+export function requestPage(url, address, signal, options = {}) {
+  const maxBytes = options.maxBytes ?? MAX_BYTES;
   return new Promise((resolve, reject) => {
     const transport = url.protocol === 'https:' ? https : http;
     const request = transport.get(url, {
@@ -62,7 +63,7 @@ function requestPage(url, address, signal) {
       lookup: (_host, options, done) => options.all ? done(null, [{ address, family: 4 }]) : done(null, address, 4),
       headers: {
         'User-Agent': 'WonderworksCrawler/1.0 (+https://www.aib.vote)',
-        Accept: 'text/html,application/xhtml+xml',
+        Accept: options.resource ? '*/*' : 'text/html,application/xhtml+xml',
         'Accept-Encoding': 'gzip, deflate, br',
       },
     }, response => {
@@ -71,7 +72,7 @@ function requestPage(url, address, signal) {
         response.destroy();
         if (!response.headers.location) reject(new CrawlError('이동할 페이지 주소가 없습니다.', 502));
         else {
-          try { resolve({ redirect: new URL(response.headers.location, url).href }); }
+          try { resolve({ redirect: new URL(response.headers.location, url).href, ...(options.resource ? { cors: response.headers['access-control-allow-origin'] } : {}) }); }
           catch { reject(new CrawlError('페이지의 이동 주소가 올바르지 않습니다.', 502)); }
         }
         return;
@@ -84,10 +85,10 @@ function requestPage(url, address, signal) {
         return;
       }
       const contentType = response.headers['content-type'] ?? '';
-      if (!/^(text\/html|application\/xhtml\+xml)(;|$)/i.test(contentType)) {
+      if (!options.resource && !/^(text\/html|application\/xhtml\+xml)(;|$)/i.test(contentType)) {
         response.destroy(); reject(new CrawlError('HTML 웹페이지만 읽을 수 있습니다.', 422)); return;
       }
-      if (Number(response.headers['content-length']) > MAX_BYTES) {
+      if (Number(response.headers['content-length']) > maxBytes) {
         response.destroy(); reject(new CrawlError('페이지가 너무 큽니다. 더 짧은 글의 주소를 입력해 주세요.', 413)); return;
       }
       const encoding = response.headers['content-encoding'];
@@ -103,7 +104,7 @@ function requestPage(url, address, signal) {
       stream.on('error', reject);
       stream.on('data', chunk => {
         size += chunk.length;
-        if (size > MAX_BYTES) {
+        if (size > maxBytes) {
           stream.destroy(); response.destroy(); request.destroy();
           reject(new CrawlError('페이지가 너무 큽니다. 더 짧은 글의 주소를 입력해 주세요.', 413));
         } else chunks.push(chunk);
@@ -111,6 +112,7 @@ function requestPage(url, address, signal) {
       stream.on('end', () => {
         try {
           const bytes = Buffer.concat(chunks);
+          if (options.resource) { resolve({ body: bytes, type: contentType, url: url.href, cors: response.headers['access-control-allow-origin'] }); return; }
           const declared = contentType.match(/charset\s*=\s*["']?([^;\s"']+)/i)?.[1]
             ?? bytes.subarray(0, 4096).toString('ascii').match(/charset\s*=\s*["']?([\w-]+)/i)?.[1] ?? 'utf-8';
           resolve({ html: new TextDecoder(declared).decode(bytes), url: url.href, bytes: size });
@@ -142,7 +144,7 @@ export async function crawl(input, options = {}) {
   throw new CrawlError('페이지 이동이 너무 많습니다. 최종 페이지 주소를 입력해 주세요.', 422);
 }
 
-export async function handleCrawl(request) {
+export async function handleCrawl(request, options = {}) {
   const json = (data, status = 200) => Response.json(data, { status, headers: {
     'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff',
     'Content-Security-Policy': "default-src 'none'", 'Referrer-Policy': 'no-referrer',
@@ -151,7 +153,24 @@ export async function handleCrawl(request) {
   if (request.headers.get('sec-fetch-site') === 'cross-site') return json({ error: '이 앱에서 주소를 입력해 주세요.' }, 403);
   if (inFlight >= 4) return json({ error: '크롤러가 모두 탐색 중입니다. 잠시 후 다시 시도해 주세요.' }, 429);
   inFlight++;
-  try { return json(await crawl(new URL(request.url).searchParams.get('url'), { signal: request.signal })); }
+  try {
+    const params = new URL(request.url).searchParams;
+    const input = normalizeUrl(params.get('url')).href;
+    let notice;
+    if (params.get('view') === 'original') {
+      try {
+        const { renderSnapshot } = await import('./snapshot.mjs');
+        return json(await renderSnapshot(input, { ...options, width: Number(params.get('width')), height: Number(params.get('height')), signal: request.signal }));
+      } catch (error) {
+        request.signal.throwIfAborted();
+        options.onRenderError?.(error);
+        notice = error.code === 'RENDERER_UNAVAILABLE'
+          ? '원본 디자인을 불러올 수 없어 본문 보기로 표시합니다.'
+          : '이 페이지의 원본 디자인을 가져오지 못해 본문 보기로 표시합니다.';
+      }
+    }
+    return json({ ...await crawl(input, { signal: request.signal }), view: 'reader', notice });
+  }
   catch (error) {
     return json({ error: error instanceof CrawlError ? error.message : error.name === 'AbortError' || error.name === 'TimeoutError'
       ? '페이지 응답 시간이 초과되었습니다. 다른 주소로 시도해 주세요.'

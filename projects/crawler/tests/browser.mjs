@@ -69,6 +69,11 @@ try {
   await page.locator('#url').fill('https://example.com'); await page.locator('#crawl-button').click();
   await page.waitForFunction(() => document.querySelector('#source-address')?.textContent === 'example.com/', null, { timeout: 18_000 });
   assert.equal(await page.locator('#error').isVisible(), false);
+  if ((await page.evaluate(() => window.__crawler)).view === 'original') {
+    assert.equal(await page.locator('.original-page').getAttribute('sandbox'), 'allow-same-origin');
+    await page.locator('#view-toggle').click();
+    await page.waitForFunction(() => window.__crawler.view === 'reader');
+  }
   assert.ok((await page.locator('#article').innerText()).includes('Example Domain'));
   passed.push('Real HTTP fetch of example.com through the shared local API');
 

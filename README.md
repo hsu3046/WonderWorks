@@ -82,7 +82,7 @@ npm run build       # All experiments, downloads, static SEO and production gall
 npm run preview     # Serve the production gallery locally
 ```
 
-For an individual study, run `npm run dev --prefix projects/pond` (or `fish`, `chroma`, `harbor`, `foliage`, `crawler`). Webcrawler runs at [http://127.0.0.1:4183](http://127.0.0.1:4183) and includes a local public-page reader endpoint. Its sample works offline; live URLs require the reader API. Bubble Day and Fruit Jelly are plain static projects. See their own README files for controls.
+For an individual study, run `npm run dev --prefix projects/pond` (or `fish`, `chroma`, `harbor`, `foliage`, `crawler`). Webcrawler runs at [http://127.0.0.1:4183](http://127.0.0.1:4183) and includes a local public-page reader endpoint. An optional existing Playwright/Chromium runtime enables original-design capture; see its [setup instructions](projects/crawler/README.md). Its sample works offline; live URLs require the reader API. Bubble Day and Fruit Jelly are plain static projects. See their own README files for controls.
 
 No secrets are required. To build for a custom public URL, use `PUBLIC_SITE_URL=https://your-domain.example npm run build`. Vercel builds otherwise derive the canonical origin from `VERCEL_PROJECT_PRODUCTION_URL`.
 
