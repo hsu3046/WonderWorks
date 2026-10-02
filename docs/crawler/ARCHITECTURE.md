@@ -17,7 +17,9 @@ The API has a four-request in-process concurrency guard; it is not a distributed
 
 ## Movement and ownership
 
-Eight independent feet use stance and swing phases. Body motion and turning move the hips; planted feet stay in place until their reach threshold is exceeded. Each hip/knee/foot chain uses two-segment inverse kinematics. Bounded swing interpolation and alternating geometry create the reference's angular movement.
+`src/legs.ts` defines four mirrored leg pairs, all attached to the front body (cephalothorax), with a separate rear abdomen. Each pair has its own rest lengths, IK bend pole and non-overlapping angular sector. A shared bend sign was incorrect for the rear pair: at rest it put the knee 6.7 units across the body centerline. Selecting the pair-specific IK branch and constraining each complete chain to its own fan fixes that crossing, including when turning or resizing.
+
+Eight feet use stance and swing phases. Two alternating groups, each with two legs per side, lift four feet while the other four support the body. Ordinary stance remains planted; sharp turns have bounded reach so a foot cannot drag across a neighboring fan. Foot lift is indicated by its tip, rather than an arbitrary screen-up offset. Body turns are rate-limited and forward travel slows while turning. The geometry tests exercise pair count, symmetry, no crossings, fixed stance, group alternation, reversal, resizing and 30/60/120 fps updates.
 
 Each spider reserves one visible uneaten word. Clicks assign the selected word to the nearest spider. Sentence mode consumes the target sentence while respecting reservations owned by other spiders. Eaten spans become invisible without changing dimensions, and canvas copies lift, rotate, shrink and fly into the mouth. Counters describe removed words, not HTTP requests.
 

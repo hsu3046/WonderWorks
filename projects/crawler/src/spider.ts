@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import { measureWords } from './reader';
+import { advanceLegs, createLegs, legJoints } from './legs';
+import type { Leg } from './legs';
 import type { Meal, Point, Word } from './types';
 
-interface Leg { foot: Point; from: Point; to: Point; progress: number; side: number; row: number; }
 interface Crawler {
   id: number; x: number; y: number; angle: number; color: string;
-  legs: Leg[]; target: Word | null; wait: number; pulse: number;
+  legs: Leg[]; target: Word | null; wait: number; pulse: number; gaitGroup: number;
 }
 interface Fragment { word: Word; x: number; y: number; angle: number; age: number; delay: number; spider: Crawler; }
 interface Silk { x: number; y: number; nextX: number; nextY: number; age: number; color: string; }
@@ -105,12 +106,9 @@ export class SpiderWorld {
     for (let i = this.spiders.length; i < this.count; i++) {
       const spider: Crawler = {
         id: i, x: this.width * (0.48 + i * 0.14), y: this.scroll + Math.min(this.height * 0.46 + i * 55, this.height - 75),
-        angle: -0.6 + i * 1.8, color: COLORS[i]!, legs: [], target: null, wait: i * 0.35 + 0.35, pulse: 0,
+        angle: -0.6 + i * 1.8, color: COLORS[i]!, legs: [], target: null, wait: i * 0.35 + 0.35, pulse: 0, gaitGroup: i % 2,
       };
-      for (const side of [-1, 1]) for (let row = 0; row < 4; row++) {
-        const rest = this.footPosition(spider, side, row);
-        spider.legs.push({ foot: { ...rest }, from: { ...rest }, to: { ...rest }, progress: 1, side, row });
-      }
+      spider.legs = createLegs(spider, this.scale);
       this.spiders.push(spider);
     }
   }
@@ -118,10 +116,6 @@ export class SpiderWorld {
   private local(spider: Crawler, forward: number, side: number): Point {
     const c = Math.cos(spider.angle), s = Math.sin(spider.angle);
     return { x: spider.x + (c * forward - s * side) * this.scale, y: spider.y + (s * forward + c * side) * this.scale };
-  }
-
-  private footPosition(spider: Crawler, side: number, row: number): Point {
-    return this.local(spider, [50, 22, -22, -48][row]!, side * [40, 64, 62, 39][row]!);
   }
 
   private measure(): void {
@@ -220,9 +214,10 @@ export class SpiderWorld {
       if (destination) {
         const dist = distance(spider, destination);
         const direction = Math.atan2(destination.y - spider.y, destination.x - spider.x);
-        spider.angle += turn(spider.angle, direction) * Math.min(1, elapsed * 5);
+        spider.angle += clamp(turn(spider.angle, direction), -elapsed * 2.4, elapsed * 2.4);
         if (dist > 21 * this.scale) {
-          const step = Math.min(dist - 19 * this.scale, elapsed * 63);
+          const alignment = Math.max(0, Math.cos(turn(spider.angle, direction)));
+          const step = Math.min(dist - 19 * this.scale, elapsed * 63 * (0.12 + 0.88 * alignment));
           const previousX = spider.x, previousY = spider.y;
           spider.x += Math.cos(direction) * step;
           spider.y += Math.sin(direction) * step;
@@ -232,23 +227,7 @@ export class SpiderWorld {
           }
         } else if (destination === spider.target && spider.wait <= 0) this.eat(spider);
       }
-      let moving = spider.legs.filter(leg => leg.progress < 1).length;
-      for (const leg of spider.legs) {
-        const rest = this.footPosition(spider, leg.side, leg.row);
-        if (leg.progress >= 1 && distance(leg.foot, rest) > 19 * this.scale && moving < 4) {
-          leg.from = { ...leg.foot };
-          const ahead = this.local(spider, 9, 0);
-          leg.to = { x: rest.x + ahead.x - spider.x, y: rest.y + ahead.y - spider.y };
-          leg.progress = 0;
-          moving++;
-        }
-        if (leg.progress < 1) {
-          leg.progress = Math.min(1, leg.progress + elapsed * (4.8 + leg.row * 0.24));
-          const t = leg.progress, eased = t * t * (3 - 2 * t);
-          leg.foot.x = leg.from.x + (leg.to.x - leg.from.x) * eased;
-          leg.foot.y = leg.from.y + (leg.to.y - leg.from.y) * eased - Math.sin(t * Math.PI) * 7;
-        }
-      }
+      spider.gaitGroup = advanceLegs(spider.legs, spider, this.scale, elapsed, spider.gaitGroup);
     }
     for (const fragment of this.fragments) fragment.age += elapsed;
     this.fragments = this.fragments.filter(fragment => fragment.age < 1.05 + fragment.delay);
@@ -269,30 +248,30 @@ export class SpiderWorld {
 
   private drawSpider(spider: Crawler): void {
     const ctx = this.ctx;
-    // Two-segment inverse kinematics; the feet remain planted during stance.
+    // Each of the four pairs has its own mirrored hip, bend pole and reach fan.
     for (const leg of spider.legs) {
-      const hip = this.local(spider, 12 - leg.row * 7, leg.side * 6);
-      const dx = leg.foot.x - hip.x, dy = leg.foot.y - hip.y;
-      const d = Math.max(1, Math.hypot(dx, dy));
-      const length = Math.max(46 * this.scale, d * 0.58);
-      const offset = Math.sqrt(Math.max(0, length * length - d * d / 4));
-      const knee = { x: (hip.x + leg.foot.x) / 2 - dy / d * offset * leg.side, y: (hip.y + leg.foot.y) / 2 + dx / d * offset * leg.side };
-      this.stroke([hip, knee, leg.foot], '#060906', 4);
+      const { hip, knee, foot } = legJoints(spider, this.scale, leg);
+      this.stroke([hip, knee, foot], '#060906', 4);
       this.stroke([hip, knee], spider.color, 1.25);
-      this.stroke([knee, leg.foot], leg.row % 2 ? '#92bfde' : '#c78abc', 1.1);
+      this.stroke([knee, foot], leg.row % 2 ? '#92bfde' : '#c78abc', 1.1);
       ctx.fillStyle = spider.color;
       ctx.beginPath(); ctx.arc(knee.x, knee.y, 2.1, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = leg.progress < 1 ? '#f9fce8' : '#90baa2';
-      ctx.beginPath(); ctx.arc(leg.foot.x, leg.foot.y, 1.8, 0, Math.PI * 2); ctx.fill();
-      if (leg.progress < 0.13) { ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(leg.foot.x, leg.foot.y, 5, 0, Math.PI * 2); ctx.strokeStyle = spider.color; ctx.stroke(); ctx.globalAlpha = 1; }
+      ctx.beginPath(); ctx.arc(foot.x, foot.y, 1.8 + Math.sin(leg.progress * Math.PI) * 0.7, 0, Math.PI * 2); ctx.fill();
+      if (leg.progress < 0.13) { ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(foot.x, foot.y, 5, 0, Math.PI * 2); ctx.strokeStyle = spider.color; ctx.stroke(); ctx.globalAlpha = 1; }
     }
-    const shell = [this.local(spider, 18, 0), this.local(spider, 8, -9), this.local(spider, -15, -11), this.local(spider, -27, 0), this.local(spider, -15, 11), this.local(spider, 8, 9), this.local(spider, 18, 0)];
-    ctx.fillStyle = '#0a120fea'; ctx.beginPath(); shell.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); ctx.fill();
+    // A separate abdomen and narrow waist make the eight thoracic attachments
+    // readable. No crossed body braces can be mistaken for extra hind legs.
+    const abdomen = [[-15, 0], [-23, -14], [-37, -13], [-46, 0], [-37, 13], [-23, 14], [-15, 0]].map(([x, y]) => this.local(spider, x!, y!));
+    const thorax = [[18, 0], [12, -10], [-5, -12], [-13, -7], [-14, 0], [-13, 7], [-5, 12], [12, 10], [18, 0]].map(([x, y]) => this.local(spider, x!, y!));
     ctx.shadowColor = spider.color; ctx.shadowBlur = 5 + spider.pulse * 14;
-    this.stroke(shell, spider.color, 1.4);
-    this.stroke([shell[1]!, this.local(spider, -8, 0), shell[4]!], '#85bfc9', 1);
-    this.stroke([shell[2]!, this.local(spider, -8, 0), shell[5]!], '#b78cb7', 1);
-    this.stroke([shell[0]!, shell[3]!], '#c9f38a88', 0.8);
+    for (const shell of [abdomen, thorax]) {
+      ctx.fillStyle = '#0a120ff2'; ctx.beginPath(); shell.forEach((point, i) => i ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)); ctx.fill();
+      this.stroke(shell, spider.color, 1.4);
+    }
+    this.stroke([this.local(spider, -16, 0), this.local(spider, -12, 0)], spider.color, 2);
+    this.stroke([this.local(spider, -19, 0), this.local(spider, -42, 0)], '#85bfc999', 0.8);
+    this.stroke([this.local(spider, 12, 0), this.local(spider, -8, 0)], '#c9f38a88', 0.8);
     for (const side of [-1, 1]) {
       const eye = this.local(spider, 12, side * 3.3);
       ctx.fillStyle = '#efffdc'; ctx.beginPath(); ctx.arc(eye.x, eye.y, 1.65, 0, Math.PI * 2); ctx.fill();
