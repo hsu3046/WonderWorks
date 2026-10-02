@@ -93,3 +93,7 @@ Record native 1536×1024 (3:2) H.264 MP4 directly from each actual canvas at tar
 ### Stillwater pond study (2026-09-29)
 
 Recreate the supplied koi-garden composition as original procedural Three.js assets, with no dependency installation or redistribution of the reference recording. Preserve visible material detail: pebbles, bark grain, koi patterns/scales/eyes/translucent fins, rippling reflection/refraction and animated light. Add four viewpoints, food attraction and touch ripples. Use existing local tooling, strict TypeScript and GPL v3/AIB Inc. credits. Reference evidence and limitations are in docs/pond/.
+
+### Webcrawler semantic habitat (2026-10-02)
+
+Recreate the supplied clip's eight jointed wireframe legs and words lifting into the mouth using Canvas 2D over actual DOM word positions. Keep eaten spans in layout so leg contacts and neighboring words do not jump. Use original bilingual sample prose with an explicit sample label. Fetch one public page per user action and rebuild its semantic text; never embed the original site or execute source scripts. A bounded, DNS-pinned Node reader supports both local Vite and the Vercel Web Handler. Preserve the existing shared-toolchain and single-video gallery preview conventions. Credit AIB's implementation separately from the supplied reference, whose creator was not identified.

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import type {Project} from './catalog.ts';
 export const escapeHTML=(text:string)=>text.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
-export const attribution=(project:Project)=>`<p class="attribution">${project.attribution.label} <a href="${project.attribution.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(project.attribution.name)} <span aria-hidden="true">↗</span></a></p>`;
+export const attribution=(project:Project)=>project.attribution?`<p class="attribution">${project.attribution.label} <a href="${project.attribution.url}" target="_blank" rel="noopener noreferrer">${escapeHTML(project.attribution.name)} <span aria-hidden="true">↗</span></a></p>`:'<p class="attribution">Inspired by a supplied clip · Creator unconfirmed</p>';
 export const tags=(items:string[])=>`<div class="tags">${items.map(t=>`<span>${escapeHTML(t)}</span>`).join('')}</div>`;
 export const renderCredits=(projects:Project[])=>projects.map(p=>`<div><dt>${escapeHTML(p.title)}</dt><dd>${attribution(p)}</dd></div>`).join('');
 export const renderIndex=(projects:Project[])=>projects.map(p=>`<a class="quick-work" href="${p.variants[0]!.path}" data-open="${p.id}" aria-label="Explore ${escapeHTML(p.title)}"><img src="${p.image}" alt="" width="52" height="42" loading="lazy"><span><small>${p.number} / ${p.category}</small>${escapeHTML(p.title)}</span></a>`).join('');

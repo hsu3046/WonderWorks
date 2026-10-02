@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10120f" />
+    <style>html,body{background:#10120f;color:#e5e8dc}</style>
+    <link rel="stylesheet" href="./src/style.css" />
+    <meta name="description" content="Give a little wireframe spider a website to explore. Watch words and sentences become its next meal. An interactive experiment by AIB Inc." />
+    <title>Webcrawler — A small appetite. An endless web.</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2310120f'/%3E%3Cg stroke='%23ceef83' stroke-width='3' fill='none'%3E%3Cpath d='M28 22 20 12 10 17M28 28 15 23 6 31M28 34 14 38 8 50M28 40 23 52 18 56M36 22 44 12 54 17M36 28 49 23 58 31M36 34 50 38 56 50M36 40 41 52 46 56M28 22 36 22 38 42 32 48 26 42Z'/%3E%3C/g%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="masthead">
+        <a class="collection" href="/" aria-label="Wonderworks 갤러리"><span class="asterisk">✳</span> WONDERWORKS <span class="slash">/</span> <span class="edition">LIVING EXPERIMENTS</span></a>
+        <a class="maker" href="https://www.aib.vote" target="_blank" rel="noopener noreferrer">BY AIB INC. <span>↗</span></a>
+      </header>
+      <main>
+        <section class="intro" aria-labelledby="title">
+          <div><p class="eyebrow"><span class="tiny-cross">+</span> DIGITAL ORGANISMS <span class="edition">— STUDY 08</span></p><h1 id="title">Web<span class="title-italic">crawler.</span><sup>08</sup></h1></div>
+          <p class="intro-copy">A small appetite.<br />An endless web.<span>웹을 걷고, 문장을 먹는 작은 생명체.</span></p>
+        </section>
+        <section class="input-section" aria-label="크롤링할 웹사이트">
+          <form id="url-form" class="url-form">
+            <span class="url-symbol" aria-hidden="true">↗</span>
+            <label class="sr-only" for="url">웹사이트 주소</label>
+            <input id="url" name="url" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="https:// … 거미에게 웹사이트를 건네주세요" maxlength="2048" />
+            <button type="submit" id="crawl-button">탐색 시작 <span aria-hidden="true">↗</span></button>
+          </form>
+          <div class="source-shortcuts"><span>TRY A LITTLE TASTE</span><button type="button" id="demo-button">샘플 페이지</button><button type="button" data-url="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website ↗</button><span class="input-note">공개 페이지의 본문을 읽어옵니다.</span></div>
+          <p id="error" class="error" role="alert" hidden></p>
+          <p id="load-status" class="load-status" role="status" hidden></p>
+        </section>
+        <section class="studio" aria-label="Webcrawler 실험실">
+          <div class="habitat">
+            <div class="browser-bar"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span id="source-address">wonderworks://field-notes</span><span class="source-kind" id="source-kind">SAMPLE</span><a id="original-link" target="_blank" rel="noopener noreferrer" aria-label="원본 페이지 열기" hidden>↗</a></div>
+            <div class="scene" id="scene">
+              <div id="viewport" class="viewport" tabindex="0" aria-label="거미가 탐색하는 본문. 스크롤하거나 단어를 클릭하세요.">
+                <div class="reader-metadata"><span id="document-label">FIELD NOTES / NO. 001</span><span id="document-detail">A PAGE FOR THE CURIOUS</span></div>
+                <article id="article" class="reader"></article>
+                <p id="page-limit" class="page-limit" hidden>긴 페이지의 앞부분을 담았습니다. 전체 내용은 원본 페이지에서 확인하세요.</p>
+                <div class="reader-end"><span>◇</span> YOU HAVE REACHED THE EDGE OF THIS WEB.</div>
+              </div>
+              <canvas id="spiders" aria-hidden="true"></canvas>
+              <div class="scene-label"><span class="status-dot"></span><span id="scene-state">ON THE HUNT</span></div>
+              <div class="scene-loader" id="scene-loader" hidden><span class="loader-orbit"></span><p>새로운 서식지를 찾고 있어요<span>READING THE PAGE</span></p></div>
+            </div>
+            <div class="habitat-footer"><span><i class="crosshair" aria-hidden="true">⌖</i> 단어를 클릭해 먹이를 주세요.</span><button id="pause" type="button" aria-pressed="false"><span id="pause-symbol" aria-hidden="true">Ⅱ</span> <span id="pause-label">일시정지</span></button></div>
+          </div>
+          <aside class="field-panel" aria-label="거미 상태와 조절">
+            <div class="panel-heading"><span>OBSERVATION LOG</span><span class="live-indicator"><i></i> LIVE</span></div>
+            <div class="counter"><span class="counter-label">WORDS DEVOURED</span><div><strong id="eaten-count">000</strong><span>words</span></div><div class="progress-track"><span id="progress"></span></div><p><span id="remaining-count">0</span> words left to discover</p></div>
+            <fieldset class="control-group"><legend>APPETITE <span>먹이의 크기</span></legend><div class="segmented"><button type="button" class="selected" data-mode="word" aria-pressed="true">단어</button><button type="button" data-mode="sentence" aria-pressed="false">문장</button></div></fieldset>
+            <div class="control-group"><label for="speed">PACE <output id="speed-value">1.0×</output></label><input type="range" id="speed" min="0.4" max="2.4" step="0.1" value="1" /><div class="range-labels"><span>CURIOUS</span><span>HUNGRY</span></div></div>
+            <fieldset class="control-group"><legend>COLONY <span>거미 수</span></legend><div class="colony"><button type="button" data-count="1" class="selected" aria-pressed="true">01</button><button type="button" data-count="2" aria-pressed="false">02</button><button type="button" data-count="3" aria-pressed="false">03</button><span id="colony-label">LONE EXPLORER</span></div></fieldset>
+            <label class="silk-control"><span>SILK TRAIL <span>거미줄 흔적</span></span><input type="checkbox" id="silk" checked /><span class="switch" aria-hidden="true"></span></label>
+            <div class="meal-log"><p>LAST LITTLE BITES <span id="meal-indicator">↙</span></p><div id="bites" aria-label="최근 먹은 단어"><span class="empty-bites">첫 번째 한 입을 기다리는 중…</span></div></div>
+            <button id="reset" class="reset-button" type="button"><span aria-hidden="true">↺</span> 페이지 복원 <span aria-hidden="true">↗</span></button>
+          </aside>
+        </section>
+        <section class="discovered" aria-label="다음 탐색할 링크"><div><span class="tiny-cross">+</span> FOLLOW A THREAD <span>발견한 링크로 계속 탐색해 보세요.</span></div><div id="links"></div><p id="no-links" hidden>이 페이지에는 탐색할 다른 링크가 없습니다.</p></section>
+      </main>
+      <footer class="footer"><span>A LITTLE LIFE IN THE HYPERTEXT.</span><span>© 2026 <a href="https://www.aib.vote" target="_blank" rel="noopener noreferrer">AIB Inc.</a> <span class="footer-divider">/</span> GNU GPL v3</span></footer>
+    </div>
+    <noscript>이 실험을 보려면 JavaScript를 켜 주세요.</noscript>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>

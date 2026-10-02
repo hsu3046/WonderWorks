@@ -11,6 +11,7 @@ Creator links supplied by the project owner on 2026-09-29. Visual references are
 | Bubble Day | Original code by | [@akakuma0219](https://x.com/akakuma0219) |
 | Fruit Jelly | Inspired by | [@vib3coded](https://x.com/vib3coded) |
 | Ocean Shoal | Inspired by | [@xingor_dev](https://x.com/xingor_dev) |
+| Webcrawler | Inspired by a user-supplied clip | Creator unconfirmed; no attribution URL supplied |
 
 Wonderworks implementation and gallery: © 2026 [AIB Inc.](https://www.aib.vote), GNU GPL v3. Bubble Day's supplied original source has a separate provenance notice; no original license was included with the supplied archive. Fruit Jelly's implementation comes from AIB's Dani project, with the visual inspiration credited above.
 
@@ -19,3 +20,5 @@ Stillwater directly uses Jikin, Tosakin, Ryukin and Shubunkin fish models/textur
 Stillwater’s Montane Brown Frog model/textures are by [ffish.asia / floraZia.com](https://sketchfab.com/ffishAsia-and-floraZia), CC BY 4.0, from the user-supplied rigged derivative. See the model attribution for conversion details and derivative provenance.
 
 Stillwater garden textures: [Poly Haven](https://polyhaven.com), CC0. Individual artists and texture sources are listed in `public/textures/ATTRIBUTION.md`.
+
+Webcrawler's reference clip (`KAW8qq-EfhNOR8AM.mp4`) is private reference material and is not redistributed. Its spider geometry, simulation, bilingual sample prose and gallery recording are original AIB work. Live fetched pages retain their respective authors' rights and are not included in source downloads.
