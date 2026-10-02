@@ -26,9 +26,12 @@
             <span class="url-symbol" aria-hidden="true">↗</span>
             <label class="sr-only" for="url">웹사이트 주소</label>
             <input id="url" name="url" type="text" inputmode="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="https:// … 거미에게 웹사이트를 건네주세요" maxlength="2048" />
-            <button type="submit" id="crawl-button">탐색 시작 <span aria-hidden="true">↗</span></button>
+            <div class="url-actions">
+              <button type="submit" id="crawl-button">탐색 시작 <span aria-hidden="true">↗</span></button>
+              <button type="button" id="random-button" class="random-button"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 6h3c4 0 8 12 12 12h3M17 14l4 4-4 4M3 18h3c1.7 0 3.4-2.2 5-5M13 9c1.6-2 3.2-3 5-3h3M17 2l4 4-4 4"/></svg>랜덤</button>
+            </div>
           </form>
-          <div class="source-shortcuts"><span>TRY A LITTLE TASTE</span><button type="button" id="demo-button">샘플 페이지</button><button type="button" data-url="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website ↗</button><span class="input-note">공개 페이지의 원본 디자인을 불러옵니다.</span></div>
+          <div class="source-shortcuts"><span>TRY A LITTLE TASTE</span><button type="button" id="demo-button">샘플 페이지</button><button type="button" data-url="https://info.cern.ch/hypertext/WWW/TheProject.html">The first website ↗</button><span class="input-note">글이 많은 100개의 페이지를 골라두었어요.</span></div>
           <p id="error" class="error" role="alert" hidden></p>
           <p id="load-status" class="load-status" role="status" hidden></p>
         </section>

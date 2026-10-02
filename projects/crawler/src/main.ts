@@ -3,6 +3,8 @@ import { parsePage, renderPage } from './reader';
 import { sample } from './sample';
 import { SpiderWorld } from './spider';
 import { mountSnapshot } from './snapshot';
+import { readingPages } from './destinations';
+import { createRandomPicker } from './random';
 import type { Meal, PageContent, Word } from './types';
 
 function required<T extends HTMLElement>(selector: string): T {
@@ -18,6 +20,8 @@ const urlInput = required<HTMLInputElement>('#url');
 const errorMessage = required('#error');
 const loadStatus = required('#load-status');
 const crawlButton = required<HTMLButtonElement>('#crawl-button');
+const randomButton = required<HTMLButtonElement>('#random-button');
+const pickRandomPage = createRandomPicker(readingPages);
 const pauseButton = required<HTMLButtonElement>('#pause');
 const resetButton = required<HTMLButtonElement>('#reset');
 const eatenCount = required('#eaten-count');
@@ -96,6 +100,7 @@ function showPage(next: PageContent, original?: { frame: HTMLIFrameElement; word
 
 function busy(value: boolean): void {
   crawlButton.disabled = value;
+  randomButton.disabled = value;
   pauseButton.disabled = value;
   resetButton.disabled = value;
   required<HTMLButtonElement>('#view-toggle').disabled = value;
@@ -177,6 +182,17 @@ try {
   showPage(sample);
   if (previewMode) world.setCount(2);
   const signal = lifetime.signal;
+  randomButton.title = `글이 많은 ${readingPages.length}개 페이지 중 하나를 골라 바로 탐색합니다.`;
+  randomButton.addEventListener('click', () => {
+    try {
+      const next = pickRandomPage([page.url, urlInput.value]);
+      urlInput.value = next.url;
+      void loadPage(next.url);
+    } catch (error) {
+      errorMessage.textContent = error instanceof Error ? error.message : '랜덤 페이지를 고르지 못했습니다. 다시 시도해 주세요.';
+      errorMessage.hidden = false;
+    }
+  }, { signal });
   required<HTMLFormElement>('#url-form').addEventListener('submit', event => { event.preventDefault(); void loadPage(urlInput.value); }, { signal });
   required('#demo-button').addEventListener('click', () => {
     const resume = controller ? resumeAfterLoad : world.running;
@@ -222,5 +238,5 @@ try {
 } catch (error) {
   errorMessage.textContent = error instanceof Error ? error.message : '실험을 시작할 수 없습니다.';
   errorMessage.hidden = false;
-  crawlButton.disabled = true; pauseButton.disabled = true; resetButton.disabled = true;
+  crawlButton.disabled = true; randomButton.disabled = true; pauseButton.disabled = true; resetButton.disabled = true;
 }

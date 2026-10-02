@@ -17,3 +17,6 @@
 
 /* Original-page styles remain inside a script-disabled frame. */
 .viewport.snapshot-mode{padding:0;overflow:hidden;scrollbar-gutter:auto}.snapshot-mode>.reader-metadata,.snapshot-mode>#article,.snapshot-mode>.page-limit,.snapshot-mode>.reader-end{display:none}.original-page{position:absolute;top:0;left:0;border:0;transform-origin:top left;background:#fff}.browser-bar #view-toggle{font-size:10px;white-space:nowrap;color:#c9d7b8;border-bottom:1px solid #607343;padding:4px 0}.browser-bar #view-toggle:disabled{opacity:.5}
+
+.url-actions{display:flex;gap:6px;flex-shrink:0}.url-form button{white-space:nowrap;flex-shrink:0}.url-form .random-button{min-width:104px;justify-content:center;gap:9px;border:1px solid #52603e;background:#222a1c;color:var(--acid);font-weight:500}.url-form .random-button:hover{background:#303c25;border-color:#91ac68}.random-button svg{flex-shrink:0}
+@media(max-width:600px){.url-form{height:auto;display:grid;grid-template-columns:auto minmax(0,1fr);row-gap:4px}.url-form input{grid-column:2;grid-row:1;min-height:42px}.url-symbol{grid-column:1;grid-row:1}.url-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}.url-form .url-actions button{min-width:0;width:100%;justify-content:center;height:42px}.url-form .random-button{gap:8px}}

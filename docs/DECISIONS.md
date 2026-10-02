@@ -101,3 +101,7 @@ Recreate the supplied clip's eight jointed wireframe legs and words lifting into
 ### Preserve original page design (2026-10-03)
 
 The user approved adding original-design capture after finding the uniform reader insufficient. Supersedes the text-only display decision above: source JavaScript may run inside a separate capture browser, while only an inert static copy reaches the app. Preserve layout with computed styles and embedded image/font resources; use text ranges/highlights instead of wrapping source text. Keep the reader as automatic fallback and a selectable alternate view. Reuse an existing server Playwright installation via `.env.local`; no package installation or deployment was authorized or performed.
+
+### Curated random exploration (2026-10-03)
+
+Offer a random button next to the URL submit button, backed by 100 real reading-page URLs from 36 sources. Select for text density and successful static capture: 187 candidates were checked, and the final set showed no partial-capture flag, horizontal text clipping or large fixed overlays at 1060×534. Include 19 Korean and 81 English pages. Draw without replacement, avoid the current page and share the normal one-page load/error/cancellation flow. Keep the catalog local and perform no runtime discovery or bulk prefetch. Source rights stay with their authors; only URLs and titles ship. Details: `docs/crawler/RANDOM_PAGES.md`.

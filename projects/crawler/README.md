@@ -19,6 +19,7 @@ For the standalone source download, install this directory's declared local deve
 ## Play
 
 - Enter a public HTTP(S) page address and select **탐색 시작**. Both a bare domain and a full URL work.
+- Select **랜덤** beside it to load one of 100 curated reading pages immediately (19 Korean, 81 English). Pages do not repeat within a round; the current page is skipped. Nothing is prefetched. The source list and capture checks are in `docs/crawler/RANDOM_PAGES.md` in the repository, or `docs/RANDOM_PAGES.md` in the standalone download.
 - Live pages first try **ORIGINAL VIEW**, preserving captured layout, images, fonts and colors. **본문 보기 / 원본 보기** switches between the captured page and the reader and restarts the meal. Source links are offered below the habitat; clicking text inside either view feeds the spider.
 - The initial **샘플 페이지** is original AIB prose, including English and Korean. It needs no network connection.
 - Click a word to direct the nearest spider toward it. **단어 / 문장** selects individual words or a whole sentence.
