@@ -2,7 +2,7 @@
 import {access,symlink} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 export const root=fileURLToPath(new URL('../',import.meta.url));
-export const builds=['fish','chroma','harbor','foliage','pond','gallery'];
+export const builds=['fish','chroma','harbor','foliage','pond','lightning','gallery'];
 await access(`${root}projects/fish/node_modules/three/package.json`);
 for(const name of builds.filter(name=>name!=='fish')){
  const destination=`${root}projects/${name}/node_modules`;

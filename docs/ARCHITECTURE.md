@@ -76,3 +76,10 @@ A separate strict TypeScript/WebGL2 effect studio lives in projects/chroma (4176
 ## Stillwater (2026-09-29)
 
 `projects/pond` (4179): original procedural koi garden inspired by the supplied 156-second garden recording. Screen-space refraction + planar reflection, animated caustics, 28 patterned koi, lily-pad frog, dragonflies and blossoms, bridge and pavilion. Four viewpoints, feeding/ripples, sunlight/dusk/rain, pause/photo controls. `docs/pond/ARCHITECTURE.md` documents rendering and limitations. Gallery uses the existing single-video hover architecture.
+
+## Fulgur / Lightning (2026-10-02)
+
+`projects/lightning` (4180) is an independent lightning chamber with ray-marched
+cloud, seeded branching discharge, local atmospheric light and an orbitable dome.
+Desktop/mobile controls and opt-in thunder. Root build includes the standalone
+route and source ZIP; no gallery card yet. See `docs/lightning/ARCHITECTURE.md`.
