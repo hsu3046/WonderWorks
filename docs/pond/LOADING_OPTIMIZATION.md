@@ -82,3 +82,43 @@ errors are recorded in `asset-optimization.json`.
   testing. Unit tests cover late results after navigation.
 - Temporary browser throttling/cache settings and local test server are restored
   or stopped after verification. No production traffic was used for this test.
+
+## Runtime regression follow-up — 2026-10-01
+
+After deployment, the user reported much worse stuttering. The earlier load-time
+and triangle-count checks did not establish runtime smoothness.
+
+Local IAB profiling identified a visible stall after the initial garden became
+interactive: attaching unprepared wildlife/flowers caused synchronous texture
+uploads and shader preparation on their first rendered frame. The CPU profile
+includes 1.07 s in `getProgramInfoLog` and 0.62 s in `texSubImage2D` across startup.
+Those are aggregate samples, not separate stopwatch measurements of one task.
+
+Detached chunks now pass through a serial GPU preparation queue. Texture uploads
+yield between resources. `compileAsync` prepares both the clipped, linear water
+pass and the normal main-view variant against the actual garden lighting before
+attachment. Renderer state is restored before each asynchronous wait. Navigation
+and preparation failures dispose detached resources without attaching them.
+Meshes, counts, colors, motion and rendering resolution are unchanged.
+
+Measured locally at a 1885 × 1060 drawing buffer, unthrottled:
+
+| Measurement | Deployed e5cc2df | Fixed |
+| --- | --- | --- |
+| Longest post-unlock frame gap, first observed run | 2685 ms | 183 ms |
+| Repeat deployed run with warm caches | 1101 ms | 183 ms on fixed repeat |
+| Garden, 6 s steady sample | 182 frames (~30 fps) | 187 frames (~31 fps) |
+
+The gap metric excludes the initial rendering frame that spans the loading
+overlay. Browser/driver caches were not reset; this is not a production-device
+benchmark. Some 100–183 ms startup gaps remain. Continuous “barely moving” behavior
+was not reproduced on this machine: pre-optimization d0503c6 measured ~15 fps,
+while e5cc2df measured ~30 fps once loaded. User device/page details are pending;
+do not claim all possible ongoing stutter is resolved from these measurements.
+
+Waterline and Lily pads transitions ran at median 33.3 ms / p95 ~34.3 ms with a
+50 ms maximum in 6-second samples. All three chunks loaded, five fish remained,
+and no new WebGL/shader errors appeared. Pause stops RAF scheduling and resume
+continues animation. Full project type checks, 20 pond tests (including prepare,
+cancel and failure cleanup), and the pond production build pass. The existing
+large-chunk warning remains. No new dependencies or asset conversions.

@@ -12,9 +12,11 @@ export function disposeObjects(root:T.Object3D){
  geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());textures.forEach(t=>t.dispose());root.clear();
 }
 /** Own a detached group until every async writer has finished. */
-export async function stageObjects<T>(parent:T.Object3D,build:(group:T.Scene)=>Promise<T>,cancelled:()=>boolean,onAttach:(value:T)=>void){
+export async function stageObjects<T>(parent:T.Object3D,build:(group:T.Scene)=>Promise<T>,cancelled:()=>boolean,onAttach:(value:T)=>void,prepare?:(group:T.Scene)=>Promise<void>){
  const staging=new T.Scene();
  try{const value=await build(staging);if(cancelled()){disposeObjects(staging);return;}
+  await prepare?.(staging);
+  if(cancelled()){disposeObjects(staging);return;}
   parent.add(...staging.children.slice());onAttach(value);
  }catch(cause){disposeObjects(staging);if(!cancelled())throw cause;}
 }

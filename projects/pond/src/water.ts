@@ -61,6 +61,17 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
   });classified=true;
  }
  return {invalidateGarden(){classified=false;},surface,uniforms,ripple:field.splat,diagnostics:()=>({...field.diagnostics(),skippedAboveWater:skipped,passDraws:{...passCounts}}),
+  async prepare(root:T.Object3D,cancelled:()=>boolean=()=>false){
+   // Water passes use a different clipping/tone-mapping shader variant from the main view.
+   // Restore renderer state before awaiting so the live scene can keep rendering normally.
+   const target=renderer.getRenderTarget(),tone=renderer.toneMapping,clip=renderer.clippingPlanes;
+   let offscreen:Promise<T.Object3D>;
+   try{renderer.toneMapping=T.NoToneMapping;renderer.clippingPlanes=aboveClip;renderer.setRenderTarget(reflection);
+    offscreen=renderer.compileAsync(root,camera,scene);
+   }finally{renderer.setRenderTarget(target);renderer.toneMapping=tone;renderer.clippingPlanes=clip;}
+   await offscreen;
+   if(!cancelled())await renderer.compileAsync(root,camera,scene);
+  },
   resize(w:number,h:number){refraction.setSize(w,h);reflection.setSize(Math.max(1,Math.round(w*.6)),Math.max(1,Math.round(h*.6)));uniforms.uResolution.value.set(w,h);},
   render(dt=0){
    uniforms.uClarity.value=s.clarity;waterUniforms.uWaterTime.value=uTime.value;waterUniforms.uWaterBreeze.value=s.breeze;

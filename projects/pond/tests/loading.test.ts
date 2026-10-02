@@ -29,3 +29,20 @@ test('failed decoration leaves the existing garden intact and cleans up partial 
  await assert.rejects(stageObjects(parent,async root=>{const geometry=new T.BoxGeometry();geometry.addEventListener('dispose',()=>disposed++);root.add(new T.Mesh(geometry,new T.MeshBasicMaterial()));throw Error('unavailable');},()=>false,()=>assert.fail('must not attach')));
  assert.deepEqual(parent.children,[garden]);assert.equal(disposed,1);
 });
+test('chunks stay detached until GPU preparation completes',async()=>{
+ const parent=new T.Group(),gate=deferred();let prepared=false,attached=false;
+ const task=stageObjects(parent,async root=>{root.add(new T.Group());return 1;},()=>false,()=>{attached=true;},async()=>{prepared=true;await gate.promise;});
+ await Promise.resolve();assert.equal(prepared,true);assert.equal(parent.children.length,0);assert.equal(attached,false);
+ gate.resolve();await task;assert.equal(parent.children.length,1);assert.equal(attached,true);
+});
+test('navigation during GPU preparation disposes a chunk without attaching',async()=>{
+ const parent=new T.Group(),gate=deferred();let cancelled=false,disposed=0;
+ const task=stageObjects(parent,async root=>{const g=new T.BoxGeometry();g.addEventListener('dispose',()=>disposed++);root.add(new T.Mesh(g));return 1;},()=>cancelled,()=>assert.fail('cancelled chunk attached'),()=>gate.promise);
+ await Promise.resolve();cancelled=true;gate.resolve();await task;
+ assert.equal(parent.children.length,0);assert.equal(disposed,1);
+});
+test('GPU preparation failure cleans up without disturbing the live scene',async()=>{
+ const parent=new T.Group(),existing=new T.Group();parent.add(existing);let disposed=0;
+ await assert.rejects(stageObjects(parent,async root=>{const g=new T.BoxGeometry();g.addEventListener('dispose',()=>disposed++);root.add(new T.Mesh(g));return 1;},()=>false,()=>assert.fail('failed preparation attached'),async()=>{throw Error('GPU preparation failed');}));
+ assert.deepEqual(parent.children,[existing]);assert.equal(disposed,1);
+});

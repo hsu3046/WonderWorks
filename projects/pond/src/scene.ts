@@ -6,6 +6,7 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {createGarden} from './garden';
 import {createLife} from './life';
 import {disposeObjects,stageObjects} from './scene-resources';
+import {createGpuPreparation} from './gpu-prepare';
 import {createDrifting} from './drifting';
 import {createWater} from './water';
 import {createBackdrop} from './backdrop';
@@ -33,12 +34,13 @@ export async function createScene(canvas:HTMLCanvasElement,s:Settings,onError:(m
  const ready=new Promise<void>(resolve=>{resolveReady=resolve;});
  let resolveFirstFrame:()=>void=()=>{};const firstFrame=new Promise<void>(resolve=>{resolveFirstFrame=resolve;});
  function changed(){water.invalidateGarden();renderer.shadowMap.needsUpdate=true;invalidate();}
+ const prepare=createGpuPreparation(renderer,root=>water.prepare(root,()=>disposed),()=>disposed);
  async function startDetails(){
   if(disposed){resolveReady();return;}performance.mark('pond:details-start');
   const jobs=[
-   ['wildlife',()=>stageObjects(world,g=>createLife(g,water.ripple),()=>disposed,value=>{life=value;life.update(0,s.activity,s.breeze);})],
-   ['hydrangeas',()=>stageObjects(garden.root,g=>garden.loadHydrangeas(g,changed,onDetailError),()=>disposed,value=>{hydrangeas=value;hydrangeas.update(camera);})],
-   ['azaleas',()=>stageObjects(garden.root,g=>garden.loadAzaleas(g,changed,onDetailError),()=>disposed,value=>{azaleas=value;azaleas.update(camera);})],
+   ['wildlife',()=>stageObjects(world,g=>createLife(g,water.ripple),()=>disposed,value=>{life=value;life.update(0,s.activity,s.breeze);},prepare)],
+   ['hydrangeas',()=>stageObjects(garden.root,g=>garden.loadHydrangeas(g,changed,onDetailError),()=>disposed,value=>{hydrangeas=value;hydrangeas.update(camera);},prepare)],
+   ['azaleas',()=>stageObjects(garden.root,g=>garden.loadAzaleas(g,changed,onDetailError),()=>disposed,value=>{azaleas=value;azaleas.update(camera);},prepare)],
   ] as const;
   await Promise.all(jobs.map(async([key,build])=>{
    loading[key]='loading';try{await build();loading[key]=disposed?'cancelled':'ready';if(!disposed)changed();}
