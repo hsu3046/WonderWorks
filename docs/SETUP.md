@@ -59,7 +59,7 @@ npm run dev
 
 `cd projects/harbor && npm run dev` → http://127.0.0.1:4177 . Build harbor before gallery prepare:works. Details: `harbor/SETUP.md`.
 
-## Webcrawler
+## Web Crawler
 
 `npm run dev --prefix projects/crawler` → [http://127.0.0.1:4183](http://127.0.0.1:4183). Reuses the repository's shared Vite/TypeScript installation; no added runtime package or API key. `npm run preview --prefix projects/crawler` also serves the reader API. The root build/check/source packaging includes the new study.
 

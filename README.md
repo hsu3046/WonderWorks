@@ -43,7 +43,7 @@ A beautiful animation often leaves you wondering how it works. Wonderworks turns
 | Through the Seasons | Watch foliage, weather and daylight change | GPU instancing, procedural botany, Web Audio |
 | Stillwater | Explore a garden pond, feed fish and startle a leaping frog | Blender morphs, PBR, reflection/refraction |
 | Fulgur | Direct branching lightning beneath a drifting thundercloud | Volumetric GLSL, seeded growth, HDR bloom |
-| Webcrawler | Give wireframe spiders a website and watch them eat its words | Canvas 2D, inverse kinematics, public HTML reader |
+| Web Crawler | Give wireframe spiders a website and watch them eat its words | Canvas 2D, inverse kinematics, public HTML reader |
 
 ## 🚀 Try It Now
 
@@ -59,7 +59,7 @@ A beautiful animation often leaves you wondering how it works. Wonderworks turns
 | Build | Vite 8.3.1, TypeScript 7.0.2, Node.js 24+ |
 | Gallery | Semantic HTML, CSS, direct navigation, Phosphor SVG icons, one shared video preview player |
 | Search & sharing | Prerendered collection, canonical URLs, sitemap, Open Graph and JSON-LD |
-| Hosting | Vercel static gallery + bounded Node reader API for Webcrawler; no API keys required |
+| Hosting | Vercel static gallery + bounded Node reader API for Web Crawler; no API keys required |
 
 Ocean Shoal requires WebGPU and HTTPS or localhost. The other 3D studies require WebGL2. Actual performance varies with GPU and scene complexity. Bubble Day uses external Google Fonts.
 
@@ -83,7 +83,7 @@ npm run build       # All experiments, downloads, static SEO and production gall
 npm run preview     # Serve the production gallery locally
 ```
 
-For an individual study, run `npm run dev --prefix projects/pond` (or `fish`, `chroma`, `harbor`, `foliage`, `crawler`). Webcrawler runs at [http://127.0.0.1:4183](http://127.0.0.1:4183) and includes a local public-page reader endpoint. An optional existing Playwright/Chromium runtime enables original-design capture; see its [setup instructions](projects/crawler/README.md). Its sample works offline; live URLs require the reader API. Bubble Day and Fruit Jelly are plain static projects. See their own README files for controls.
+For an individual study, run `npm run dev --prefix projects/pond` (or `fish`, `chroma`, `harbor`, `foliage`, `crawler`). Web Crawler runs at [http://127.0.0.1:4183](http://127.0.0.1:4183) and includes a local public-page reader endpoint. An optional existing Playwright/Chromium runtime enables original-design capture; see its [setup instructions](projects/crawler/README.md). Its sample works offline; live URLs require the reader API. Bubble Day and Fruit Jelly are plain static projects. See their own README files for controls.
 
 No secrets are required. To build for a custom public URL, use `PUBLIC_SITE_URL=https://your-domain.example npm run build`. Vercel builds otherwise derive the canonical origin from `VERCEL_PROJECT_PRODUCTION_URL`.
 
@@ -100,7 +100,7 @@ No secrets are required. To build for a custom public URL, use `PUBLIC_SITE_URL=
 │   ├── foliage/               # Seasons, weather and procedural vegetation
 │   ├── pond/                  # Stillwater, animal models and garden rendering
 │   └── crawler/               # Text-eating spiders and a safe public-page reader
-├── api/crawl.mjs              # Vercel adapter for Webcrawler's shared reader
+├── api/crawl.mjs              # Vercel adapter for Web Crawler's shared reader
 ├── scripts/                   # Reproducible builds, source archives and checks
 ├── docs/                      # Architecture, decisions, setup and SEO findings
 ├── vercel.json                # Static deployment and response headers

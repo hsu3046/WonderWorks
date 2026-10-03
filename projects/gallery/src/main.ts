@@ -25,6 +25,6 @@ for(const project of projects){
 }
 const observers=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observers.unobserve(entry.target);}}),{threshold:.08});
 document.querySelectorAll('.reveal').forEach(e=>observers.observe(e));
-// Standard links retain ordinary navigation, modifier clicks and back history.
+// Standard links open experiences in a new tab and preserve native modifier clicks.
 window.addEventListener('pagehide',event=>{if(event.persisted)previews.suspend(true);else{observers.disconnect();previews.dispose();hero.dispose();}});
 window.addEventListener('pageshow',event=>{if(event.persisted)previews.suspend(false);});

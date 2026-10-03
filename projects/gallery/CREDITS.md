@@ -12,7 +12,7 @@ Creator links supplied by the project owner on 2026-09-29. Visual references are
 | Fruit Jelly | Inspired by | [@vib3coded](https://x.com/vib3coded) |
 | Ocean Shoal | Inspired by | [@xingor_dev](https://x.com/xingor_dev) |
 | Fulgur | Inspired by | [Jason Key (@key_vfx)](https://x.com/key_vfx) |
-| Webcrawler | Inspired by | [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx) |
+| Web Crawler | Inspired by | [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx) |
 | Skyglider | Original code by | [AIB Inc.](https://www.aib.vote) |
 
 Fulgur's visual inspiration credit was supplied by the project owner on 2026-10-03.
@@ -25,7 +25,7 @@ Stillwater’s Montane Brown Frog model/textures are by [ffish.asia / floraZia.c
 
 Stillwater garden textures: [Poly Haven](https://polyhaven.com), CC0. Individual artists and texture sources are listed in `public/textures/ATTRIBUTION.md`.
 
-Webcrawler is inspired by [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx), identified by the project owner on 2026-10-03. Its reference clip (`KAW8qq-EfhNOR8AM.mp4`) is private reference material and is not redistributed. Its spider geometry, simulation, bilingual sample prose and gallery recording are original AIB work. Live fetched pages retain their respective authors' rights and are not included in source downloads.
+Web Crawler is inspired by [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx), identified by the project owner on 2026-10-03. Its reference clip (`KAW8qq-EfhNOR8AM.mp4`) is private reference material and is not redistributed. Its spider geometry, simulation, bilingual sample prose and gallery recording are original AIB work. Live fetched pages retain their respective authors' rights and are not included in source downloads.
 
 ## Supplied monarch butterfly — 2026-09-30
 

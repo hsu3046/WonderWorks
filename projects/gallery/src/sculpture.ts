@@ -27,14 +27,15 @@ export function createSculpture(canvas:HTMLCanvasElement){
  const dustGeometry=new THREE.BufferGeometry();dustGeometry.setAttribute('position',new THREE.BufferAttribute(points,3));const dust=new THREE.Points(dustGeometry,new THREE.PointsMaterial({color:'#d7dcef',size:.012,transparent:true,opacity:.5}));group.add(dust);
  let active=true,visible=true,raf=0,last=0,time=0;const target=new THREE.Vector2(),pointer=new THREE.Vector2();
  const draw=(now:number)=>{raf=0;if(!active||!visible||document.hidden)return;const dt=last?Math.min((now-last)/1000,.05):0;last=now;time+=dt;
-  pointer.lerp(target,.045);group.rotation.y=pointer.x*.25;group.rotation.x=-pointer.y*.14;
+  // Pointer input spans ±75° horizontally and ±45° vertically, with a gentle approach to the target.
+  pointer.lerp(target,.045);group.rotation.y=pointer.x*THREE.MathUtils.degToRad(75);group.rotation.x=-pointer.y*THREE.MathUtils.degToRad(45);
   if(!reduced.matches){knot.rotation.y=.3+time*.12;knot.rotation.z=.1+Math.sin(time*.18)*.18;sphere.position.y=.9+Math.sin(time*.65)*.12;orange.rotation.y=.7+time*.2;group.position.y=Math.sin(time*.38)*.05;dust.rotation.z=time*.01;}
   renderer.render(scene,camera);if(!reduced.matches)raf=requestAnimationFrame(draw);
  };
  const wake=()=>{if(!raf&&active&&visible&&!document.hidden){last=0;raf=requestAnimationFrame(draw);}};
  const setActive=(value:boolean)=>{active=value;if(!value){cancelAnimationFrame(raf);raf=0;last=0;}else wake();};
  const resize=()=>{const {width,height}=canvas.getBoundingClientRect();if(!width||!height)return;renderer.setSize(width,height,false);camera.aspect=width/height;camera.updateProjectionMatrix();group.scale.setScalar(width<480?.91:1.08);wake();};
- const move=(event:PointerEvent)=>{const r=canvas.getBoundingClientRect();target.set((event.clientX-r.left)/r.width*2-1,(event.clientY-r.top)/r.height*2-1);wake();};
+ const move=(event:PointerEvent)=>{const r=canvas.getBoundingClientRect();target.set(THREE.MathUtils.clamp((event.clientX-r.left)/r.width*2-1,-1,1),THREE.MathUtils.clamp((event.clientY-r.top)/r.height*2-1,-1,1));wake();};
  canvas.addEventListener('pointermove',move);const observer=new ResizeObserver(resize);observer.observe(canvas);
  const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(!visible){cancelAnimationFrame(raf);raf=0;}else wake();},{threshold:.05});visibility.observe(canvas);
  const onVisibility=()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;last=0;}else wake();};document.addEventListener('visibilitychange',onVisibility);reduced.addEventListener('change',wake);
