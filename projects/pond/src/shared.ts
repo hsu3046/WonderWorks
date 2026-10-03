@@ -4,7 +4,7 @@ import {causticGLSL,waterUniforms} from './water-field';
 export const tau=Math.PI*2;
 export const rng=(seed:number)=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
 export const uTime={value:0};
-export interface Settings{hour:number;clarity:number;breeze:number;activity:number;rain:boolean;paused:boolean;roam:boolean;}
+export interface Settings{hour:number;clarity:number;breeze:number;activity:number;glow:number;rain:boolean;paused:boolean;roam:boolean;}
 export const noiseGLSL=`float hash21(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);} float noise2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash21(i),hash21(i+vec2(1,0)),f.x),mix(hash21(i+vec2(0,1)),hash21(i+1.),f.x),f.y);}`;
 export function underwaterLight(material:T.MeshStandardMaterial){material.onBeforeCompile=shader=>{Object.assign(shader.uniforms,waterUniforms);shader.uniforms.uPondTime=uTime;shader.vertexShader=shader.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vPondWorld;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvPondWorld=(modelMatrix*vec4(transformed,1.)).xyz;');shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>\nuniform float uPondTime;varying vec3 vPondWorld;${causticGLSL}`).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat wet=1.-smoothstep(-.06,.06,vPondWorld.y);totalEmissiveRadiance+=diffuseColor.rgb*vec3(.24,.28,.20)*causticLight(vPondWorld)*wet;diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*vec3(.66,.88,.75),wet*.38);');};return material;}
 export function texture(kind:'rock'|'bark'|'sand'|'wood'){
