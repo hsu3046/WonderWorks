@@ -105,3 +105,7 @@ The user approved adding original-design capture after finding the uniform reade
 ### Curated random exploration (2026-10-03)
 
 Offer a random button next to the URL submit button, backed by 100 real reading-page URLs from 36 sources. Select for text density and successful static capture: 187 candidates were checked, and the final set showed no partial-capture flag, horizontal text clipping or large fixed overlays at 1060×534. Include 19 Korean and 81 English pages. Draw without replacement, avoid the current page and share the normal one-page load/error/cancellation flow. Keep the catalog local and perform no runtime discovery or bulk prefetch. Source rights stay with their authors; only URLs and titles ship. Details: `docs/crawler/RANDOM_PAGES.md`.
+
+### Webcrawler reference attribution (2026-10-03)
+
+The project owner identified the reference creator as ༺ཧคlคฝคཊ༻, @rybinfx. Display “Inspired by” with that exact name, handle and `https://x.com/rybinfx` link below the standalone Webcrawler title and throughout its gallery card/detail/credits. This replaces the earlier unknown-creator notice; AIB's implementation credit and the private reference-video boundary remain separate.

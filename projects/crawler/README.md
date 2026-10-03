@@ -60,6 +60,6 @@ The snapshot suite captures an original AIB fixture through the real renderer, c
 
 ## Provenance
 
-Visual reference: user-supplied `KAW8qq-EfhNOR8AM.mp4` (16.7 seconds). Creator identity was not supplied and has not been inferred. The reference recording is not included in releases. All geometry, code, sample prose, and gallery recordings are original AIB implementation. No source or assets were copied from the reference.
+Inspired by [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx), identified by the project owner on 2026-10-03. Visual reference: user-supplied `KAW8qq-EfhNOR8AM.mp4` (16.7 seconds). The reference recording is not included in releases. All geometry, code, sample prose, and gallery recordings are original AIB implementation. No source or assets were copied from the reference.
 
 See `docs/crawler/ARCHITECTURE.md` in the repository, or `docs/ARCHITECTURE.md` in the standalone source archive.

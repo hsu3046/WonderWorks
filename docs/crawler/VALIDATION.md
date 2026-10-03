@@ -78,3 +78,13 @@ Combined the completed crawler branch with `origin/main` at `b423558`, preservin
 - A Chromium smoke check of the combined production build passed: eight gallery cards, preserved pond attribution, the Webcrawler detail/link, sample feeding, and one curated random request followed by resumed feeding. The random response was mocked to isolate the compiled UI. Development diagnostics were absent and no page errors occurred.
 
 This verifies the local integration. GitHub push and deployment were not performed; the optional original-view browser runtime still needs server configuration in a deployment.
+
+## Reference credit — 2026-10-03
+
+Pulled the latest `main` before adding the creator supplied by the project owner: **Inspired by ༺ཧคlคฝคཊ༻ (@rybinfx)**, linking to `https://x.com/rybinfx`.
+
+- Root `npm run build` passed all study type checks, builds, source archives and static SEO/asset checks.
+- The compiled gallery's initial HTML, Webcrawler card, detail dialog and credits contain the supplied name/handle/link. The prior unknown-creator notice is absent from Webcrawler's detail.
+- The standalone title credit is visible without clipping or page overflow at 1440, 768 and 390px. The source link opens separately with `noopener noreferrer`. Chromium page errors: zero.
+
+Screenshots in ignored `docs/validation/crawler/`: `attribution-1440.png`, `attribution-768.png`, `attribution-390.png`.
