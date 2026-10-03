@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc. https://www.aib.vote
 import * as T from 'three';
 import {FullScreenQuad} from 'three/addons/postprocessing/Pass.js';
+import {createOpticalDiffusion} from './optical-diffusion';
 
 const vertexShader=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`;
 const sampleGLSL=`uniform sampler2D uSource;uniform vec2 uStep;varying vec2 vUv;
@@ -29,10 +30,11 @@ export function createSunGlow(world:T.Scene){
 /** One sharp HDR scene, five small bloom passes, then one output conversion. */
 export function createDreamLight(renderer:T.WebGLRenderer,onFallback:(message:string)=>void){
  const gl=renderer.getContext();
- let available=renderer.extensions.has('EXT_color_buffer_float'),failed=false,width=1,height=1;
+ let available=renderer.extensions.has('EXT_color_buffer_float'),failed=false;
  const sceneTarget=new T.WebGLRenderTarget(1,1,{type:T.HalfFloatType,depthBuffer:true,samples:2});
  const levels=Array.from({length:3},()=>new T.WebGLRenderTarget(1,1,{type:T.HalfFloatType,depthBuffer:false}));
  const up=Array.from({length:2},()=>new T.WebGLRenderTarget(1,1,{type:T.HalfFloatType,depthBuffer:false}));
+ const diffusion=createOpticalDiffusion(renderer);
  const extract=new T.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:false,vertexShader,
   uniforms:{uSource:{value:sceneTarget.texture},uStep:{value:new T.Vector2()},uThreshold:{value:.65}},
   fragmentShader:`${sampleGLSL}uniform float uThreshold;
@@ -46,15 +48,11 @@ export function createDreamLight(renderer:T.WebGLRenderer,onFallback:(message:st
     c+=(sampleLight(vUv+uStep)+sampleLight(vUv-uStep)+sampleLight(vUv+vec2(uStep.x,-uStep.y))+sampleLight(vUv+vec2(-uStep.x,uStep.y)))*.2;
     gl_FragColor=vec4(mix(c,texture2D(uDetail,vUv).rgb,uMix),1.);}`});
  const composite=new T.ShaderMaterial({depthTest:false,depthWrite:false,vertexShader,
-  uniforms:{uScene:{value:sceneTarget.texture},uBloom:{value:up[0]!.texture},uStrength:{value:0},uScatter:{value:0},uScatterStep:{value:new T.Vector2()}},
-  fragmentShader:`varying vec2 vUv;uniform sampler2D uScene,uBloom;uniform float uStrength,uScatter;uniform vec2 uScatterStep;
+  uniforms:{uScene:{value:sceneTarget.texture},uBloom:{value:up[0]!.texture},uSoftScene:{value:diffusion.texture},uStrength:{value:0},uScatter:{value:0}},
+  fragmentShader:`varying vec2 vUv;uniform sampler2D uScene,uBloom,uSoftScene;uniform float uStrength,uScatter;
    void main(){vec3 base=texture2D(uScene,vUv).rgb;
     // Only submerged views diffuse the original image through the water column.
-    if(uScatter>0.){vec3 soft=texture2D(uScene,clamp(vUv+uScatterStep,0.,1.)).rgb;
-     soft+=texture2D(uScene,clamp(vUv-uScatterStep,0.,1.)).rgb;
-     soft+=texture2D(uScene,clamp(vUv+vec2(uScatterStep.x,-uScatterStep.y),0.,1.)).rgb;
-     soft+=texture2D(uScene,clamp(vUv+vec2(-uScatterStep.x,uScatterStep.y),0.,1.)).rgb;
-     base=mix(base,soft*.25,uScatter);}
+    if(uScatter>0.)base=mix(base,texture2D(uSoftScene,vUv).rgb,uScatter);
     vec3 halo=texture2D(uBloom,vUv).rgb*vec3(1.18,1.07,.74);
     gl_FragColor=vec4(base+halo*uStrength,1.);
     #include <tonemapping_fragment>
@@ -89,7 +87,7 @@ export function createDreamLight(renderer:T.WebGLRenderer,onFallback:(message:st
  return {
   get target(){return available?sceneTarget:null;},
   resize(w:number,h:number){
-   width=w;height=h;sceneTarget.setSize(w,h);
+   sceneTarget.setSize(w,h);diffusion.resize(w,h);
    // Limit only the light buffers. Original scene and water resolution stay intact.
    const scale=Math.min(.35,640/Math.max(w,h));
    levels.forEach((target,i)=>target.setSize(Math.max(1,Math.ceil(w*scale/2**i)),Math.max(1,Math.ceil(h*scale/2**i))));
@@ -101,17 +99,17 @@ export function createDreamLight(renderer:T.WebGLRenderer,onFallback:(message:st
    try{
     // Water captures restore this HDR target before rendering the main scene.
     renderer.setRenderTarget(sceneTarget);renderer.toneMapping=T.NoToneMapping;renderScene();
+    if(underwater){diffusion.render(sceneTarget.texture);passes+=3;}
     extract.uniforms.uStep!.value.set(.75/levels[0]!.width,.75/levels[0]!.height);
     extract.uniforms.uThreshold!.value=underwater?.52:.80;draw(extract,levels[0]!);
     blurTo(levels[0]!,levels[1]!,1.05);blurTo(levels[1]!,levels[2]!,1.05);
     blurTo(levels[2]!,up[1]!,1.05,levels[1]);blurTo(up[1]!,up[0]!,1.05,levels[0]);
     composite.uniforms.uStrength!.value=amount*(.65+.55*day)*(rain?.48:1)*(underwater?1.05:1);
     composite.uniforms.uScatter!.value=underwater?Math.min(.32,amount*.22):0;
-    composite.uniforms.uScatterStep!.value.set(4.5/width,4.5/height);
     renderer.toneMapping=tone;draw(composite,target);
    }finally{renderer.toneMapping=tone;renderer.setRenderTarget(target);}
   },
-  diagnostics:()=>({available,amount:composite.uniforms.uStrength!.value,passes,scene:[width,height],bloom:levels.map(t=>[t.width,t.height]),samples:sceneTarget.samples}),
-  dispose(){sceneTarget.dispose();for(const target of [...levels,...up])target.dispose();extract.dispose();blur.dispose();composite.dispose();quad.dispose();}
+  diagnostics:()=>({available,amount:composite.uniforms.uStrength!.value,passes,scene:[sceneTarget.width,sceneTarget.height],bloom:levels.map(t=>[t.width,t.height]),samples:sceneTarget.samples}),
+  dispose(){sceneTarget.dispose();for(const target of [...levels,...up])target.dispose();diffusion.dispose();extract.dispose();blur.dispose();composite.dispose();quad.dispose();}
  };
 }

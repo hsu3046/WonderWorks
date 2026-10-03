@@ -23,7 +23,8 @@ export function createDrifting(scene:T.Scene){
     vec3 local=position*aSize;float a=t*(.65+phase*.07)+phase;
     ${seed?`vec4 mv=viewMatrix*vec4(world,1.);float tilt=sin(t*.7+phase)*.38;mv.xy+=mat2(cos(tilt),-sin(tilt),sin(tilt),cos(tilt))*local.xy;gl_Position=projectionMatrix*mv;vLight=1.;`:`local.xy=mat2(cos(a),-sin(a),sin(a),cos(a))*local.xy;float b=sin(t*.8+phase)*1.5;local.yz=mat2(cos(b),-sin(b),sin(b),cos(b))*local.yz;gl_Position=projectionMatrix*viewMatrix*vec4(world+local,1.);vLight=.70+.30*abs(cos(b));`}
    }`,fragmentShader:`uniform sampler2D uMap;varying vec2 vUv;varying float vLight;void main(){
-    ${seed?'vec4 tex=texture2D(uMap,vUv);if(tex.a<.035)discard;gl_FragColor=vec4(tex.rgb,tex.a*.56);':'float vein=pow(1.-abs(vUv.x),8.)*.05;gl_FragColor=vec4(vec3(.97,.66,.73)*vLight+vein,1.);'}
+    // MSAA may extrapolate UVs at a subpixel edge. Negative pow bases are undefined.
+    ${seed?'vec4 tex=texture2D(uMap,vUv);if(tex.a<.035)discard;gl_FragColor=vec4(tex.rgb,tex.a*.56);':'float vein=pow(clamp(1.-abs(vUv.x),0.,1.),8.)*.05;gl_FragColor=vec4(vec3(.97,.66,.73)*vLight+vein,1.);'}
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
    }`});
