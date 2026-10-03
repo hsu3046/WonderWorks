@@ -57,7 +57,7 @@ A beautiful animation often leaves you wondering how it works. Wonderworks turns
 | Rendering | Three.js 0.186, WebGL2, WebGPU, GLSL, TSL/WGSL |
 | Asset authoring | Blender, glTF/GLB, procedural geometry and local PBR maps |
 | Build | Vite 8.3.1, TypeScript 7.0.2, Node.js 24+ |
-| Gallery | Semantic HTML, CSS, native dialogs, one shared video preview player |
+| Gallery | Semantic HTML, CSS, direct navigation, Phosphor SVG icons, one shared video preview player |
 | Search & sharing | Prerendered collection, canonical URLs, sitemap, Open Graph and JSON-LD |
 | Hosting | Vercel static gallery + bounded Node reader API for Webcrawler; no API keys required |
 

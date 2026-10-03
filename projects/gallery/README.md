@@ -12,25 +12,27 @@ The root build compiles every study, prepares gallery copies, generates download
 
 ## Search and sharing
 
-`vite.config.ts` uses `src/render.ts` to prerender the catalog into the initial HTML. Real links keep the collection usable without JavaScript and are enhanced into dialogs when scripts load. The build adds canonical URLs, Open Graph/Twitter metadata, Organization/WebSite/CollectionPage structured data, robots.txt and sitemap.xml. The canonical origin comes from `PUBLIC_SITE_URL` or Vercel's production domain environment variable.
+`vite.config.ts` uses `src/render.ts` to prerender the catalog into the initial HTML. Real links open the experiences directly, with or without JavaScript. Specifications, source downloads, licenses and credits are included in the main page. The build adds canonical URLs, Open Graph/Twitter metadata, Organization/WebSite/CollectionPage structured data, robots.txt and sitemap.xml. The canonical origin comes from `PUBLIC_SITE_URL` or Vercel's production domain environment variable.
 
 ## Design and behavior
 
 - Real Three.js chrome/glass sculpture, physical materials, environment lighting and pointer parallax.
 - Card previews use silent, prerecorded footage of the actual experiments. One shared HTML video player serves the entire gallery. No artwork iframe or simulation is initialized by scrolling or hovering.
-- Hover starts the selected clip from the beginning; leaving immediately restores its first-frame poster and resets playback to zero. Switching/offscreen/hidden/dialog transitions release the video source. Citrus footage shows pulling, release and bouncing; Watermelon includes a knife cut and an independently moving piece.
-- The hero pauses while a clip is preparing/playing. Reduced motion and touch-only input keep static posters; details and full experiences remain accessible.
-- Project details include an interactive preview, technology overview, full experience link, license and source download.
+- Hover starts the selected clip from the beginning; leaving immediately restores its first-frame poster and resets playback to zero. Switching, offscreen and hidden transitions release the video source. Citrus footage shows pulling, release and bouncing; Watermelon includes a knife cut and an independently moving piece.
+- The hero pauses while a clip is preparing/playing. Reduced motion and touch-only input keep static posters; direct links to the full experiences remain accessible.
+- Main cards include an experience description, creator credit, technologies, specifications, direct Open experience link, license and Download source link.
 - Citrus and Watermelon share one project with two variations.
-- Native dialogs provide focus management and Escape closing. Reduced-motion preferences disable hover autoplay and continuous hero motion.
+- Credits and licenses appear inline on the main page. Links preserve normal keyboard navigation, modifier clicks and browser history. Reduced-motion preferences disable hover autoplay and continuous hero motion.
 - Actual screenshots provide thumbnails and loading fallbacks. Ocean Shoal requires WebGPU.
 
 ## Source
 
-`src/catalog.ts` is the project catalog. `src/main.ts` owns previews/dialogs. `src/sculpture.ts` renders the hero. `src/style.css` defines responsive layouts. `scripts/prepare-works.mjs` packages the experiment copies.
+`src/catalog.ts` is the project catalog. `src/main.ts` owns previews and variation selection. `src/sculpture.ts` renders the hero. `src/style.css` defines responsive layouts. `scripts/prepare-works.mjs` packages the experiment copies.
 
 New gallery code: GNU GPL v3, Copyright © 2026 AIB Inc. (https://www.aib.vote). See `SOURCE_NOTICE.md` for artwork and vendor exceptions. The gallery hero is procedural; individual experiments include Blender assets with their own documented provenance.
 
-Card playback lives in `src/previews.ts`. `src/catalog.ts` contains movie/poster paths. `public/media/previews` holds H.264 MP4 clips and matching high-resolution JPEG posters, captured from the actual implementations. The iframe protocol in `scripts/preview-runtime.js` is used only for explicitly requested detail previews and capture tooling; gallery cards do not use it.
+Card playback lives in `src/previews.ts`. `src/catalog.ts` contains movie/poster paths. `public/media/previews` holds H.264 MP4 clips and matching high-resolution JPEG posters, captured from the actual implementations. The iframe protocol in `scripts/preview-runtime.js` is retained for capture tooling; gallery cards do not use it.
 
-Creator credits appear on cards, project details, and Source & credits, driven by `src/catalog.ts`. See [CREDITS.md](CREDITS.md): visual recreations use Inspired by, while Bubble Day uses Original code by.
+Creator credits appear on cards and the inline Credits and licenses section, driven by `src/catalog.ts`. See [CREDITS.md](CREDITS.md): visual recreations use Inspired by, while Bubble Day uses Original code by.
+
+Phosphor regular SVG icons are bundled as local inline symbols. External links use link-simple; navigation and source downloads use the appropriate arrow and download icons. Pinned upstream sources and the original MIT license are in `src/icons/`. No icon font or package installation is required.

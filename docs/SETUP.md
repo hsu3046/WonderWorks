@@ -53,7 +53,7 @@ npm run dev
 
 복사 작품 갱신: fish 빌드 → gallery에서 `npm run prepare:works`. 다운로드 소스에는 실행 복사본이 포함되어 있어 단독 실행에는 이 단계가 필요 없다.
 
-사용자 확인: 카드에 마우스를 올려 프리뷰, 클릭해 상세와 Play, Fruit Jelly의 Citrus/Watermelon 전환, Open experience에서 휠·드래그/젤리 변형, Download source, Escape로 닫기. 실제 모바일의 터치·발열 검증은 별도 필요.
+사용자 확인: 카드에 마우스를 올려 영상 프리뷰, 카드 클릭 시 작품 페이지 직접 이동, Fruit Jelly의 Citrus/Watermelon 전환과 링크 동기화, 메인 Download source, 인라인 Credits and licenses. 작품 페이지에서 휠·드래그/젤리 변형을 확인한다. 실제 모바일의 터치·발열 검증은 별도 필요.
 
 ## Harbor
 
