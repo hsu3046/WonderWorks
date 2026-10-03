@@ -35,3 +35,8 @@ AIB runtime work: normalize the pitched +X body to -Z forward, retain the origin
 
 
 Skyglider is an original AIB implementation inspired by the privately supplied flight recording; its reference creator was not identified, so no creator identity is inferred. The private clip and squirrel reference images are not redistributed. Poly Haven textures/plants retain CC0 credits. Supplied scenery models have separate source rights, as recorded in `public/assets/ATTRIBUTION.md` and `local/processing.json`; the application GPL grant does not replace them. The gallery preview is a recording of the implemented scene.
+
+
+## Phosphor Icons — 2026-10-03
+
+The gallery uses the regular-weight `link-simple`, `arrow-right`, `arrow-down`, `download-simple`, and `play` SVGs from [Phosphor Icons](https://phosphoricons.com). Assets are pinned to `phosphor-icons/core` commit `2b75f3ad12b420c9504ef05df8d2564a28f8500e`, bundled as inline SVG symbols without a runtime dependency. Original MIT copyright and permission terms are retained in `src/icons/LICENSE`; exact source URLs and SHA-256 digests are recorded in `src/icons/SOURCES.json`.

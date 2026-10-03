@@ -47,7 +47,7 @@ docs/
 - `projects/jelly`: Dani의 citrus/melon/jelly-shared 및 사용 vendor/assets 복사본. 원본 Dani 수정 없음.
 - `prepare-works.mjs`: gallery/public/experiments에 독립 실행 복사본을 생성. preview 쿼리에서만 UI를 숨기고 준비 메시지 전송; 젤리는 주기적 nudge, fish는 가까운 프리뷰 시점 적용.
 - hero와 hover preview는 동시에 돌리지 않음. hover iframe 최대 1개, pointerleave/화면 밖/탭 숨김 시 제거. 상세 모달은 명시적으로 Play 후 실행.
-- UI는 native dialog, 초점 복구, backdrop 닫기, 반응형 및 reduced-motion을 지원.
+- 갤러리 작품 링크는 별도 설명창 없이 해당 독립 페이지로 직접 이동한다. 조작/기술 정보·소스 ZIP·라이선스는 메인 카드에, 전체 출처는 메인 Credits 섹션에 표시한다. 반응형·키보드 탐색·reduced-motion과 단일 hover video를 유지한다.
 - `public/downloads`: 프로젝트별 소스 ZIP과 갤러리 소스. 신규 코드 GPL과 원본 출처 예외를 구분.
 - 포트: Shabon 4173 / Fish 4174 / Gallery 4175. 각 기존 서버와 원본은 유지.
 

@@ -10,6 +10,14 @@ assert.equal(new Set(projects.map(project=>project.number)).size,projects.length
 assert.equal((html.match(/<h1\b/g)||[]).length,1,'One primary heading');
 assert.equal((html.match(/class="project-card /g)||[]).length,projects.length,'Catalog is present in initial HTML');
 assert.equal((html.match(/class="quick-work"/g)||[]).length,projects.length,'Every study is in the top index');
+assert.ok(!html.includes('<dialog'),'Collection uses direct navigation and inline information');
+assert.ok(!html.includes('data-open='),'Experience links are not intercepted by a detail dialog');
+assert.equal((html.match(/class="project-specs"/g)||[]).length,projects.length,'Each card includes its experience details');
+assert.equal((html.match(/class="project-actions"/g)||[]).length,projects.length,'Each card includes open and download actions');
+for(const link of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)){
+ if(/href="https?:\/\//.test(link[1])||/target="_blank"/.test(link[1]))assert.ok(link[2].includes('#icon-link-simple'),'External links use Phosphor link-simple');
+}
+for(const project of projects)assert.ok(html.includes(`href="${project.source}" download`),`${project.title} source download is on the main page`);
 for(const project of projects)assert.ok(html.includes(`id="project-${project.id}"`),`${project.title} is in the collection`);
 assert.ok(html.includes('application/ld+json'));JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
 for(const path of ['/media/og-wonderworks-v2.jpg','/robots.txt','/sitemap.xml','/404.html',...projects.flatMap(p=>[p.image,p.source,...p.variants.flatMap(v=>[v.image,v.movie,v.path])])])await access(resolve(root,'.'+path));
