@@ -6,7 +6,7 @@
 
 | Priority | Finding | Resolution |
 | --- | --- | --- |
-| High | Collection, creator names and artwork links existed only after client JavaScript ran | A shared renderer now emits real cards, descriptions and links into the initial HTML through Vite. Client JS enhances those links into dialogs. |
+| High | Collection, creator names and artwork links existed only after client JavaScript ran | A shared renderer now emits real cards, descriptions and links into the initial HTML through Vite. Links navigate directly to the experiences. Controls, source downloads, licenses and credits remain in the initial main-page HTML. |
 | High | No canonical URLs or sitemap | Build generates one canonical per gallery/experiment, plus a sitemap containing the homepage and eight experiment variants. Preview query parameters canonicalize to the corresponding clean experience URL. |
 | Medium | Missing Open Graph / Twitter metadata | Homepage and experiments receive title, description, canonical, social image and large-card metadata. Homepage uses a 1200×630 image composed from actual experiment previews. |
 | Medium | Old description mentioned only the initial three studies | Collection description now covers the growing gallery, with all current studies represented in visible HTML. |

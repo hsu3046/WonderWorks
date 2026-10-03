@@ -1,4 +1,4 @@
-# Webcrawler
+# Web Crawler
 
 A small appetite. An endless web. A wireframe spider walks across a page and eats words or sentences. Original implementation © 2026 [AIB Inc.](https://www.aib.vote), GNU GPL v3.
 

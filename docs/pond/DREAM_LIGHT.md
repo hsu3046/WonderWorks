@@ -10,9 +10,9 @@ The garden now has warm, deliberately exaggerated soft light inspired by Japanes
 
 - `src/dream-light.ts` wraps the existing water renderer in a full-resolution, linear half-float main target with two MSAA samples. Reflection and refraction retain their existing resolution and linear color pipeline. There is no extra scene capture or animation loop.
 - Bright extraction, two downsample blurs and two upsample blurs operate on three sizes of light buffer. Final tuning reduces blur offsets from 1.5 to 1.05 pixels (30%) and increases fine-detail reconstruction from 28% to 42%. The largest is 35% of the scene dimensions, capped at 640 pixels on its longest axis. Two additional reconstruction buffers avoid read/write feedback.
-- The final fullscreen pass adds a yellow-warm halo to the scene texture (with a small water-column diffusion only when submerged), then applies the existing ACES tone mapping and sRGB output conversion exactly once. The sun shader follows the same intermediate/final output contract.
+- The final fullscreen pass adds a yellow-warm halo to the scene texture (with a small Gaussian water-column diffusion only when submerged), then applies the existing ACES tone mapping and sRGB output conversion exactly once. The sun shader follows the same intermediate/final output contract.
 - Half-float capability and framebuffer completeness are checked. An unsupported or incomplete light target bypasses the effect, hides the sun source and displays an original-lighting notice. All render targets and materials are released on disposal; renderer target and tone-mapping state are restored after rendering and asynchronous shader preparation.
-- Delayed asset preparation compiles the clipped water, unclipped HDR main and direct-output variants before attachment. Water records the actual main-scene draw/triangle counts before the fullscreen passes replace renderer statistics.
+- Delayed asset preparation compiles the clipped water, neutral-plane HDR main and direct-output variants before attachment. Water records the actual main-scene draw/triangle counts before the fullscreen passes replace renderer statistics.
 - Resize follows the existing scene pixel budget; pause, hidden-page handling and saved photographs use the same scene/render lifecycle.
 
 ## Verification — 2026-10-03
@@ -27,7 +27,7 @@ Before the user’s subsequent contrast/warmth/underwater refinement, at a settl
 
 The user requested stronger underwater light/reflections, slightly less overall blur, higher light contrast and a little more yellow warmth. Surface extraction threshold is now 0.80 (previously 0.65), underwater 0.52 (previously 0.85). Daylight receives a small directional-light increase and ambient reduction proportional to Dream light; sun color and halo shift toward yellow. At the default 85%, the underwater bloom multiplier is 1.05 versus the original 0.35.
 
-Water receives a bounded artistic reflection lift above its physical Fresnel value (the total internal reflection limit remains 1), stronger sun glints, depth-dependent diffusion of refraction samples and 42.5% stronger wave-derived caustics at the default setting. Submerged views also receive warm depth fog and a modest four-tap scattering blend; this deliberately gives up pristine fish sharpness. Zero Dream light restores the original lighting/optics values. No simulation, fish geometry, plant layout or scene-resolution changes were made.
+Water receives a bounded artistic reflection lift above its physical Fresnel value (the total internal reflection limit remains 1), stronger sun glints, depth-dependent diffusion of refraction samples and 42.5% stronger wave-derived caustics at the default setting. Submerged views also receive warm depth fog and a modest Gaussian scattering blend; this deliberately gives up pristine fish sharpness. Zero Dream light restores the original lighting/optics values. No simulation, fish geometry, plant layout or scene-resolution changes were made.
 
 Final refined Garden, Waterline and Dive in views were checked in a fresh browser preview; console/shader logs were clear. Final strict production build and the 20 existing pond tests passed.
 
@@ -36,3 +36,11 @@ Local proof captures are ignored under `docs/validation/dream-light/`. No depend
 ## Review
 
 Open the local pond preview on port 4179. Compare Dream light at 0%, 85% and 150%; try Dusk and Soft rain, then Waterline and Dive in. Pause the garden and change only Dream light to compare the same pose. Save a moment to confirm that the photograph includes the glow.
+
+## Optical artifact fix — 2026-10-03
+
+Floating petals used `pow(1 - abs(uv.x), 8)`. At subpixel MSAA edges, extrapolated UVs can give a negative base, which GLSL leaves undefined. This produced extreme HDR values that bloom spread into flashing white blocks. Clamping the base to [0, 1] removes the invalid arithmetic while retaining two-sample MSAA, petal density and the existing bloom settings. A controlled same-frame test changed the bloom-buffer maximum from approximately 1,596 to 2.01 linear units; hiding petals or disabling MSAA independently removed the spike. A 145-time-sample scan after the fix had no nonfinite values or extreme spikes.
+
+The previous water diffusion sampled four displaced sharp images, producing multiple fin outlines. `optical-diffusion.ts` now downsamples into a half-resolution HDR buffer, then applies horizontal and vertical Gaussian passes. Prefiltering is necessary so bilinear tap pairs cover adjacent source texels. Refraction and submerged composition share this implementation. Depth-dependent blend strength, water color, reflections, caustics, fog and bloom tuning remain unchanged. A GPU impulse probe produced one continuous symmetric peak; a constant-color probe retained exactly 0.5 linear RGB.
+
+Diffusion adds three half-resolution fullscreen passes for refraction when Dream light is enabled, plus three for submerged composition. Bloom/composition remains six passes above water, nine including diffusion below water. Zero Dream light bypasses both filters. All three buffers per filter follow resize and disposal. Same-pose fish close-ups, submerged rendering and zero-glow paths were checked. See `PERFORMANCE.md` for the refreshed media and measured frame intervals.

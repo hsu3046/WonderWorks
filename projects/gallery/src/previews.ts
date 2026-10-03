@@ -8,8 +8,8 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
  const video=document.createElement('video');video.muted=true;video.defaultMuted=true;video.playsInline=true;video.loop=true;video.preload='none';video.setAttribute('aria-hidden','true');video.tabIndex=-1;
  let current:Entry|null=null,wanted:Entry|null=null,blocked=false,disposed=false,ticket=0,enterTimer=0,loadTimer=0;
  const image=(e:Entry)=>e.host.querySelector<HTMLImageElement>('img')!;
- const idle=()=>reduced.matches?'OPEN TO EXPLORE':hover.matches?'HOVER TO PREVIEW':'TAP TO EXPLORE';
- const label=(e:Entry,text:string)=>{const el=e.host.querySelector('.preview-hint');if(el)el.textContent=text;};
+ const idle=()=>reduced.matches?'Open experience':hover.matches?'Hover to preview':'Tap to open';
+ const label=(e:Entry,text:string)=>{const el=e.host.querySelector('.preview-label');if(el)el.textContent=text;};
  function pause(){
   ticket++;clearTimeout(enterTimer);clearTimeout(loadTimer);wanted=null;video.pause();
   // Hide the old frame before seeking so pointer leave immediately restores the poster.
@@ -22,7 +22,7 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
   current?.host.classList.remove('video-ready','playing');current=null;
  }
  function fail(e:Entry){
-  if(current!==e)return;pause();release();label(e,'OPEN TO EXPLORE');
+  if(current!==e)return;pause();release();label(e,'Open experience');
  }
  async function play(e:Entry){
   if(disposed||blocked||document.hidden||reduced.matches||!hover.matches||wanted!==e)return;
@@ -30,7 +30,7 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
   if(current!==e){
    release();current=e;video.poster=e.variant.image;video.src=e.variant.movie;e.host.append(video);
   }
-  label(e,'LOADING PREVIEW');onBusy(true);
+  label(e,'Loading preview…');onBusy(true);
   clearTimeout(loadTimer);loadTimer=window.setTimeout(()=>{if(ticket===request)fail(e);},8000);
   try{await video.play();}catch(error){
    if(ticket!==request||wanted!==e)return;
@@ -39,7 +39,7 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
  }
  const playing=()=>{
   if(!current||wanted!==current||blocked||document.hidden||reduced.matches){video.pause();return;}
-  clearTimeout(loadTimer);current.host.classList.add('video-ready','playing');label(current,'PREVIEW · LEAVE TO RESET');
+  clearTimeout(loadTimer);current.host.classList.add('video-ready','playing');label(current,'Preview playing');
  };
  video.addEventListener('playing',playing);video.addEventListener('error',()=>{if(current)fail(current);});
  const observer=new IntersectionObserver(changes=>{

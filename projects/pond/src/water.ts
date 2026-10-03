@@ -2,16 +2,18 @@
 import * as T from 'three';
 import {uTime,type Settings} from './shared';
 import {createWaveField,waterFieldGLSL,waterUniforms} from './water-field';
+import {createOpticalDiffusion} from './optical-diffusion';
 export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.PerspectiveCamera,s:Settings,garden:T.Group){
  const reflection=new T.WebGLRenderTarget(768,512,{type:T.HalfFloatType,depthBuffer:true});
  const refraction=new T.WebGLRenderTarget(1280,800,{type:T.HalfFloatType,depthBuffer:true});
  refraction.depthTexture=new T.DepthTexture(1280,800,T.UnsignedIntType);
+ const diffusion=createOpticalDiffusion(renderer);diffusion.resize(1280,800);
  const mirror=new T.PerspectiveCamera(),matrix=new T.Matrix4(),field=createWaveField(renderer);
  const aboveClip=[new T.Plane(new T.Vector3(0,1,0),.055)],belowClip=[new T.Plane(new T.Vector3(0,-1,0),.055)];
  // Same one-plane HDR shader variant for captures and main. This plane lies far
  // below every scene/camera bound, so the main view clips no garden fragments.
  const neutralClip=[new T.Plane(new T.Vector3(0,1,0),100000)];
- const uniforms={...waterUniforms,uReflection:{value:reflection.texture},uRefraction:{value:refraction.texture},uDepth:{value:refraction.depthTexture},uResolution:{value:new T.Vector2(1280,800)},uReflectMatrix:{value:matrix},uProjectionInverse:{value:new T.Matrix4()},uCameraWorld:{value:new T.Matrix4()},uClarity:{value:s.clarity},uDream:{value:s.glow},uSun:{value:waterUniforms.uWaterSun.value},uSunColor:{value:new T.Color('#fff2d4')},uUnder:{value:0}};
+ const uniforms={...waterUniforms,uReflection:{value:reflection.texture},uRefraction:{value:refraction.texture},uRefractionSoft:{value:diffusion.texture},uDepth:{value:refraction.depthTexture},uResolution:{value:new T.Vector2(1280,800)},uReflectMatrix:{value:matrix},uProjectionInverse:{value:new T.Matrix4()},uCameraWorld:{value:new T.Matrix4()},uClarity:{value:s.clarity},uDream:{value:s.glow},uSun:{value:waterUniforms.uWaterSun.value},uSunColor:{value:new T.Color('#fff2d4')},uUnder:{value:0}};
  const mat=new T.ShaderMaterial({uniforms,side:T.DoubleSide,vertexShader:`
   ${waterFieldGLSL}
   varying vec3 vWorld;varying vec4 vReflect;uniform mat4 uReflectMatrix;
@@ -19,7 +21,7 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
    vWorld=(modelMatrix*vec4(p,1.)).xyz;vReflect=uReflectMatrix*vec4(vWorld,1.);
    gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);}`,
  fragmentShader:`${waterFieldGLSL}
-  uniform sampler2D uReflection,uRefraction,uDepth;uniform vec2 uResolution;
+  uniform sampler2D uReflection,uRefraction,uRefractionSoft,uDepth;uniform vec2 uResolution;
   uniform mat4 uProjectionInverse,uCameraWorld;uniform float uClarity,uUnder,uDream;
   uniform vec3 uSun,uSunColor;varying vec3 vWorld;varying vec4 vReflect;
   vec3 scenePoint(vec2 uv){float d=texture2D(uDepth,uv).x;vec4 q=uProjectionInverse*vec4(uv*2.-1.,d*2.-1.,1.);return (uCameraWorld*vec4(q.xyz/q.w,1.)).xyz;}
@@ -44,13 +46,9 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
    vec3 transmission=exp(-absorption*path);
    vec3 refracted=texture2D(uRefraction,bent).rgb;
    if(uDream>0.){
-    // Depth-dependent optical diffusion softens fish seen through the surface.
-    vec2 spread=(1.5+min(path,4.)*1.4)*uDream/uResolution;
-    vec3 soft=texture2D(uRefraction,clamp(bent+spread,.002,.998)).rgb;
-    soft+=texture2D(uRefraction,clamp(bent-spread,.002,.998)).rgb;
-    soft+=texture2D(uRefraction,clamp(bent+vec2(spread.x,-spread.y),.002,.998)).rgb;
-    soft+=texture2D(uRefraction,clamp(bent+vec2(-spread.x,spread.y),.002,.998)).rgb;
-    refracted=mix(refracted,soft*.25,min(.48,uDream*(.22+min(path,4.)*.05)));
+    // Preserve depth-dependent softness without four displaced copies of the fish.
+    vec3 soft=texture2D(uRefractionSoft,bent).rgb;
+    refracted=mix(refracted,soft,min(.48,uDream*(.22+min(path,4.)*.05)));
    }
    vec3 transmitted=refracted*transmission;
    transmitted+=vec3(.045,.12,.078)*(1.-transmission)*(.22+murk*.75);
@@ -75,7 +73,7 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
    box.setFromObject(o);if(o.userData.waterAbove===true||box.min.y>.12)aboveObjects.push({object:o,visible:o.visible});
   });classified=true;
  }
- return {invalidateGarden(){classified=false;},surface,uniforms,ripple:field.splat,diagnostics:()=>({...field.diagnostics(),skippedAboveWater:skipped,passDraws:{...passCounts},mainTriangles}),
+ return {invalidateGarden(){classified=false;},surface,uniforms,ripple:field.splat,diagnostics:()=>({...field.diagnostics(),skippedAboveWater:skipped,passDraws:{...passCounts},mainTriangles,diffusion:diffusion.diagnostics()}),
   async prepare(root:T.Object3D,cancelled:()=>boolean=()=>false,mainTarget:T.WebGLRenderTarget|null=null){
    // Water passes use a different clipping/tone-mapping shader variant from the main view.
    // Restore renderer state before awaiting so the live scene can keep rendering normally.
@@ -94,7 +92,7 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
     if(mainTarget&&!cancelled())await renderer.compileAsync(root,camera,scene);
    }
   },
-  resize(w:number,h:number){refraction.setSize(w,h);reflection.setSize(Math.max(1,Math.round(w*.6)),Math.max(1,Math.round(h*.6)));uniforms.uResolution.value.set(w,h);},
+  resize(w:number,h:number){refraction.setSize(w,h);reflection.setSize(Math.max(1,Math.round(w*.6)),Math.max(1,Math.round(h*.6)));uniforms.uResolution.value.set(w,h);diffusion.resize(w,h);},
   render(dt=0,dreamAmount=s.glow){
    uniforms.uClarity.value=s.clarity;uniforms.uDream.value=dreamAmount;waterUniforms.uWaterTime.value=uTime.value;waterUniforms.uWaterBreeze.value=s.breeze;
    waterUniforms.uWaterDay.value=Math.max(uniforms.uSunColor.value.r,uniforms.uSunColor.value.g,uniforms.uSunColor.value.b)*(s.rain?.32:1)*(1.+dreamAmount*.5);
@@ -114,12 +112,13 @@ export function createWater(scene:T.Scene,renderer:T.WebGLRenderer,camera:T.Pers
     // Skip entire dry planting batches in refraction, not only their fragments.
     skipped=0;hidden=!underwater;if(hidden)for(const item of aboveObjects){item.visible=item.object.visible;if(item.visible){item.object.visible=false;skipped++;}}
     renderer.clippingPlanes=underwater?aboveClip:belowClip;renderer.setRenderTarget(refraction);renderer.render(scene,camera);passCounts.refraction=renderer.info.render.calls;
+    if(dreamAmount>0)diffusion.render(refraction.texture);else diffusion.skip();
     if(hidden)for(const item of aboveObjects)item.object.visible=item.visible;hidden=false;
     surface.visible=true;renderer.clippingPlanes=previousTarget?neutralClip:previousClip;renderer.toneMapping=tone;renderer.setRenderTarget(previousTarget);renderer.render(scene,camera);passCounts.main=renderer.info.render.calls;mainTriangles=renderer.info.render.triangles;
    }finally{
     if(hidden)for(const item of aboveObjects)item.object.visible=item.visible;
     surface.visible=true;renderer.clippingPlanes=previousClip;renderer.toneMapping=tone;renderer.setRenderTarget(previousTarget);
    }
-  },dispose(){reflection.dispose();refraction.dispose();field.dispose();}
+  },dispose(){reflection.dispose();refraction.dispose();diffusion.dispose();field.dispose();}
  };
 }
