@@ -35,4 +35,4 @@ Card playback lives in `src/previews.ts`. `src/catalog.ts` contains movie/poster
 
 Creator credits appear on cards and the inline Credits and licenses section, driven by `src/catalog.ts`. See [CREDITS.md](CREDITS.md): visual recreations use Inspired by, while Bubble Day uses Original code by.
 
-Phosphor regular SVG icons are bundled as local inline symbols. Experience links open directly in a new tab; artwork links have no overlay arrow. Card creator names have no icon; other external links use link-simple; navigation and source downloads use the appropriate arrow and download icons. Pinned upstream sources and the original MIT license are in `src/icons/`. No icon font or package installation is required.
+Phosphor regular SVG icons are bundled as local inline symbols. Experience links open directly in a new tab; artwork links have no overlay arrow. Card creator names and the footer copyright have no icon; other external links use link-simple; navigation and source downloads use the appropriate arrow and download icons. Pinned upstream sources and the original MIT license are in `src/icons/`. No icon font or package installation is required.

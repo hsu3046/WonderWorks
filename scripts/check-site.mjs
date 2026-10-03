@@ -17,9 +17,10 @@ assert.equal((html.match(/class="project-actions"/g)||[]).length,projects.length
 for(const link of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)){
  const experience=/data-work=/.test(link[1]);
  if(experience)assert.ok(/target="_blank"/.test(link[1])&&/rel="noopener noreferrer"/.test(link[1]),'Experience links open safely in a new tab');
- // Compact card creator credits intentionally omit the external-link icon.
+ // Compact card creator names and the footer copyright intentionally omit the icon.
  const cardCreator=projects.some(p=>p.attribution?.url===link[1].match(/href="([^"]+)"/)?.[1])&&!link[2].includes('<svg');
- if(!experience&&!cardCreator&&(/href="https?:\/\//.test(link[1])||/target="_blank"/.test(link[1])))assert.ok(link[2].includes('#icon-link-simple'),'Other external links use Phosphor link-simple');
+ const footerCopyright=/class="credit-link"/.test(link[1]);
+ if(!experience&&!cardCreator&&!footerCopyright&&(/href="https?:\/\//.test(link[1])||/target="_blank"/.test(link[1])))assert.ok(link[2].includes('#icon-link-simple'),'Other external links use Phosphor link-simple');
 }
 assert.ok(!html.includes('class="open-disc"'),'Artwork navigation has no overlay arrow button');
 const credits=html.match(/<dl id="project-credits"[^>]*>([\s\S]*?)<\/dl>/)?.[1]||'';
