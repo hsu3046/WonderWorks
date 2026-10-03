@@ -139,3 +139,6 @@ Stillwater fish models/textures are by [somitsu](https://sketchfab.com/somitsu),
 Visual inspiration is credited separately from code and asset ownership. See the complete [creator credits](projects/gallery/CREDITS.md).
 
 *Built by [AIB Inc.](https://www.aib.vote) · © 2026 AIB Inc.*
+
+
+Skyglider (study10) adds a flying-squirrel journey, tree-crown takeoff, alpine coast, waterfalls, local scenery and grounded walking. Its standalone source and asset notices are in `projects/skyglider`; the root build publishes it alongside all nine existing studies.

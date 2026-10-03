@@ -1,0 +1,88 @@
+[
+  {
+    "name": "bridge",
+    "source": "assets/Wooden_Bridge_Refined/Wooden_Bridge_Refined_v1.glb",
+    "sourceBytes": 50379984,
+    "bytes": 3067880,
+    "sourceTriangles": 291574,
+    "triangles": 23982,
+    "sha256": "668028aecbaaee147a3d45f9cb2f7ce11bc60ec33ff734e8c136f16b07d52284"
+  },
+  {
+    "name": "gazebo",
+    "source": "assets/Wooden_Gazebo_Refined/Wooden_Gazebo_Refined_v1.glb",
+    "sourceBytes": 34651252,
+    "bytes": 2231188,
+    "sourceTriangles": 290960,
+    "triangles": 22000,
+    "sha256": "b050b03fc7b36a1464888198574d27f4dc0d827add4ee5db7925d8bb7d660fd1"
+  },
+  {
+    "name": "cherry",
+    "source": "assets/\u6a31\u82b1\u68113d\u6a21\u578b.glb",
+    "sourceBytes": 59858324,
+    "bytes": 1151604,
+    "sourceTriangles": 1941855,
+    "triangles": 23832,
+    "sha256": "04cfdaf3f5e1a95f711bf405977a23ab1542b9cfc24a983e953cb17ef854279d"
+  },
+  {
+    "name": "house",
+    "source": "assets/whimsical house 3d model.glb",
+    "sourceBytes": 58882328,
+    "bytes": 2176236,
+    "sourceTriangles": 1930194,
+    "triangles": 18000,
+    "sha256": "75dbec83f6df30de686b53257e16cb28d3eddbc2618242d8ad4aba9280cd3764"
+  },
+  {
+    "name": "castle",
+    "source": "assets/fantasy castle 3d model.glb",
+    "sourceBytes": 60102640,
+    "bytes": 2767220,
+    "sourceTriangles": 1890878,
+    "triangles": 31998,
+    "sha256": "6961021acd25559e9a1290740a724a12dc1ed95c613ef7054015cda994a670af"
+  },
+  {
+    "name": "hydrangea",
+    "source": "projects/pond/public/models/hydrangea-far-v2.glb",
+    "sourceBytes": 4124264,
+    "bytes": 1489508,
+    "sourceTriangles": 2800,
+    "triangles": 2800,
+    "sha256": "d47415863bc1422b172132a4adc9b3f09587a0a0eddd2e7e1dc3cf244e8318eb"
+  },
+  {
+    "name": "azalea",
+    "source": "projects/pond/public/models/azalea-far-v2.glb",
+    "sourceBytes": 2103384,
+    "bytes": 727940,
+    "sourceTriangles": 999,
+    "triangles": 999,
+    "sha256": "9936911f097b60b7447dbfafac8780023c1b4025ebde8533a1eb64b414dca2e0"
+  },
+  {
+    "name": "butterfly",
+    "source": "assets/monarch butterfly 3d model.glb",
+    "sourceBytes": 4774660,
+    "bytes": 1624688,
+    "sourceTriangles": 16965,
+    "triangles": 2999,
+    "sha256": "01195a1bed359f01ee6d0c910d41b2c9756999ae491540f8f5c8d51ce6a91277"
+  },
+  {
+    "name": "meadow",
+    "source": "assets/meadow-ground-v1.png",
+    "sourceBytes": 3493320,
+    "bytes": 697628,
+    "sha256": "d9ec9420c4413df142a83cafabc1981e5888cbcda476cf70e4b1bc3d4f70b99b"
+  },
+  {
+    "name": "leaf-floor",
+    "source": "assets/foliage-autumn-ground-v1.png",
+    "sourceBytes": 3663600,
+    "bytes": 728538,
+    "sha256": "e823665719fb3ff66d2351d5ab383547e62def7f9a1e835e03e5390ff08badf1"
+  }
+]

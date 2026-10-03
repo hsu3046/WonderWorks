@@ -13,6 +13,7 @@ Creator links supplied by the project owner on 2026-09-29. Visual references are
 | Ocean Shoal | Inspired by | [@xingor_dev](https://x.com/xingor_dev) |
 | Fulgur | Inspired by | [Jason Key (@key_vfx)](https://x.com/key_vfx) |
 | Webcrawler | Inspired by | [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx) |
+| Skyglider | Original code by | [AIB Inc.](https://www.aib.vote) |
 
 Fulgur's visual inspiration credit was supplied by the project owner on 2026-10-03.
 
@@ -31,3 +32,6 @@ Webcrawler is inspired by [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/r
 `monarch-butterfly.glb` is the user-supplied `monarch butterfly 3d model.glb`, copied byte-for-byte. The embedded generator is Tripo; the file does not contain an author or license declaration. This model is not covered by the application's GPL grant or the other animal models' CC BY notices. Provenance/redistribution terms remain to be supplied before public distribution.
 
 AIB runtime work: normalize the pitched +X body to -Z forward, retain the original UV/color/normal/roughness maps, and apply weighted wing rotation with matching normals. Two small instances share one geometry and the texture maps, with independent wing strokes, gliding intervals and flight paths. The source file has no rig or animation clips; web motion is authored by AIB Inc.
+
+
+Skyglider is an original AIB implementation inspired by the privately supplied flight recording; its reference creator was not identified, so no creator identity is inferred. The private clip and squirrel reference images are not redistributed. Poly Haven textures/plants retain CC0 credits. Supplied scenery models have separate source rights, as recorded in `public/assets/ATTRIBUTION.md` and `local/processing.json`; the application GPL grant does not replace them. The gallery preview is a recording of the implemented scene.

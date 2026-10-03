@@ -5,7 +5,7 @@ import path from 'node:path';
 const root=fileURLToPath(new URL('../..',import.meta.url));
 const output=path.join(root,'gallery/public/experiments');
 await mkdir(output,{recursive:true});
-for(const [source,destination] of [['shabon','shabon'],['jelly','jelly'],['fish/dist','ocean'],['chroma/dist','chroma'],['harbor/dist','harbor'],['foliage/dist','foliage'],['pond/dist','pond'],['lightning/dist','lightning'],['crawler/dist','crawler']]){
+for(const [source,destination] of [['shabon','shabon'],['jelly','jelly'],['fish/dist','ocean'],['chroma/dist','chroma'],['harbor/dist','harbor'],['foliage/dist','foliage'],['pond/dist','pond'],['lightning/dist','lightning'],['crawler/dist','crawler'],['skyglider/dist','skyglider']]){
   await cp(path.join(root,source),path.join(output,destination),{recursive:true,filter:p=>!p.includes('node_modules')&&!p.endsWith('.DS_Store')});
 }
 const ocean=path.join(output,'ocean/index.html');

@@ -63,3 +63,8 @@
 
 - 기존 공개 Fulgur는 `feat/pond-monarch-butterfly`의 `17b6eb7`에 통합되어 있었으며 `main`에는 없었다. 크롤러 main을 그대로 배포한 것이 기존 작품 누락 원인이다. 원격 main 최신 여부만으로 현재 프로덕션의 작품 보존을 판단하지 않는다.
 - 기존 공개 브랜치의 커밋된 연못·갤러리·번개 내용을 크롤러와 병합해 보존한다. Fulgur 08, Webcrawler 09로 번호를 구분하며 두 크레딧·영상·다운로드·실행 경로를 함께 유지한다. `scripts/check-site.mjs`에서 두 작품 존재와 번호 중복을 검사한다.
+
+
+## 2026-10-03 — Skyglider gallery release
+- Integrated latest origin/main0c09367, retaining Fulgur08/Webcrawler09. Study10Skyglider: actual scene movie/poster, native same-origin live preview, source download, root build/setup/check/copy/package integration and static regression presence check.
+- Full strict checks+79tests and production build passed:10studies/10sourcearchives/12canonicalpages. No dependency version change; reused existing project-local fish toolchain. Private references/rawassets/validation stay ignored. GPL/AIB and external asset notices preserved.

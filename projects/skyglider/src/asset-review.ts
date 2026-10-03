@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc. https://www.aib.vote
+import * as T from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const names=['bridge','gazebo','cherry','house','castle','hydrangea','azalea','butterfly'] as const;
+const canvas=document.querySelector('canvas')!,renderer=new T.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.toneMapping=T.ACESFilmicToneMapping;
+const scene=new T.Scene();scene.background=new T.Color(0xd5ddd9);scene.add(new T.HemisphereLight(0xe5efff,0x78836a,2.2));const sun=new T.DirectionalLight(0xffedcb,3);sun.position.set(-3,6,4);scene.add(sun);
+const ground=new T.Mesh(new T.PlaneGeometry(20,20),new T.MeshStandardMaterial({color:0xb8c6bc,roughness:1}));ground.rotation.x=-Math.PI/2;ground.position.y=-.015;scene.add(ground);
+const camera=new T.PerspectiveCamera(42,1,.01,100);camera.position.set(3.2,2.5,4.4);const controls=new OrbitControls(camera,canvas);controls.target.set(0,1.1,0);controls.update();
+const status=document.getElementById('status')!,loader=new GLTFLoader();let model:T.Group|undefined,request=0;
+function draw(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();renderer.render(scene,camera);}
+controls.addEventListener('change',draw);new ResizeObserver(draw).observe(canvas);
+function release(model:T.Group){const geometries=new Set<T.BufferGeometry>(),materials=new Set<T.Material>(),textures=new Set<T.Texture>();model.traverse(o=>{if(o instanceof T.Mesh){geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}});for(const m of materials){for(const value of Object.values(m))if(value instanceof T.Texture)textures.add(value);m.dispose();}geometries.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());}
+async function choose(name:typeof names[number]){const token=++request;status.textContent=`Loading ${name}…`;try{const asset=await loader.loadAsync(`${import.meta.env.BASE_URL}assets/local/${name}.glb`);if(token!==request){release(asset.scene);return;}if(model){scene.remove(model);release(model);}model=asset.scene;const b=new T.Box3().setFromObject(model),s=b.getSize(new T.Vector3()),c=b.getCenter(new T.Vector3()),scale=2.8/Math.max(s.x,s.y,s.z);model.scale.setScalar(scale);model.position.set(-c.x*scale,-b.min.y*scale,-c.z*scale);scene.add(model);let triangles=0;model.traverse(o=>{if(o instanceof T.Mesh)triangles+=(o.geometry.index?.count??o.geometry.attributes.position.count)/3;});status.textContent=`${name} · ${triangles.toLocaleString()} triangles · Drag to orbit`;document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-pressed',String(b.textContent===name)));draw();}catch(error){status.textContent=`Could not load ${name}: ${String(error)}`;}}
+for(const name of names){const button=document.createElement('button');button.textContent=name;button.onclick=()=>void choose(name);document.getElementById('models')!.append(button);}void choose('bridge');

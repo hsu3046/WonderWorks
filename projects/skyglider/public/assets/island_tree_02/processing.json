@@ -1,0 +1,20 @@
+[
+  {
+    "material": 0,
+    "sourceTriangles": 27298,
+    "triangles": 3497,
+    "error": 0.002481721341609955
+  },
+  {
+    "material": 1,
+    "sourceTriangles": 714744,
+    "triangles": 22000,
+    "error": 0.002847094088792801
+  },
+  {
+    "material": 2,
+    "sourceTriangles": 330171,
+    "triangles": 2781,
+    "error": 0.0025834841653704643
+  }
+]

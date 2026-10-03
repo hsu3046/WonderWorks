@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#102d30" />
+  <meta name="description" content="A little creature. An extraordinary world. Glide through a living valley of ancient trees, waterfalls and a faraway kingdom." />
+  <title>Skyglider — Wonderworks</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23102d30'/%3E%3Cpath d='M7 14 20 25 33 14 26 29H14Z' fill='%23ece5ca'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/src/style.css" />
+  <style>html,body{margin:0;background:#102d30;color:#f5f1df}#loading{position:fixed;inset:0;z-index:30;display:grid;place-content:center;background:#102d30}#loading[hidden]{display:none}</style>
+</head>
+<body>
+  <canvas id="world" aria-label="Interactive 3D valley. Drag to look around and scroll to zoom. Use WASD or arrow keys to walk. Take flight to explore." tabindex="0"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <div id="ui">
+    <header class="topbar">
+      <a class="brand" href="https://wonderworks.vercel.app" aria-label="Wonderworks home"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 10 10 23 16 13 22 23 29 10M9 8l7 5 7-5"/></svg><span>WONDERWORKS<small>A COLLECTION OF LITTLE WONDERS</small></span></a>
+      <div class="chapter"><span class="live-dot"></span> AN OPEN-SKY EXPLORATION</div>
+      <button class="quiet-button" id="guide-open" aria-haspopup="dialog"><span class="icon">?</span><span>Field guide</span></button>
+    </header>
+    <div class="place"><span class="place-index">01 / THE EMERALD REACH</span><span class="place-line"></span><span id="location">The old oak</span></div>
+    <aside class="telemetry" aria-label="Flight information"><div><span id="altitude">80</span><small>M ABOVE WATER</small></div><div><span id="airspeed">0</span><small id="speed-label">M/S · WALKING</small></div></aside>
+    <section class="identity"><p class="eyebrow">SMALL PAWS. BOUNDLESS SKY.</p><h1>Sky<span>glider</span><i>.</i></h1><p class="intro">Some worlds are too wonderful<br>to keep your feet on the ground.</p></section>
+    <div class="flight-progress" aria-label="Journey progress"><span id="progress"></span></div>
+    <div class="flight-actions"><div class="journey-controls"><button id="takeoff" class="primary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 5 9 8 9-8-5 14-4-6-4 6Z"/></svg><span>Take flight</span><kbd>SPACE</kbd></button><button id="land" class="land-action" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 19h16"/></svg><span>Land nearby</span><kbd>L</kbd></button></div><button id="home" class="return" hidden>↶ Back to the old oak</button><p id="control-hint">DRAG TO LOOK AROUND <b>·</b> SCROLL TO GET CLOSER</p></div>
+    <div class="tools" role="group" aria-label="Scene controls">
+      <button id="light" aria-pressed="false" aria-label="Golden hour" title="Golden hour"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+      <button id="pause" aria-pressed="false" aria-label="Pause the scene" title="Pause"><svg id="pause-icon" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+      <button id="capture" aria-label="Save a photograph" title="Save photograph"><svg viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3Z"/><circle cx="12" cy="13" r="4"/></svg></button>
+      <button id="cinema" aria-pressed="false" aria-label="Hide interface" title="Hide interface (H)"><svg viewBox="0 0 24 24"><path d="M3 9V3h6m6 0h6v6M3 15v6h6m6 0h6v-6"/></svg></button>
+    </div>
+    <div class="touch-steer" role="group" aria-label="Flight steering" hidden><button data-steer="ArrowLeft" aria-label="Bank left">←</button><button data-steer="ArrowUp" aria-label="Rise">↑</button><button data-steer="ArrowDown" aria-label="Descend">↓</button><button data-steer="ArrowRight" aria-label="Bank right">→</button></div>
+    <footer><span>FOLLOW YOUR CURIOSITY</span><a href="https://www.aib.vote" target="_blank" rel="noopener">© 2026 AIB Inc.</a></footer>
+  </div>
+  <button id="restore-ui" hidden>Show controls <kbd>H</kbd></button>
+  <dialog id="guide" aria-labelledby="guide-title">
+    <button id="guide-close" class="close" aria-label="Close field guide">×</button>
+    <p class="eyebrow">A NOTE FROM THE FOREST</p><h2 id="guide-title">Trust the wind.</h2>
+    <p>You are a very small glider in a very big world. Leave the old oak and follow the air through the valley. There is no hurry. Before flying, walk along the bough with WASD or arrow keys. After landing, use the same keys to explore the ground; drag to choose your view.</p>
+    <dl><div><dt>Take flight / pause</dt><dd><kbd>SPACE</kbd></dd></div><div><dt>Land in a nearby clearing</dt><dd><kbd>L</kbd> / Land nearby</dd></div><div><dt>Look around</dt><dd>Drag</dd></div><div><dt>Move closer</dt><dd>Scroll / pinch</dd></div><div><dt>Walk / steer & change height</dt><dd><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / arrows</dd></div><div><dt>Return to the oak</dt><dd><kbd>R</kbd></dd></div><div><dt>Hide the interface</dt><dd><kbd>H</kbd></dd></div></dl>
+    <label class="speed-label" for="speed">The pace of your journey <output id="speed-value">1.0×</output></label><input id="speed" type="range" min="0.5" max="1.6" value="1" step="0.1" />
+    <p class="guide-note">An original browser study inspired by the supplied film. Scanned materials & plants from <a href="https://polyhaven.com" target="_blank" rel="noopener">Poly Haven</a> · CC0. Supplied scenery and illustrations from the local asset library. <a href="./assets/ATTRIBUTION.md" target="_blank" rel="noopener">Full credits ↗</a></p>
+  </dialog>
+  <div id="loading" role="status"><div class="loader-mark">⌁</div><p class="eyebrow">WONDERWORKS PRESENTS</p><div class="loading-title">Skyglider</div><p id="load-message">A small world is waking up…</p><div class="loading-track"><span></span></div></div>
+  <div id="error" hidden role="alert"><p>The valley couldn't wake up.</p><span id="error-message"></span><button onclick="location.reload()">Try again</button></div>
+  <p id="notice" role="status" aria-live="polite"></p>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
