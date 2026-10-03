@@ -1,7 +1,8 @@
 # Fulgur
 
-A small storm, held in wonder. An original interactive lightning study inspired
-by the user-supplied `qnjYPMOpyE0aMMfz.mp4` reference recording.
+A small storm, held in wonder. An original interactive lightning study.
+**Inspired by [Jason Key (@key_vfx)](https://x.com/key_vfx)**, credited by the
+project owner for the supplied `qnjYPMOpyE0aMMfz.mp4` reference recording.
 
 ## Run
 
@@ -28,8 +29,7 @@ when floating-point color buffers are unavailable.
 The cloud uses a ray-marched procedural density field; it is **not a fluid or
 voxel physics solver**. Lightning channels use bounded seeded branching and
 approximate leader/return-stroke envelopes. The source video, its UI and assets
-are not redistributed. No author attribution has been invented for the supplied
-recording. Typography uses DM Sans and Instrument Serif from Google Fonts, with
+are not redistributed. Typography uses DM Sans and Instrument Serif from Google Fonts, with
 local system fallbacks when offline.
 
 Code: GNU GPL v3. © 2026 **AIB Inc.** — https://www.aib.vote

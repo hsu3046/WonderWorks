@@ -3,8 +3,10 @@
 Standalone `projects/lightning`, package `vote.aib.wonderworks-lightning`, port
 4180. Built in the managed `codex/lightning-simulation` worktree. Existing artwork
 source and the primary checkout's uncommitted Stillwater repair are not modified.
-The root build creates `/experiments/lightning/index.html` and a Fulgur source ZIP;
-a gallery card and production deployment are outside this initial study.
+The root build creates `/experiments/lightning/index.html` and a Fulgur source ZIP.
+Fulgur is gallery study 08, including the top index, a poster/video card, live
+detail preview, source download and sitemap metadata. Visual inspiration:
+[Jason Key (@key_vfx)](https://x.com/key_vfx), supplied by the project owner.
 
 ## Reference evidence
 

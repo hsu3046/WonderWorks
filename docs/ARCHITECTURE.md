@@ -82,4 +82,5 @@ A separate strict TypeScript/WebGL2 effect studio lives in projects/chroma (4176
 `projects/lightning` (4180) is an independent lightning chamber with ray-marched
 cloud, seeded branching discharge, local atmospheric light and an orbitable dome.
 Desktop/mobile controls and opt-in thunder. Root build includes the standalone
-route and source ZIP; no gallery card yet. See `docs/lightning/ARCHITECTURE.md`.
+route and source ZIP, plus study 08 in the gallery index and collection.
+See `docs/lightning/ARCHITECTURE.md`.

@@ -42,6 +42,7 @@ A beautiful animation often leaves you wondering how it works. Wonderworks turns
 | Tidelight Harbor | Steer a boat and watch a whale in changing weather | Blender, glTF, water reflection |
 | Through the Seasons | Watch foliage, weather and daylight change | GPU instancing, procedural botany, Web Audio |
 | Stillwater | Explore a garden pond, feed fish and startle a leaping frog | Blender morphs, PBR, reflection/refraction |
+| Fulgur | Direct branching lightning beneath a drifting thundercloud | Volumetric GLSL, seeded growth, HDR bloom |
 
 ## 🚀 Try It Now
 
