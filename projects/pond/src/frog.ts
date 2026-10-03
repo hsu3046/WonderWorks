@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createModelLoader} from './model-loader';
 import {noiseGLSL} from './shared';
 import {frogPose,frogTiming} from './frog-pose';
 
 export async function createFrog(scene:T.Scene,pads:T.Group[],ripple:(x:number,z:number,strength?:number)=>void){
  const pad=pads[0]!;
- const asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/montane-frog-hopping.glb`);
+ const asset=await createModelLoader().loadAsync(`${import.meta.env.BASE_URL}models/montane-frog-hopping-packed-v1.glb`);
  const frogScale=.36;
  const root=asset.scene;root.scale.setScalar(frogScale);root.position.y=.0045;
  // Face the lily viewpoint independently of the pad's random rotation.

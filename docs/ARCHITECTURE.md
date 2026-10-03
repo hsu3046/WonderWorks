@@ -77,6 +77,14 @@ A separate strict TypeScript/WebGL2 effect studio lives in projects/chroma (4176
 
 `projects/pond` (4179): original procedural koi garden inspired by the supplied 156-second garden recording. Screen-space refraction + planar reflection, animated caustics, 28 patterned koi, lily-pad frog, dragonflies and blossoms, bridge and pavilion. Four viewpoints, feeding/ripples, sunlight/dusk/rain, pause/photo controls. `docs/pond/ARCHITECTURE.md` documents rendering and limitations. Gallery uses the existing single-video hover architecture.
 
+## Fulgur / Lightning (2026-10-02)
+
+`projects/lightning` (4180) is an independent lightning chamber with ray-marched
+cloud, seeded branching discharge, local atmospheric light and an orbitable dome.
+Desktop/mobile controls and opt-in thunder. Root build includes the standalone
+route and source ZIP, plus study 08 in the gallery index and collection.
+See `docs/lightning/ARCHITECTURE.md`.
+
 ## Webcrawler (2026-10-02)
 
 `projects/crawler` (4183): public-page reader with procedural eight-legged wireframe spiders. Browser-native sentence/word segmentation, planted-foot inverse kinematics, stable document geometry during consumption, floating word fragments, one to three spiders, pause/speed/reset and discovered links. `server/crawl.mjs` is shared by Vite dev/preview and `api/crawl.mjs` on Vercel. Gallery remains statically built; only fetching external page text needs this bounded Node endpoint. [Crawler architecture](crawler/ARCHITECTURE.md) documents content isolation, request limits, lifecycle and unsupported sources.

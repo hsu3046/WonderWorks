@@ -32,7 +32,8 @@ function petalTexture(){
 }
 export function createLilies(scene:T.Scene){
  const r=rng(720),root=new T.Group();scene.add(root);const pads:T.Group[]=[],maps=leafTextures(),petalMap=petalTexture();
- const spots=[[-5.2,2.7,.86],[-6.4,2.3,.64],[-4.3,3.4,.61],[-6,3.8,.82],[4.9,-2,.7],[6,-1.2,.86],[6.4,-2.7,.63],[-2.2,-3.9,.5],[2.8,3.8,.52]];
+ // Keep the rear-left pad clear of the refined bridge and its footings.
+ const spots=[[-5.2,2.7,.86],[-6.4,2.3,.64],[-4.3,3.4,.61],[-6,3.8,.82],[4.9,-2,.7],[6,-1.2,.86],[6.4,-2.7,.63],[-3.5,-2.65,.5],[2.8,3.8,.52]];
  spots.forEach(([x,z,size],index)=>{
   const pad=new T.Group();pad.position.set(x!,.055,z!);pad.rotation.y=r()*tau;root.add(pad);pads.push(pad);
   const positions:number[]=[],uv:number[]=[],indices:number[]=[],segments=96,rings=14;

@@ -155,6 +155,7 @@ export function createMorph(s:Settings){
    uRibbonRoll:{value:0},uRibbonWarm:{value:new THREE.Color()},uRibbonPink:{value:new THREE.Color()},uRibbonCream:{value:new THREE.Color()},uRibbonCool:{value:new THREE.Color()},uRibbonShade:{value:new THREE.Color()},uWarm:{value:new THREE.Color()},uLight:{value:new THREE.Color()},uDeep:{value:new THREE.Color()},uAccent:{value:new THREE.Color()},uGrain:{value:s.grain}},
  }));
  materials.forEach(material=>{const mesh=new THREE.Mesh(geometry,material);mesh.frustumCulled=false;group.add(mesh);});
+ let lastPalette:Settings['palette']|undefined;
  function update(time:number,width:number){
   const state=sequenceFrame(time),colors=palettes[s.palette];
   materials.forEach((material,i)=>{
@@ -165,11 +166,14 @@ export function createMorph(s:Settings){
    u.uRotationSign.value=rotationSign;u.uFrom.value=a.kind;u.uTo.value=b.kind;u.uMorph.value=state.blend;u.uWidth.value=width;u.uGrain.value=s.grain;
    (u.uCenterA.value as THREE.Vector3).fromArray(a.center);(u.uCenterB.value as THREE.Vector3).fromArray(b.center);
    (u.uShapeA.value as THREE.Vector4).fromArray(a.shape);(u.uShapeB.value as THREE.Vector4).fromArray(b.shape);
+   if(lastPalette!==s.palette){
    ['uWarm','uLight','uDeep','uAccent'].forEach((key,j)=>(u[key].value as THREE.Color).set(colors[j]));
    const ribbonColors=s.palette==='spectral'?['#ee2348','#e568b5','#fff4cf','#3020b5','#640079']:[colors[0],colors[1],colors[3],colors[2],colors[2]];
    ['uRibbonWarm','uRibbonPink','uRibbonCream','uRibbonCool','uRibbonShade'].forEach((key,j)=>(u[key].value as THREE.Color).set(ribbonColors[j]));
+   }
    u.uRibbonRoll.value=Math.abs(Math.sin(state.from==='ribbons'?a.shape[2]:b.shape[2]));
   });
+  lastPalette=s.palette;
   return state;
  }
  return {group,update,dispose(){geometry.dispose();materials.forEach(m=>m.dispose());}};

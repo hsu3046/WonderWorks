@@ -1,6 +1,6 @@
 import { nativeShader } from './native-shader';
 // SPDX-License-Identifier: GPL-3.0-only — Copyright 2026 KnowAI
-import { Fn, If, Loop, cross, float, instanceIndex, instancedArray, length, normalize, uint, vec3 } from 'three/tsl';
+import { Fn, If, Loop, cross, dot, float, instanceIndex, instancedArray, length, normalize, uint, vec3 } from 'three/tsl';
 import { FISH_COUNT, randomGenerator, type OceanUniforms } from './shared';
 
 const steeringField = nativeShader<'vec3'>(`
@@ -33,6 +33,7 @@ fn steeringField(p: vec3<f32>, id: f32, t: f32) -> vec3<f32> {
 }`);
 const pointerForce = nativeShader<'vec3'>(`
 fn pointerForce(p: vec3<f32>, origin: vec3<f32>, ray: vec3<f32>, power: f32) -> vec3<f32> {
+  if (power == 0.0) { return vec3<f32>(0.0); }
   let along = clamp(dot(p-origin,ray),0.0,65.0);
   let delta = p-(origin+ray*along);
   let d = length(delta);
@@ -41,11 +42,11 @@ fn pointerForce(p: vec3<f32>, origin: vec3<f32>, ray: vec3<f32>, power: f32) -> 
 const shockForce = nativeShader<'vec3'>(`
 fn shockForce(p: vec3<f32>, shock: vec4<f32>, t: f32) -> vec3<f32> {
   let age = t-shock.w;
+  if (age < 0.0 || age >= 2.5) { return vec3<f32>(0.0); }
   let delta = p-shock.xyz;
   let d = length(delta);
   let shell = 1.0-smoothstep(.2,2.4,abs(d-age*11.0));
-  let enabled = select(0.0,1.0,age>=0.0 && age<2.5);
-  return delta/max(d,.1)*shell*enabled*24.0*exp(-age*.9);
+  return delta/max(d,.1)*shell*24.0*exp(-age*.9);
 }`);
 
 export function createSimulation(u: OceanUniforms) {
@@ -70,10 +71,11 @@ export function createSimulation(u: OceanUniforms) {
     Loop({start:uint(0),end:uint(32),type:'uint',condition:'<'},({i})=>{
       const j=id.mul(uint(73)).add(i.mul(uint(193))).add(uint(u.time.mul(9))).mod(uint(FISH_COUNT));
       const delta=positions.element(j).sub(pos).toVar();
-      const d=length(delta).toVar();
-      If(d.greaterThan(.001).and(d.lessThan(3.0)),()=>{
+      // Distance comparisons need squared length, not a square root per neighbor.
+      const d2=dot(delta,delta).toVar();
+      If(d2.greaterThan(.000001).and(d2.lessThan(9.0)),()=>{
         alignment.addAssign(velocities.element(j));cohesion.addAssign(delta);neighbors.addAssign(1);
-        If(d.lessThan(.8),()=>{separation.subAssign(delta.div(d.mul(d).add(.04)));});
+        If(d2.lessThan(.64),()=>{separation.subAssign(delta.div(d2.add(.04)));});
       });
     });
     If(neighbors.greaterThan(0),()=>{

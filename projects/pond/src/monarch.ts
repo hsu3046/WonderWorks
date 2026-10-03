@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createModelLoader} from './model-loader';
 import {monarchBehavior} from './monarch-behavior';
 
 // The supplied mesh faces +X, with the body pitched up and its wings already raised.
@@ -11,7 +11,7 @@ const alignment=new T.Matrix4().makeRotationY(Math.PI/2)
 
 export async function createMonarchs(scene:T.Scene,pads:T.Group[]){
  let asset;
- try{asset=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/monarch-butterfly.glb`);}
+ try{asset=await createModelLoader().loadAsync(`${import.meta.env.BASE_URL}models/monarch-butterfly-packed-v1.glb`);}
  catch(cause){throw new Error('The monarch butterfly could not load. Please reload the garden.',{cause});}
  const meshes:T.Mesh<T.BufferGeometry,T.MeshStandardMaterial>[]=[];
  asset.scene.updateMatrixWorld(true);
@@ -33,7 +33,7 @@ export async function createMonarchs(scene:T.Scene,pads:T.Group[]){
  geometry.computeBoundingSphere();geometry.boundingSphere!.radius*=1.45;
  const butterflies=Array.from({length:2},(_,i)=>{
   const root=new T.Group();root.name=`Monarch butterfly ${i+1}`;
-  root.scale.setScalar(i===0?.25:.29);scene.add(root);
+  root.scale.setScalar(i===0?.15:.17);scene.add(root);
   const flap={value:0},legFold={value:1},material=source.material.clone();
   material.metalness=0;material.roughness=.82;material.side=T.DoubleSide;
   material.envMapIntensity=.35;material.normalScale.setScalar(.55);

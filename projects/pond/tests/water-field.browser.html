@@ -1,0 +1,20 @@
+<!doctype html><html><body style="background:#13241f;color:white;font:16px monospace"><h1>Water GPU verification</h1><pre id="result">Running</pre><script type="module">
+import * as T from 'three';
+import {createWaveField,waterUniforms} from '/src/water-field.ts';
+const renderer=new T.WebGLRenderer();renderer.setSize(64,64);document.body.append(renderer.domElement);
+const field=createWaveField(renderer),output={};
+try {
+ document.querySelector('#result').textContent='Reading initial field';
+ output.initial=await field.inspect();field.splat(0,0,1);field.splat(1,.5,.6);
+ for(let i=0;i<60;i++){waterUniforms.uWaterTime.value=i/60;field.update(1/60);}
+ document.querySelector('#result').textContent='Reading active field';
+ output.active=await field.inspect();output.steps=field.diagnostics().steps;
+ for(let i=0;i<20;i++)field.update(0);
+ output.paused=await field.inspect();output.pausedSteps=field.diagnostics().steps;
+ document.querySelector('#result').textContent='Simulating decay';
+ for(let i=0;i<900;i++){waterUniforms.uWaterTime.value=1+i/60;field.update(1/60);}
+ output.settled=await field.inspect();
+ output.pass=output.initial.peak===0&&output.active.finite&&output.active.peak>0&&output.active.peak<.1&&output.pausedSteps===output.steps&&output.paused.energy===output.active.energy&&output.settled.finite&&output.settled.energy<output.active.energy;
+} catch(error) {output.error=String(error)}finally{field.dispose();renderer.dispose();}
+document.querySelector('#result').textContent=JSON.stringify(output,null,2);
+</script></body></html>

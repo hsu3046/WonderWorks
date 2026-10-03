@@ -28,6 +28,23 @@ export function leafStage(year:number,seed:number,wind:number,elapsed=0,species:
  const flight=clamp(((year-fall.release+wind*.012)*autumnSeconds+localTime)/fall.duration);
  return {size,flight,visible:size>.02&&year<.99};
 }
+// Seeds and fall schedules never change; keep double precision for HUD thresholds.
+export function createLeafCounter(seeds:ArrayLike<number>){
+ const buds=Float64Array.from(seeds,seed=>.20+seed*.09);
+ const releases=new Float64Array(seeds.length),durations=new Float64Array(seeds.length);
+ for(let i=0;i<seeds.length;i++){const fall=leafFall(seeds[i]);releases[i]=fall.release;durations[i]=fall.duration;}
+ return (year:number,wind:number,elapsed:number,species:Species)=>{
+  let attached=0,air=0,ground=0;
+  if(year>=.99)return {attached,air,ground};
+  const blossom=species==='cherry'?climate(year).blossom:0,localTime=year>=.69?elapsed:0;
+  for(let i=0;i<buds.length;i++){
+   if(Math.max(smooth(buds[i],buds[i]+.06,year),blossom)<=.02)continue;
+   const flight=clamp(((year-releases[i]+wind*.012)*autumnSeconds+localTime)/durations[i]);
+   if(flight===0)attached++;else if(flight<1)air++;else ground++;
+  }
+  return {attached,air,ground};
+ };
+}
 export function readSettings(search:string):Settings{
  const p=new URLSearchParams(search),s={...defaults};
  for(const key of ['year','hour','wind','speed'] as const){const raw=p.get(key);if(raw===null)continue;const n=Number(raw);if(Number.isFinite(n))s[key]=clamp(n,0,key==='hour'?24:key==='speed'?4:1);}

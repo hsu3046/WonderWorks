@@ -171,3 +171,15 @@ Removed the single-UV 170-unit soil fallback plane. Replaced the clipped rectang
 Water Fresnel now uses air/water F0=0.0204 and approaches full reflection at grazing incidence. Removed the 0.85 multiplier that always leaked at least 18.8% of refraction through; attenuation also increases with grazing optical path length. Fish are not globally hidden or toggled by camera height: ground depth occlusion and water optics determine their visibility, preserving the Dive view.
 
 Validation: replayed the reported camera coordinates in a temporary browser tab; the lawn blocks pond fish. Above-water and Dive presets remain available. Four terrain/motion tests and strict build pass.
+
+### 2026-09-30 — Bridge clearance and monarch scale
+
+The isolated rear-left lily pad now sits at x=-3.5, z=-2.65 (radius0.5), moved from x=-2.2, z=-3.9 where it intersected the refined bridge footing. It clears the bridge bounds; flower-bearing pads and their landing indices are unchanged.
+
+Both supplied monarch butterflies now use scales0.15/0.17 instead of0.25/0.29 (about40% smaller). Existing wing/leg motion and scale-aware foot placement remain intact. Procedural butterflies are unchanged. Strict TypeScript/build and browser render/error checks passed.
+
+### 2026-09-30 — More active, balanced tail beats
+
+The previous sustained turn offset (0.11 at full tail weight) exceeded the low-effort oscillation amplitude (about0.058), leaving the tail on one side during long glides. Turn offset is now0.025, while beat amplitude is0.095+0.31×effort. The normal derivative matches the revised bend. Fin flutter also increases modestly.
+
+Propulsion lasts1.1–2.0 seconds, glide0.55–1.35 seconds. Effort targets are0.86/0.27, and the size-adjusted phase rate is4.8+8×effort radians/second. Fish retain independent phases, routes and depth; no new per-vertex CPU work. Strict build and all12 existing pond tests pass, including two-minute position/depth bounds and smooth propulsion transitions.

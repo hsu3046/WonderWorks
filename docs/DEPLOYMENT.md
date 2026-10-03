@@ -26,3 +26,11 @@ The existing empty public repository is reused. Production deployment is separat
 ## Validation
 
 Run `npm run check` and `npm run build`. `scripts/check-site.mjs` verifies static catalog coverage, each declared image/video/source asset, metadata, structured data and sitemap URLs. Verify the deployed site in a browser; avoid repeated scripted requests that could trigger production firewall protection.
+
+## Preserving published studies
+
+A production deployment from a feature branch can include work that is absent from `main`. Before replacing production, integrate that already-published work into the release alongside the new feature. On 2026-10-03, rebuilding crawler-only `main` removed Fulgur because the published lightning/gallery changes were on `feat/pond-monarch-butterfly`. The restoration combines that committed branch with Webcrawler: nine studies, Fulgur 08 and Webcrawler 09, both previews, credits, source downloads and standalone routes.
+
+The static release check now requires both `lightning` and `crawler` in the catalog and unique study numbers. This catches their omission before a deployment can replace the live collection.
+
+Restoration validation: root type checks and 48 unit tests passed; the full build generated nine study downloads and validated 11 canonical pages. The local compiled gallery contains both creator credits; Fulgur's detail, source link and live scene opened successfully with no browser errors.

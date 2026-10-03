@@ -1,0 +1,129 @@
+[
+  {
+    "file": "wooden-bridge-refined-v1-packed-v1",
+    "before": 15931896,
+    "after": 11760448
+  },
+  {
+    "file": "wooden-gazebo-refined-v1-packed-v1",
+    "before": 12826188,
+    "after": 9259616
+  },
+  {
+    "file": "montane-frog-hopping-packed-v1",
+    "before": 9181380,
+    "after": 3329340
+  },
+  {
+    "file": "aib-goldfish-v5-packed-v1",
+    "before": 8416504,
+    "after": 4777692
+  },
+  {
+    "file": "aib-goldfish-v5-cornea-packed-v1",
+    "before": 155700,
+    "after": 103168
+  },
+  {
+    "file": "monarch-butterfly-packed-v1",
+    "before": 4774660,
+    "after": 2810420
+  },
+  {
+    "file": "jikin-neutral-v1-packed-v1",
+    "before": 3371128,
+    "after": 1820880
+  },
+  {
+    "file": "tosakin-packed-v1",
+    "before": 3629164,
+    "after": 2163700
+  },
+  {
+    "file": "ryukin-packed-v1",
+    "before": 3927256,
+    "after": 2037716
+  },
+  {
+    "file": "shubunkin-packed-v1",
+    "before": 3622792,
+    "after": 1849796
+  },
+  {
+    "flower": "Hydrangea",
+    "trianglesBefore": 12096,
+    "trianglesAfter": 2800,
+    "error": 0.012655791826546192
+  },
+  {
+    "file": "hydrangea-far-v2",
+    "before": 6481240,
+    "after": 4124264
+  },
+  {
+    "file": "hydrangea-near-v2",
+    "before": 6481240,
+    "after": 1345812
+  },
+  {
+    "flower": "Azalea",
+    "trianglesBefore": 3489,
+    "trianglesAfter": 999,
+    "error": 0.015333275310695171
+  },
+  {
+    "file": "azalea-far-v2",
+    "before": 2727532,
+    "after": 2103384
+  },
+  {
+    "file": "azalea-near-v2",
+    "before": 2727532,
+    "after": 374396
+  },
+  {
+    "file": "bark_brown_02_diff_1k-v2.webp",
+    "before": 659592,
+    "after": 441214
+  },
+  {
+    "file": "bark_brown_02_nor_gl_1k-v2.webp",
+    "before": 1015623,
+    "after": 464050
+  },
+  {
+    "file": "bark_brown_02_rough_1k-v2.webp",
+    "before": 337946,
+    "after": 223936
+  },
+  {
+    "file": "forest_ground_04_diff_1k-v2.webp",
+    "before": 1113899,
+    "after": 512628
+  },
+  {
+    "file": "forest_ground_04_nor_gl_1k-v2.webp",
+    "before": 1326812,
+    "after": 563214
+  },
+  {
+    "file": "forest_ground_04_rough_1k-v2.webp",
+    "before": 627507,
+    "after": 271672
+  },
+  {
+    "file": "rock_boulder_dry_diff_1k-v2.webp",
+    "before": 859211,
+    "after": 367722
+  },
+  {
+    "file": "rock_boulder_dry_nor_gl_1k-v2.webp",
+    "before": 802497,
+    "after": 240256
+  },
+  {
+    "file": "rock_boulder_dry_rough_1k-v2.webp",
+    "before": 668127,
+    "after": 285234
+  }
+]

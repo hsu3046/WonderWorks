@@ -483,7 +483,7 @@ async function boot() {
   shadows.renderFar(scene, sunDir, (cam) => { terrain.update(cam, true); trees.cullFar(cam, true); });
   mark('farShadow:end');
   // 近距離の影の対象（木の近景など）
-  const nearFocus = new THREE.Vector3();
+  const nearFocus = new THREE.Vector3(), nearForward = new THREE.Vector3();
 
   status('');
   app.ready = true;
@@ -552,7 +552,7 @@ async function boot() {
     butterflies.update(camera);
     // 近距離の影：視線の先の地面のあたり
     {
-      const f = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion);
+      const f = nearForward.set(0, 0, -1).applyQuaternion(camera.quaternion);
       const hgt = Math.max(2, camera.position.y - 0);
       nearFocus.copy(camera.position).addScaledVector(f, Math.min(45, 12 + hgt * 0.6));
       prof.begin('shadowNear');
@@ -596,7 +596,8 @@ async function boot() {
     if (!app.skip.particles) particles.render(renderer, camera, post.dofRT, app.w, app.h, post.cocMat.uniforms.uFocus.value, sceneRT.depthTexture);
     // しゃぼん玉（被写界深度のあとに、それぞれのボケで重ねる）
     prof.begin('bubbles');
-    bubbleR.probe(renderer, camera);  // 泡の映り込みの環境図
+    // The POV film also consumes this probe, even after the last external bubble disappears.
+    bubbleR.probe(renderer, camera, app.bubbles.length > 0);
     if (app.bubbles.length) {
       bubbleR.update(app.bubbles, camera, app.w, app.h, post.cocMat.uniforms.uFocus.value, sceneRT.depthTexture);
       bubbleR.render(renderer, camera, post.dofRT);
@@ -610,11 +611,17 @@ async function boot() {
     post.run(post.final, null);
     prof.frame();
   };
+  let frameRaf = 0, frameActive = true;
+  const canFrame = () => !CAPTURE && frameActive && !app.paused && !document.hidden;
+  const syncFrame = () => {
+    cancelAnimationFrame(frameRaf); frameRaf = 0; last = performance.now();
+    if (canFrame()) frameRaf = requestAnimationFrame(frame);
+  };
   const frame = () => {
-    requestAnimationFrame(frame);
+    frameRaf = 0;
+    if (!canFrame()) return;
     const now = performance.now();
     // メニューを開いている間は止める（最後の画をそのまま見せる）
-    if (app.paused) { last = now; return; }
     const rawDt = (now - last) / 1000;
     const dt = Math.min(0.05, rawDt);
     last = now;
@@ -631,8 +638,14 @@ async function boot() {
       if (loadingT > 1.4) loadingEl.hidden = true;
     }
     app.frames++;
+    if (canFrame() && !frameRaf) frameRaf = requestAnimationFrame(frame);
     for (let i = app._waiters.length - 1; i >= 0; i--) if (app.frames >= app._waiters[i].at) { app._waiters[i].res(); app._waiters.splice(i, 1); }
   };
+  // Menu, gallery and visibility share a single RAF owner. Resume never catches up hidden time.
+  let paused = app.paused;
+  Object.defineProperty(app, 'paused', {get: () => paused, set(value) {paused = value; syncFrame();}});
+  app.setActive = active => {frameActive = active; syncFrame();};
+  document.addEventListener('visibilitychange', syncFrame);
   if (CAPTURE) runCapture({ simulate, render, director, wind, camera, groundAt, canvas, app, loadingEl, titleEl, hintEl, sndBtn, params });
   else frame();
 }

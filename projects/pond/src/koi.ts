@@ -1,22 +1,27 @@
 // SPDX-License-Identifier: GPL-3.0-only — © 2026 AIB Inc.
 // Fish assets: somitsu (CC BY 4.0) and AIB Inc.; see public/models/ATTRIBUTION.md.
 import * as T from 'three';
-import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {settleAll} from './task-pool';
+import {disposeObjects} from './scene-resources';
+import {createModelLoader} from './model-loader';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
-import {noiseGLSL,uTime} from './shared';
+import {uTime} from './shared';
+import {causticGLSL,waterUniforms} from './water-field';
 import {fishSpecies} from './fish-species';
 
 /** Blender-normalized assets share +X forward / +Y up, with independent GPU swim phases. */
 export async function createKoi(scene:T.Scene,seeds:Float32Array){
- const loader=new GLTFLoader();
- const assets=await Promise.all(fishSpecies.map(async({name})=>{
-  const asset=await loader.loadAsync(`${import.meta.env.BASE_URL}models/${name}.glb`);
-  if(name==='aib-goldfish-v5'){
-   const cornea=await loader.loadAsync(`${import.meta.env.BASE_URL}models/aib-goldfish-v5-cornea.glb`);
-   asset.scene.add(cornea.scene);
-  }
+ const loader=createModelLoader();
+ const completed:Awaited<ReturnType<typeof loader.loadAsync>>[]=[];
+ let assets:typeof completed;
+ try{assets=await settleAll(fishSpecies.map(async({name})=>{
+  // Jikin's source export baked a one-sided rig pose; swim from its neutral bake.
+  const file=name==='jikin'?'jikin-neutral-v1':name;
+  const files=[file,...(name==='aib-goldfish-v5'?['aib-goldfish-v5-cornea']:[])];
+  const parts=await settleAll(files.map(async f=>{const asset=await loader.loadAsync(`${import.meta.env.BASE_URL}models/${f}-packed-v1.glb`);completed.push(asset);return asset;}));
+  const asset=parts[0]!;if(parts[1])asset.scene.add(parts[1].scene);
   return asset;
- }));
+ }));}catch(cause){completed.forEach(asset=>disposeObjects(asset.scene));throw cause;}
  const speciesCount=assets.length;
  const batches:T.InstancedMesh[][]=assets.map(()=>[]);
  const swimAttributes:T.InstancedBufferAttribute[]=[];
@@ -91,22 +96,24 @@ export async function createKoi(scene:T.Scene,seeds:Float32Array){
    const g=mergeGeometries(parts)!;parts.forEach(p=>p.dispose());
    g.setAttribute('aSwim',swim);
    material.onBeforeCompile=shader=>{
-    shader.uniforms.uLifeTime=uTime;
+    Object.assign(shader.uniforms,waterUniforms);shader.uniforms.uLifeTime=uTime;
     shader.vertexShader=shader.vertexShader.replace('#include <common>',`#include <common>
      uniform float uLifeTime;attribute vec3 aSwim;attribute vec2 aFlex;varying vec3 vPond;`)
     .replace('#include <beginnormal_vertex>',`#include <beginnormal_vertex>
      float swimPhase=aSwim.x+position.x*2.7;
      float tailWeight=clamp((.65-position.x)/1.8,0.,1.);
-     float amplitude=.12+.15*aSwim.y;
-     float bendSlope=amplitude*(2.7*cos(swimPhase)*tailWeight*tailWeight-2.*sin(swimPhase)*tailWeight/1.8)-aSwim.z*tailWeight*.12;
+     // Tail beats must cross the centreline even during a sustained turn/glide.
+     float amplitude=.095+.31*aSwim.y;
+     float turnBend=aSwim.z*.025;
+     float bendSlope=amplitude*(2.7*cos(swimPhase)*tailWeight*tailWeight-2.*sin(swimPhase)*tailWeight/1.8)-2.*turnBend*tailWeight/1.8;
      objectNormal.x-=bendSlope*objectNormal.z;`)
     .replace('#include <begin_vertex>',`#include <begin_vertex>
-     transformed.z+=sin(swimPhase)*amplitude*tailWeight*tailWeight+aSwim.z*tailWeight*tailWeight*.11;
-     float flutter=sin(aSwim.x*1.35+position.x*4.+position.z*3.)*aFlex.x*aFlex.x*(.045+.045*aSwim.y);
+     transformed.z+=sin(swimPhase)*amplitude*tailWeight*tailWeight+turnBend*tailWeight*tailWeight;
+     float flutter=sin(aSwim.x*1.35+position.x*4.+position.z*3.)*aFlex.x*aFlex.x*(.060+.085*aSwim.y);
      if(aFlex.y>.5)transformed.y+=flutter;else transformed.z+=flutter;`)
     .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvPond=(modelMatrix*instanceMatrix*vec4(transformed,1.)).xyz;');
     shader.fragmentShader=shader.fragmentShader.replace('#include <common>',`#include <common>
-     uniform float uLifeTime;varying vec3 vPond;${noiseGLSL}`)
+     uniform float uLifeTime;varying vec3 vPond;${causticGLSL}`)
     .replace('#include <alphatest_fragment>',`#include <alphatest_fragment>
      // Keep texture cutouts but prevent the whole fin from disappearing under refraction.
      diffuseColor.a=${cornea?'.16':fin?(authored?'clamp(diffuseColor.a,.03,.98)':'clamp(diffuseColor.a,.72,.98)'):'1.'};`)
@@ -114,7 +121,7 @@ export async function createKoi(scene:T.Scene,seeds:Float32Array){
      // glTF roughness maps multiply the scalar, so the scalar alone cannot set a floor.
      ${eye||authored?'':'roughnessFactor=clamp(roughnessFactor,.48,.82);'}`)
     .replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>
-     ${eye?'':'totalEmissiveRadiance+=diffuseColor.rgb*vec3(.038,.050,.027)*caustic(vPond.xz*3.,uLifeTime);'}`);
+     ${eye?'':'totalEmissiveRadiance+=diffuseColor.rgb*vec3(.18,.21,.15)*causticLight(vPond);'}`);
     if(cornea)shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`
      // Original curved membrane: nearly clear head-on, more reflective toward the rim.
      float eyeFresnel=pow(1.-abs(dot(normal,normalize(vViewPosition))),3.);
@@ -124,7 +131,7 @@ export async function createKoi(scene:T.Scene,seeds:Float32Array){
      diffuseColor.a=max(.12+.48*eyeFresnel,catchlight*.85);
      #include <opaque_fragment>`);
    };
-   material.customProgramCacheKey=()=>`stillwater-source-colors-v10-${species}-${fin}-${eye}-${cornea}`;
+   material.customProgramCacheKey=()=>`stillwater-water-light-v12-${species}-${fin}-${eye}-${cornea}`;
    const mesh=new T.InstancedMesh(g,material,subset.length);mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.frustumCulled=false;mesh.castShadow=!fin&&!cornea;mesh.receiveShadow=true;
    scene.add(mesh);batches[species]!.push(mesh);
   }

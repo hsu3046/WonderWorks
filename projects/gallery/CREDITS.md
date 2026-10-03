@@ -11,7 +11,10 @@ Creator links supplied by the project owner on 2026-09-29. Visual references are
 | Bubble Day | Original code by | [@akakuma0219](https://x.com/akakuma0219) |
 | Fruit Jelly | Inspired by | [@vib3coded](https://x.com/vib3coded) |
 | Ocean Shoal | Inspired by | [@xingor_dev](https://x.com/xingor_dev) |
+| Fulgur | Inspired by | [Jason Key (@key_vfx)](https://x.com/key_vfx) |
 | Webcrawler | Inspired by | [༺ཧคlคฝคཊ༻ (@rybinfx)](https://x.com/rybinfx) |
+
+Fulgur's visual inspiration credit was supplied by the project owner on 2026-10-03.
 
 Wonderworks implementation and gallery: © 2026 [AIB Inc.](https://www.aib.vote), GNU GPL v3. Bubble Day's supplied original source has a separate provenance notice; no original license was included with the supplied archive. Fruit Jelly's implementation comes from AIB's Dani project, with the visual inspiration credited above.
 

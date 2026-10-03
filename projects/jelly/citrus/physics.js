@@ -5,7 +5,14 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const dot = (a,b) => a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
 const cross = (a,b) => [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
 const sub = (p,a,b) => [p[a*3]-p[b*3],p[a*3+1]-p[b*3+1],p[a*3+2]-p[b*3+2]];
-export function signedVolume(p,a,b,c,d) { return dot(sub(p,b,a),cross(sub(p,c,a),sub(p,d,a)))/6; }
+// Scalar triple product: preserve operation order without four temporary arrays per tet.
+export function signedVolume(p,a,b,c,d) {
+  const ax=p[a*3],ay=p[a*3+1],az=p[a*3+2];
+  const bx=p[b*3]-ax,by=p[b*3+1]-ay,bz=p[b*3+2]-az;
+  const cx=p[c*3]-ax,cy=p[c*3+1]-ay,cz=p[c*3+2]-az;
+  const dx=p[d*3]-ax,dy=p[d*3+1]-ay,dz=p[d*3+2]-az;
+  return (bx*(cy*dz-cz*dy)+by*(cz*dx-cx*dz)+bz*(cx*dy-cy*dx))/6;
+}
 
 // Consistent triangular-prism split: sorted triangle IDs give every shared quad the same diagonal.
 export function createCitrus({rings=4,sectors=24,layers=3,radius=1.58,height=.43}={}) {
@@ -111,8 +118,9 @@ export class SoftBody {
     for(let n=0;n<weights.length;n++)if(weights[n])for(let k=0;k<3;k++){const i=n*3+k;this.p[i]+=correction[i]*.32/Math.max(1,weights[n]);}
   }
   solveEdges(alpha) {
+    // The solver clamps positions to a small finite box; hypot overflow rescaling is unnecessary.
     const p=this.p;
-    for(let e=0;e<this.edges.length;e++){const [ai,bi]=this.edges[e],a=ai*3,b=bi*3,dx=p[a]-p[b],dy=p[a+1]-p[b+1],dz=p[a+2]-p[b+2],len=Math.hypot(dx,dy,dz);if(len<1e-9)continue;const dl=(-(len-this.lengths[e])-alpha*this.edgeLambda[e])/(2+alpha);this.edgeLambda[e]+=dl;const f=dl/len;p[a]+=dx*f;p[b]-=dx*f;p[a+1]+=dy*f;p[b+1]-=dy*f;p[a+2]+=dz*f;p[b+2]-=dz*f;}
+    for(let e=0;e<this.edges.length;e++){const [ai,bi]=this.edges[e],a=ai*3,b=bi*3,dx=p[a]-p[b],dy=p[a+1]-p[b+1],dz=p[a+2]-p[b+2],len=Math.sqrt(dx*dx+dy*dy+dz*dz);if(len<1e-9)continue;const dl=(-(len-this.lengths[e])-alpha*this.edgeLambda[e])/(2+alpha);this.edgeLambda[e]+=dl;const f=dl/len;p[a]+=dx*f;p[b]-=dx*f;p[a+1]+=dy*f;p[b+1]-=dy*f;p[a+2]+=dz*f;p[b+2]-=dz*f;}
   }
   solveVolumes(alpha) {
     const p=this.p,g=this.grad;
