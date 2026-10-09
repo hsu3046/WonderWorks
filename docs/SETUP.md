@@ -68,3 +68,5 @@ User checks: open the sample, click a word, switch to sentence mode, add two mor
 Original-design capture optionally reuses an installed Playwright runtime and Chromium. In the crawler project, copy `.env.example` to `.env.local` and set `CRAWLER_PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs`. For gallery preview or a deployed Node process, set the same server environment variable there. It is never exposed to client code. No runtime is automatically installed; without it, live URLs fall back to reader view.
 
 Original-view checks: load a styled public page, inspect its image/font/layout, feed a word, scroll within the captured page, switch original/reader views and restore. Resizing scales the capture; reload the address to capture a different responsive width. Canvas/video/live interactions are outside this static-copy mode.
+
+Bloom Studio (study 12) uses its own local dependencies: root `npm run setup` runs `npm ci --prefix projects/bloom` alongside the shared toolchain. For standalone development use `npm run dev --prefix projects/bloom` (port 4185).

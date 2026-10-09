@@ -19,3 +19,5 @@ Stillwater directly uses Jikin, Tosakin, Ryukin and Shubunkin fish models/textur
 Stillwater’s Montane Brown Frog model/textures are by [ffish.asia / floraZia.com](https://sketchfab.com/ffishAsia-and-floraZia), CC BY 4.0, from the user-supplied rigged derivative. See the model attribution for conversion details and derivative provenance.
 
 Stillwater garden textures: [Poly Haven](https://polyhaven.com), CC0. Individual artists and texture sources are listed in `public/textures/ATTRIBUTION.md`.
+
+Bloom Studio: inspired by [@ann_nnng](https://x.com/ann_nnng). Original procedural 3D flowers and vase by AIB Inc.; AI-generated botanical thumbnails. The supplied reference recording is not redistributed. Three.js, node-qrcode and jsQR retain their MIT licenses.

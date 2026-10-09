@@ -7,3 +7,5 @@ const result=spawnSync(process.execPath,['--test',...['pond','lightning','skygli
 const crawler=spawnSync(process.execPath,['--test',...readdirSync(`${root}projects/crawler/tests`).filter(f=>f.endsWith('.test.mjs')).map(f=>`projects/crawler/tests/${f}`)],{cwd:root,stdio:'inherit'});if(crawler.status!==0)process.exit(crawler.status||1);
 
 const foil=spawnSync('npm',['run','test','--prefix','projects/foil'],{cwd:root,stdio:'inherit'});if(foil.status!==0)process.exit(foil.status||1);
+
+const bloom=spawnSync('npm',['run','test','--prefix','projects/bloom'],{cwd:root,stdio:'inherit'});if(bloom.status!==0)process.exit(bloom.status||1);
