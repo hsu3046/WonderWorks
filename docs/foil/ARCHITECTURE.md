@@ -72,3 +72,7 @@ Validation: strict build and8tests pass, including legacy decoding, endpoints, i
 ### Gallery integration — 2026-10-09
 
 Study11 is registered in the gallery catalog with Inspired by @ann_nnng linking to the supplied creator profile. Root setup/build/check include Foil; prepare-works copies its relative-base build to experiments/foil; source packaging produces foil-studio-source.zip. Gallery SEO, credits and source actions derive from the catalog. Preview poster and six-second MP4 are captures of the local card renderer (closed foil and opened portrait views), not redistributed reference footage.
+
+### PR4 review corrections — 2026-10-09
+
+Only ray-hit pointers enter the gesture set and each is captured before tracking, including secondary touches; missed background touches cannot leave an unreleased pointer ID. Shared-card settings are applied synchronously before image decoding. Decoded artwork is committed only if its generation still owns the image, preserving concurrent letter/settings edits and newer uploads/templates. Audited all source assignments and gesture-set mutations. Three handler-level regressions cover missed touches, edits during decoding and superseding picture selections. All11tests and the strict standalone build pass.

@@ -178,17 +178,22 @@ saveButton.addEventListener('click', async () => {
 
 async function init(): Promise<void> {
   if (location.hash.startsWith('#card=')) {
+    const request = ++generation;
     try {
       const restored = decodeCard(location.hash.slice(6));
+      // Apply settings synchronously, before image decoding lets the user edit them.
+      state = restored; sync(); document.body.classList.add('recipient');
+      message(restored.sender ? `A little card from ${restored.sender}. Tap to look inside.` : 'Someone made this for you. Tap to look inside.');
+      let next: HTMLCanvasElement;
       if (restored.image) {
-        const image = await loadImage(restored.image); source = canvas(image.naturalWidth, image.naturalHeight); context(source).drawImage(image, 0, 0);
+        const image = await loadImage(restored.image); next = canvas(image.naturalWidth, image.naturalHeight); context(next).drawImage(image, 0, 0);
       } else if (restored.template) {
         const template = weddingTemplates.find(item => item.id === restored.template)!;
-        source = await templateArtwork(template.file);
-      } else source = sampleArtwork(restored.sample);
-      state = restored; document.body.classList.add('recipient');
-      message(restored.sender ? `A little card from ${restored.sender}. Tap to look inside.` : 'Someone made this for you. Tap to look inside.');
-    } catch (error) { errorMessage(error); }
+        next = await templateArtwork(template.file);
+      } else next = sampleArtwork(restored.sample);
+      // A newer upload/template owns the image; letter/settings edits already live in state.
+      if (request === generation) source = next;
+    } catch (error) { if (request === generation) errorMessage(error); }
   }
   sync(); thumbnail();
   try {

@@ -250,12 +250,13 @@ export class CardRenderer {
     return this.raycaster.intersectObject(this.book, true).length > 0;
   }
   private down = (event: PointerEvent): void => {
+    if (event.button !== 0 || !this.hit(event)) return;
+    // Track only captured pointers: their release arrives even outside the stage.
+    this.host.setPointerCapture(event.pointerId);
     this.gestures.add(event.pointerId);
     if (this.gestures.size > 1) { this.pointer = null; return; }
-    if (event.button !== 0 || !this.hit(event)) return;
     this.target.copy(this.root.quaternion);
     this.pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false, time: performance.now() };
-    this.host.setPointerCapture(event.pointerId);
   };
   private move = (event: PointerEvent): void => {
     const p = this.pointer; if (!p || p.id !== event.pointerId) return;
