@@ -43,3 +43,6 @@ The gallery uses the regular-weight `link-simple`, `arrow-right`, `arrow-down`, 
 
 
 Foil Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The supplied recording is private reference material and is not redistributed. Implementation, botanical samples and generated wedding artwork are original AIB work; prompts and provenance are in `docs/foil/`. © 2026 AIB Inc., GNU GPL v3.
+
+
+Bloom Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng). Original procedural bouquets and glazed vase, with AI-generated botanical thumbnails, by AIB Inc. The gallery preview records the implemented scene; the supplied reference video is not redistributed. Three.js, node-qrcode and jsQR retain their MIT licenses.

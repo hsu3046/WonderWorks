@@ -2,9 +2,9 @@
 import {access,symlink} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 export const root=fileURLToPath(new URL('../',import.meta.url));
-export const builds=['fish','chroma','harbor','foliage','pond','lightning','crawler','skyglider','foil','gallery'];
+export const builds=['fish','chroma','harbor','foliage','pond','lightning','crawler','skyglider','foil','bloom','gallery'];
 await access(`${root}projects/fish/node_modules/three/package.json`);
-for(const name of builds.filter(name=>name!=='fish')){
+for(const name of builds.filter(name=>name!=='fish'&&name!=='bloom')){
  const destination=`${root}projects/${name}/node_modules`;
  try{await access(destination);}catch{await symlink('../fish/node_modules',destination,'dir');}
 }

@@ -1,0 +1,6 @@
+{
+  "name": "vote.aib.wonderworks-bloom", "version": "0.1.0", "private": true, "type": "module", "license": "GPL-3.0-only",
+  "scripts": {"dev":"vite --host 127.0.0.1 --port 4185 --strictPort", "build":"tsc --noEmit && vite build --base=./", "check":"tsc --noEmit", "test":"node --experimental-strip-types --test tests/*.test.mjs"},
+  "dependencies":{"three":"0.186.0","qrcode":"1.5.4","jsqr":"1.4.0"},
+  "devDependencies":{"@types/three":"0.186.0","@types/qrcode":"1.5.6","typescript":"7.0.2","vite":"8.3.1"}
+}
