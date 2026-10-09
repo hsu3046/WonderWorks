@@ -76,3 +76,7 @@ Study11 is registered in the gallery catalog with Inspired by @ann_nnng linking 
 ### PR4 review corrections — 2026-10-09
 
 Only ray-hit pointers enter the gesture set and each is captured before tracking, including secondary touches; missed background touches cannot leave an unreleased pointer ID. Shared-card settings are applied synchronously before image decoding. Decoded artwork is committed only if its generation still owns the image, preserving concurrent letter/settings edits and newer uploads/templates. Audited all source assignments and gesture-set mutations. Three handler-level regressions cover missed touches, edits during decoding and superseding picture selections. All11tests and the strict standalone build pass.
+
+### PR4 second review corrections — 2026-10-09
+
+Image request generations and successful artwork revisions are separate: a failed or still-pending replacement cannot discard the restored shared image, while successful upload/template/sample commits supersede it. Template presets compare per-setting interaction revisions, including same-value clicks, away/back selections and Surprise me. All six preset-controlled fields and all source commits were audited. Added deferred restoration and actual template/swatch callback regressions;13tests and strict build pass.

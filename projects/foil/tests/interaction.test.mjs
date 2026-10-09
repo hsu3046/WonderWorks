@@ -34,7 +34,7 @@ function pendingRestore() {
   let resolve;
   const image = new Promise(done => { resolve = done; });
   const restored = { ...defaultState(), template: 'wedding-celestial', letter: 'Original' };
-  const env = { location: { hash: '#card=test' }, generation: 0, state: defaultState(), source: 'initial',
+  const env = { location: { hash: '#card=test' }, generation: 0, artworkRevision: 0, state: defaultState(), source: 'initial',
     decodeCard: () => restored, sync() {}, document: { body: { classList: { add() {} } } }, message() {},
     weddingTemplates: [{ id: 'wedding-celestial', file: 'cover.png' }], templateArtwork: () => image,
     thumbnail() {}, loadImage: async () => ({}), templateUrl: x => x, stage: {}, renderer: null,
@@ -52,8 +52,44 @@ test('editing the letter during shared artwork decoding survives restoration', a
 });
 test('a newer picture selection wins over pending shared artwork decoding', async () => {
   const { env, resolve, run } = pendingRestore();
-  env.generation++; env.source = 'new upload'; env.state = { ...env.state, template: undefined, image: 'new image' };
+  env.generation++; env.artworkRevision++; env.source = 'new upload'; env.state = { ...env.state, template: undefined, image: 'new image' };
   resolve('old shared cover'); await run;
   assert.equal(env.rendered.source, 'new upload');
   assert.equal(env.state.image, 'new image');
+});
+
+
+test('failed or still-pending replacements retain the successfully restored artwork', async () => {
+  const { env, resolve, run } = pendingRestore();
+  env.generation++; // A rejected upload or pending template did not commit an image.
+  resolve('shared cover'); await run;
+  assert.equal(env.rendered.source, 'shared cover');
+  assert.equal(env.state.template, 'wedding-celestial');
+});
+
+// Exercise the real template and swatch callbacks while template decoding is delayed.
+test('same-value and away/back selections override pending template presets', async () => {
+  const start = main.indexOf("button.addEventListener('click', async ");
+  const end = main.indexOf("element('upload').addEventListener", start);
+  const handlerSource = main.slice(start, end).trim().replace(/}$/, '');
+  const swatchesSource = main.slice(main.indexOf('function swatches('), main.indexOf('function sync('));
+  for (const indices of [[0], [1, 0]]) {
+    let resolve, pending, select;
+    const controls = [];
+    const env = { generation: 0, artworkRevision: 0, source: 'old', state: defaultState(),
+      settingRevisions: { foil: 0, paper: 0, amount: 0, shape: 0, mode: 0, border: 0 },
+      template: { id: 'wedding-garden', name: 'Garden vows', file: 'cover', foil: 2, paper: 1, amount: 24 },
+      button: { addEventListener: (_, callback) => { select = callback; } },
+      element: () => ({ setAttribute() {}, append(button) { controls.push(button); } }),
+      document: { createElement: () => ({ dataset: {}, style: { setProperty() {} }, setAttribute() {}, addEventListener(_, fn) { this.click = fn; } }) },
+      templateArtwork: () => new Promise(done => { resolve = done; }),
+      message() {}, thumbnail() {}, sync() {}, changed() {}, renderer: null, errorMessage: e => { throw e; } };
+    new Function('env', `with(env) { ${handlerSource} ${swatchesSource}; swatches('foil', 'foil', [{name:'Gold',colour:'#000'}, {name:'Silver',colour:'#fff'}]); }`)(env);
+    pending = select();
+    for (const index of indices) controls[index].click();
+    resolve('garden'); await pending;
+    assert.equal(env.state.foil, 0);
+    assert.equal(env.state.paper, 1, 'untouched settings still receive the preset');
+    assert.equal(env.source, 'garden');
+  }
 });

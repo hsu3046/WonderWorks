@@ -15,7 +15,9 @@ function errorMessage(error: unknown): void { message(error instanceof Error ? e
 let state = defaultState();
 let source = sampleArtwork(0);
 let renderer: CardRenderer | null = null;
-let opened = false, generation = 0, updateTimer = 0;
+let opened = false, generation = 0, artworkRevision = 0, updateTimer = 0;
+// User intent must be tracked even when a control is set to its existing value.
+const settingRevisions = { foil: 0, paper: 0, amount: 0, shape: 0, mode: 0, border: 0 };
 let shared = false;
 const letter = element<HTMLTextAreaElement>('letter'), sender = element<HTMLInputElement>('sender');
 const amount = element<HTMLInputElement>('amount'), border = element<HTMLInputElement>('border');
@@ -34,7 +36,7 @@ function choices<T extends 'shape' | 'mode'>(id: string, key: T, values: readonl
   const container = element(id);
   values.forEach((value, index) => {
     const button = document.createElement('button'); button.textContent = value; button.dataset.value = String(index);
-    button.addEventListener('click', () => { state[key] = index; sync(); changed(); }); container.append(button);
+    button.addEventListener('click', () => { settingRevisions[key]++; state[key] = index; sync(); changed(); }); container.append(button);
   });
 }
 function swatches(id: string, key: 'foil' | 'paper', values: readonly { name: string; colour: string; gradient?: string }[]): void {
@@ -42,7 +44,7 @@ function swatches(id: string, key: 'foil' | 'paper', values: readonly { name: st
   values.forEach((value, index) => {
     const button = document.createElement('button'); button.className = 'swatch'; button.dataset.value = String(index);
     button.style.setProperty('--swatch', value.gradient ?? value.colour); button.title = value.name; button.setAttribute('aria-label', value.name);
-    button.addEventListener('click', () => { state[key] = index; sync(); changed(); }); container.append(button);
+    button.addEventListener('click', () => { settingRevisions[key]++; state[key] = index; sync(); changed(); }); container.append(button);
   });
 }
 function sync(): void {
@@ -68,7 +70,7 @@ async function acceptPicture(picture: File): Promise<void> {
   try {
     const next = await importImage(picture); if (request !== generation) return;
     // Commit only the new image; edits made while decoding remain in the latest state.
-    const linkImage = shareImage(next); source = next; state.image = linkImage; delete state.template; sync();
+    const linkImage = shareImage(next); source = next; artworkRevision++; state.image = linkImage; delete state.template; sync();
     thumbnail(); changed(); message('Your picture is ready. Turn it toward the light.');
   } catch (error) { if (request === generation) errorMessage(error); }
   finally { file.value = ''; }
@@ -89,18 +91,18 @@ for (const template of weddingTemplates) {
   button.title = template.detail; button.append(preview, name); element('wedding-templates').append(button);
   button.addEventListener('click', async () => {
     const request = ++generation;
-    const before = { foil: state.foil, paper: state.paper, amount: state.amount, shape: state.shape, mode: state.mode, border: state.border };
+    const before = { ...settingRevisions };
     element('wedding-templates').setAttribute('aria-busy', 'true'); message(`Preparing ${template.name}…`);
     try {
       const next = await templateArtwork(template.file); if (request !== generation) return;
-      source = next; state.image = null; state.template = template.id;
+      source = next; artworkRevision++; state.image = null; state.template = template.id;
       // Preserve any settings/letter edits made while the image was loading.
-      if (state.foil === before.foil) state.foil = template.foil;
-      if (state.paper === before.paper) state.paper = template.paper;
-      if (state.amount === before.amount) state.amount = template.amount;
-      if (state.shape === before.shape) state.shape = 0;
-      if (state.mode === before.mode) state.mode = 0;
-      if (state.border === before.border) state.border = false;
+      if (settingRevisions.foil === before.foil) state.foil = template.foil;
+      if (settingRevisions.paper === before.paper) state.paper = template.paper;
+      if (settingRevisions.amount === before.amount) state.amount = template.amount;
+      if (settingRevisions.shape === before.shape) state.shape = 0;
+      if (settingRevisions.mode === before.mode) state.mode = 0;
+      if (settingRevisions.border === before.border) state.border = false;
       thumbnail(); sync(); changed(); renderer?.setOpen(false);
       message(`${template.name} is ready. Your letter stays inside.`);
     } catch (error) { if (request === generation) errorMessage(error); }
@@ -110,18 +112,19 @@ for (const template of weddingTemplates) {
 element('upload').addEventListener('click', () => file.click());
 file.addEventListener('change', () => { if (file.files?.[0]) void acceptPicture(file.files[0]); });
 element('sample').addEventListener('click', () => {
-  generation++; element('wedding-templates').setAttribute('aria-busy', 'false'); state.sample = (state.sample + 1) % 3; state.image = null; delete state.template; source = sampleArtwork(state.sample); thumbnail(); sync(); changed(); message('A fresh little design, just for you.');
+  generation++; element('wedding-templates').setAttribute('aria-busy', 'false'); state.sample = (state.sample + 1) % 3; state.image = null; delete state.template; source = sampleArtwork(state.sample); artworkRevision++; thumbnail(); sync(); changed(); message('A fresh little design, just for you.');
 });
-amount.addEventListener('input', () => { state.amount = Number(amount.value); element('amount-value').textContent = `${state.amount}%`; changed(); });
+amount.addEventListener('input', () => { settingRevisions.amount++; state.amount = Number(amount.value); element('amount-value').textContent = `${state.amount}%`; changed(); });
 gloss.addEventListener('input', () => {
   state.gloss = Number(gloss.value); element('gloss-value').textContent = `${state.gloss}%`;
   // Update only the photo material so dragging stays responsive.
   renderer?.updateGloss(state.gloss);
   if (shared) message('Your card has changed. Make a fresh link to share.');
 });
-border.addEventListener('change', () => { state.border = border.checked; changed(); });
+border.addEventListener('change', () => { settingRevisions.border++; state.border = border.checked; changed(); });
 element<HTMLInputElement>('target-colour').addEventListener('input', event => { state.target = (event.currentTarget as HTMLInputElement).value; changed(); });
 element('surprise').addEventListener('click', () => {
+  settingRevisions.foil++; settingRevisions.paper++; settingRevisions.mode++; settingRevisions.amount++;
   state.foil = Math.floor(Math.random() * foils.length); state.paper = Math.floor(Math.random() * 5);
   state.mode = Math.floor(Math.random() * 2); state.amount = 25 + Math.floor(Math.random() * 40); sync(); changed();
 });
@@ -179,6 +182,7 @@ saveButton.addEventListener('click', async () => {
 async function init(): Promise<void> {
   if (location.hash.startsWith('#card=')) {
     const request = ++generation;
+    const beforeArtwork = artworkRevision;
     try {
       const restored = decodeCard(location.hash.slice(6));
       // Apply settings synchronously, before image decoding lets the user edit them.
@@ -191,8 +195,8 @@ async function init(): Promise<void> {
         const template = weddingTemplates.find(item => item.id === restored.template)!;
         next = await templateArtwork(template.file);
       } else next = sampleArtwork(restored.sample);
-      // A newer upload/template owns the image; letter/settings edits already live in state.
-      if (request === generation) source = next;
+      // Only a successful replacement supersedes restored artwork; failed requests keep it.
+      if (beforeArtwork === artworkRevision) source = next;
     } catch (error) { if (request === generation) errorMessage(error); }
   }
   sync(); thumbnail();
