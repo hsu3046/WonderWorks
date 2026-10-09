@@ -92,3 +92,7 @@ See `docs/lightning/ARCHITECTURE.md`.
 ### Original-design capture (2026-10-03)
 
 Web Crawler now requests a bounded Playwright/Chromium capture before reader fallback. A script-disabled, network-disabled iframe preserves computed layout, images and fonts. DOM ranges and CSS Custom Highlights retain original line wrapping while words disappear. The shared API and gallery remain compatible without the optional browser runtime. See the crawler architecture for resource budgets, cancellation and limitations.
+
+## Foil Studio — Study11
+
+`projects/foil` (4184) adds a foil card studio with wedding covers, an interior photograph, adjustable gloss and URL-fragment sharing. The gallery build publishes `/experiments/foil/index.html`, preview media and a source ZIP. Inspired by [@ann_nnng](https://x.com/ann_nnng). See `docs/foil/ARCHITECTURE.md`.
