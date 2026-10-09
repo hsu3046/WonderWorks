@@ -40,3 +40,6 @@ Skyglider is an original AIB implementation inspired by the privately supplied f
 ## Phosphor Icons — 2026-10-03
 
 The gallery uses the regular-weight `link-simple`, `arrow-right`, `arrow-down`, `download-simple`, and `play` SVGs from [Phosphor Icons](https://phosphoricons.com). Assets are pinned to `phosphor-icons/core` commit `2b75f3ad12b420c9504ef05df8d2564a28f8500e`, bundled as inline SVG symbols without a runtime dependency. Original MIT copyright and permission terms are retained in `src/icons/LICENSE`; exact source URLs and SHA-256 digests are recorded in `src/icons/SOURCES.json`.
+
+
+Foil Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The supplied recording is private reference material and is not redistributed. Implementation, botanical samples and generated wedding artwork are original AIB work; prompts and provenance are in `docs/foil/`. © 2026 AIB Inc., GNU GPL v3.

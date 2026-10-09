@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import {projects} from '../projects/gallery/src/catalog.ts';
 const root=resolve(import.meta.dirname,'../projects/gallery/dist'),html=await readFile(resolve(root,'index.html'),'utf8');
 // These public studies live on different branches; neither may disappear in an integration build.
-for(const id of ['lightning','crawler','skyglider'])assert.ok(projects.some(project=>project.id===id),`Published study ${id} must remain in the collection`);
+for(const id of ['lightning','crawler','skyglider','foil'])assert.ok(projects.some(project=>project.id===id),`Published study ${id} must remain in the collection`);
 assert.equal(new Set(projects.map(project=>project.number)).size,projects.length,'Study numbers are unique');
 assert.equal((html.match(/<h1\b/g)||[]).length,1,'One primary heading');
 assert.equal((html.match(/class="project-card /g)||[]).length,projects.length,'Catalog is present in initial HTML');

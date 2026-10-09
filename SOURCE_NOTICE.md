@@ -26,3 +26,6 @@ Bubble Day는 @akakuma0219의 제공된 원본 코드를 사용한다. 원본의
 - 물고기·해저·바위·해초·빛무늬는 새 코드가 생성한다. 참조 사이트의 코드·모델·텍스처를 복사해 포함하지 않았다.
 - `docs/references/fish/`의 녹화 추출 프레임은 시각 비교 자료이며 실행 에셋이나 GPL 신규 창작물로 취급하지 않는다.
 - Three.js 등 npm 의존성은 각 패키지에 포함된 라이선스를 따른다.
+
+
+Foil Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The supplied recording is private reference material and is not redistributed. Implementation, botanical samples and generated wedding artwork are original AIB work; prompts and provenance are in `docs/foil/`. © 2026 AIB Inc., GNU GPL v3.
