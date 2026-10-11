@@ -48,3 +48,7 @@ All nine finishes selected in the browser without WebGL errors. Frame width, met
 
 ### Prism Archive — 2026-10-11
 Thirty generated fantasy card images are indexed in `src/cards.ts`. Previous/next buttons wrap and preserve rendering state. Requested and displayed indices are separate: a rapid selection advances from the pending request, while the label commits only after successful decoding. Generation/abort guards cover sample navigation, uploads and URL replacement together. Empty/single-entry and wrap behavior are tested alongside manifest identity and asset uniqueness. Exact prompts and provenance: `docs/prism/cards/`. Lossless original PNGs are stored in ignored `local-assets/prism-originals/`; all 30 SHA-256 hashes match generator output. Public JPEGs are independent delivery copies.
+
+
+### PR6 review corrections
+Keyboard-held arrows now have their own pressed-key set, released on keyup, host blur, reset and cancellation. Real pointer hover remains independent; automatic tilt resumes after the final key release. Header-level rejection (HTTP error or declared size above20MiB) cancels the response body before throwing, matching stream-overflow cancellation. Actual keyboard/draw handlers and both header rejection paths have regression coverage. Prism10tests and strict production build pass.

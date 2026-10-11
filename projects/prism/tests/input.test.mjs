@@ -34,3 +34,12 @@ test('HTTP failure and aborted requests never resolve as an image',async(t)=>{
   t.mock.method(globalThis,'fetch',async()=>{throw new DOMException('Aborted','AbortError');});
   await assert.rejects(remoteImage('https://example.com/slow',new AbortController().signal),{name:'AbortError'});
 });
+
+test('header rejection cancels oversized and unsuccessful response bodies',async(t)=>{
+ for(const status of [200,503]){
+  let cancelled=false;
+  t.mock.method(globalThis,'fetch',async()=>new Response(new ReadableStream({cancel(){cancelled=true;}}),{status,headers:{'content-length':String(MAX_BYTES+1)}}));
+  await assert.rejects(remoteImage('https://example.com/huge',new AbortController().signal),status===200?/20 MB/:/503/);
+  assert.equal(cancelled,true);
+ }
+});

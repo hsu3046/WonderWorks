@@ -12,7 +12,7 @@ export class Viewer{
   private target=new THREE.Vector2(.12,-.1);
   private pose=new THREE.Vector2(.12,-.1);
   private tiltLimit=THREE.MathUtils.degToRad(24);
-  private motion=false;private hovering=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  private keys=new Set<string>();private motion=false;private hovering=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');
   private resize:ResizeObserver;private controller=new AbortController();private frame=0;private last=0;private time=0;private dirty=true;private disposed=false;private failed=false;
   private pointers=new Set<number>();private pointer:number|null=null;private startX=0;private startY=0;private startPose=new THREE.Vector2();private dragging=false;private aspect=5/7;
   constructor(private host:HTMLElement,private report:(message:string)=>void){
@@ -24,7 +24,7 @@ export class Viewer{
     host.append(this.renderer.domElement);this.renderer.domElement.style.filter='drop-shadow(14px 24px 17px #0008)';
     const signal=this.controller.signal;
     host.addEventListener('pointerdown',this.down,{signal});host.addEventListener('pointermove',this.move,{signal});host.addEventListener('pointerup',this.up,{signal});host.addEventListener('pointercancel',this.up,{signal});
-    host.addEventListener('lostpointercapture',this.lost,{signal});host.addEventListener('pointerleave',this.leave,{signal});host.addEventListener('keydown',this.key,{signal});
+    host.addEventListener('lostpointercapture',this.lost,{signal});host.addEventListener('pointerleave',this.leave,{signal});host.addEventListener('keydown',this.key,{signal});host.addEventListener('keyup',this.keyUp,{signal});host.addEventListener('blur',this.releaseKeys,{signal});
     window.addEventListener('blur',this.cancel,{signal});document.addEventListener('visibilitychange',this.visibility,{signal});this.reduced.addEventListener('change',this.wake,{signal});
     this.renderer.domElement.addEventListener('webglcontextlost',this.contextLost,{signal});
     this.resize=new ResizeObserver(()=>{this.cancel();this.size();});this.resize.observe(host);this.size();
@@ -57,14 +57,16 @@ export class Viewer{
   private up=(e:PointerEvent)=>{this.pointers.delete(e.pointerId);if(this.host.hasPointerCapture(e.pointerId))this.host.releasePointerCapture(e.pointerId);if(this.pointer===e.pointerId){this.pointer=null;this.dragging=false;}if(!this.pointers.size){this.hovering=false;this.wake();}};
   private lost=(e:PointerEvent)=>{if(e.target===this.host&&this.pointers.has(e.pointerId))this.up(e);};
   private leave=()=>{if(this.pointers.size)return;this.hovering=false;this.target.set(.12,-.1);this.wake();};
-  private cancel=()=>{this.pointer=null;this.dragging=false;this.hovering=false;const pointers=[...this.pointers];this.pointers.clear();for(const id of pointers)if(this.host.hasPointerCapture(id))this.host.releasePointerCapture(id);};
-  private key=(e:KeyboardEvent)=>{const k=e.key;if(k.toLowerCase()==='r'){e.preventDefault();this.reset();return;}if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(k))return;e.preventDefault();this.hovering=true;if(k==='ArrowLeft')this.target.x-=.08;if(k==='ArrowRight')this.target.x+=.08;if(k==='ArrowUp')this.target.y+=.08;if(k==='ArrowDown')this.target.y-=.08;this.target.x=clamp(this.target.x,-.58,.58);this.target.y=clamp(this.target.y,-.5,.5);this.wake();};
+  private cancel=()=>{this.keys.clear();this.pointer=null;this.dragging=false;this.hovering=false;const pointers=[...this.pointers];this.pointers.clear();for(const id of pointers)if(this.host.hasPointerCapture(id))this.host.releasePointerCapture(id);};
+  private key=(e:KeyboardEvent)=>{const k=e.key;if(k.toLowerCase()==='r'){e.preventDefault();this.reset();return;}if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(k))return;e.preventDefault();this.keys.add(k);if(k==='ArrowLeft')this.target.x-=.08;if(k==='ArrowRight')this.target.x+=.08;if(k==='ArrowUp')this.target.y+=.08;if(k==='ArrowDown')this.target.y-=.08;this.target.x=clamp(this.target.x,-.58,.58);this.target.y=clamp(this.target.y,-.5,.5);this.wake();};
+  private keyUp=(e:KeyboardEvent)=>{if(this.keys.delete(e.key))this.wake();};
+  private releaseKeys=()=>{this.keys.clear();this.wake();};
   private visibility=()=>{this.cancel();if(document.hidden){cancelAnimationFrame(this.frame);this.frame=0;this.last=0;}else this.wake();};
   private wake=()=>{this.dirty=true;if(!this.frame&&!this.disposed&&!this.failed&&!document.hidden)this.frame=requestAnimationFrame(this.draw);};
   private draw=(now:number)=>{
     this.frame=0;if(this.disposed||this.failed||document.hidden)return;
     const dt=this.last?Math.min((now-this.last)/1000,.05):.016;this.last=now;
-    const moving=this.motion&&this.tiltLimit>0&&!this.reduced.matches&&!this.hovering&&!this.pointers.size;
+    const moving=this.motion&&this.tiltLimit>0&&!this.reduced.matches&&!this.hovering&&!this.keys.size&&!this.pointers.size;
     if(moving){this.time+=dt;this.target.set(Math.sin(this.time*.7)*.34,Math.cos(this.time*.51)*.19);}
     // Apply the same limit to drag, hover, keyboard and automatic motion.
     this.target.clampScalar(-this.tiltLimit,this.tiltLimit);

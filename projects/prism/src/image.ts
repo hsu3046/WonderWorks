@@ -3,8 +3,11 @@ export const MAX_BYTES=20*1024*1024;
 const supported=/^image\/(png|jpeg|webp|avif|gif)$/i;
 export async function remoteImage(address:string,signal:AbortSignal):Promise<Blob>{
   const response=await fetch(address,{signal,mode:'cors',credentials:'omit',referrerPolicy:'no-referrer'});
-  if(!response.ok)throw new Error(`The image server returned ${response.status}. Try uploading the file instead.`);
-  if(Number(response.headers.get('content-length'))>MAX_BYTES)throw new Error('Use an image smaller than 20 MB.');
+  // Rejecting headers must also stop the body; clearing the caller timeout is not cancellation.
+  if(!response.ok||Number(response.headers.get('content-length'))>MAX_BYTES){
+    await response.body?.cancel();
+    throw new Error(!response.ok?`The image server returned ${response.status}. Try uploading the file instead.`:'Use an image smaller than 20 MB.');
+  }
   if(!response.body)throw new Error('The image server returned an empty response.');
   const reader=response.body.getReader(),parts:Uint8Array<ArrayBuffer>[]=[];let size=0;
   try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>MAX_BYTES)throw new Error('Use an image smaller than 20 MB.');parts.push(new Uint8Array(value));}}catch(error){await reader.cancel();throw error;}finally{reader.releaseLock();}

@@ -33,3 +33,7 @@ User requested less perfect, faded stamp lines. A date-seeded SVG luminance mask
 
 ### Gallery release preparation — 2026-10-11
 Study 14 is registered in the main index, gallery, creator credits, root toolchain/check/build, experiment copy and source ZIP packaging. Inspiration: @raffiki_art. Gallery thumbnail is cropped from the implemented desk; MP4 is a four-second still preview. No supplied reference video is redistributed. Root checks (106 tests), build, and 14-study/16-canonical-page validation passed. The integrated path opens its letterbox and reports no browser console errors. Local development storage on port 4187 does not transfer to the gallery origin or production. Publication has not been performed.
+
+
+### PR6 storage reconciliation
+Storage events received during dispatch set a pending flag. After the animation unlocks, the UI rereads current localStorage and rebuilds the letterbox, preserving changes from other tabs. Non-busy events also read current storage, including clear events; sessionStorage events are ignored. A regression executes the actual storage callback and send-completion code against a storage change during dispatch. Dearly7tests and strict production build pass.

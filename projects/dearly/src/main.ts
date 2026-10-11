@@ -7,7 +7,7 @@ const el = <T extends HTMLElement>(id: string): T => { const e=document.getEleme
 const to=el<HTMLInputElement>('to'), from=el<HTMLInputElement>('from'), message=el<HTMLTextAreaElement>('message'), envelope=el('envelope'), attached=el('attached-stamp'), guide=el('stamp-guide'), status=el('status'), desk=el('desk'), form=el<HTMLFormElement>('letter-form'), send=el<HTMLButtonElement>('send'), stack=el('letter-stack'), dialog=el<HTMLDialogElement>('read-dialog');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 let selected: StampId | null=null, paper: Paper='ivory', stuck=false, stampX=.84, stampY=.25, stampAngle=-5, busy=false, sounds=false, audio:AudioContext | null=null, viewing: Letter | null=null, openedFrom:HTMLElement|null=null;
-let letters: Letter[]=[];
+let letters: Letter[]=[];let pendingStorage=false;
 try { letters=readLetters(localStorage.getItem(STORAGE_KEY)); } catch { tell('Your saved letterbox could not be read. Existing browser data has been left untouched.', true); }
 function tell(text:string,error=false):void {status.textContent=text;status.classList.toggle('error',error);}
 function sound(kind:'paper'|'stamp'):void {
@@ -58,6 +58,7 @@ form.addEventListener('submit',async e=>{
  await delay(440);const mark=el('postmark');mark.innerHTML=postmark(letter.date);mark.style.left=`${stampX*100}%`;mark.style.top=`${stampY*100}%`;mark.hidden=false;mark.classList.add('inked');sound('stamp');
  await delay(1100);desk.classList.add('departing');await delay(720);
  showBox(true);lock(false);send.textContent='Seal & send ↗';tell('Postmarked and tucked safely into your letterbox.');resetDraft();el('box-tab').focus();
+ if(pendingStorage)reconcileStorage(true);
 });
 function resetDraft():void {form.reset();selected=null;stuck=false;paper='ivory';stampX=.84;stampY=.25;stampAngle=-5;attached.hidden=true;guide.hidden=false;guide.classList.remove('ready');el('remove-stamp').hidden=true;el('postmark').hidden=true;el('postmark').classList.remove('inked');el('rubber-stamp').classList.remove('strike');desk.classList.remove('sealing','departing');envelope.className='envelope ivory';book.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));document.querySelectorAll<HTMLElement>('[data-paper]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.paper==='ivory')));el('preview-to').textContent='someone special';el('preview-from').textContent='someone who cares';el('peek-text').textContent='There is something lovely about\nputting a feeling into words.';el('count').textContent='0 / 1200';el('stamp-hint').textContent='Choose one, then tap the envelope to stick it on.';el('desk-note').textContent='01 / Choose a stamp. Give it a home.';}
 const samples:Letter[]=[
@@ -118,5 +119,7 @@ el('box-tab').addEventListener('click',()=>showBox());el('write-tab').addEventLi
 function openLetter(letter:Letter,trigger:HTMLElement):void {viewing=letter;openedFrom=trigger;el('read-date').textContent=letter.id.startsWith('sample-')?'A LETTER FROM THE DEARLY COLLECTION':`POSTMARKED ${new Date(letter.date).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'})}`;el('read-to').textContent=`Dear ${letter.to},`;el('read-message').textContent=letter.message;el('read-from').textContent=letter.from?`With love, ${letter.from}`:'With love, always';el('read-stamp').innerHTML=stampSVG(letter.stamp);dialog.showModal();sound('paper');}
 el('close-letter').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>{openedFrom?.focus();viewing=null;});
 el('download-letter').addEventListener('click',()=>{if(!viewing)return;const text=`Dear ${viewing.to},\n\n${viewing.message}\n\nWith love, ${viewing.from||'always'}\n\nPostmarked ${new Date(viewing.date).toLocaleDateString()} · Dearly / AIB Inc.\n`;const url=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='dearly-letter.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
-window.addEventListener('storage',e=>{if(e.key!==STORAGE_KEY||busy)return;try{letters=readLetters(e.newValue);el('letter-count').textContent=String(letters.length);if(document.body.classList.contains('in-box'))renderBox();}catch{tell('Your letterbox changed in another tab but could not be read.',true);}});
+// Storage can change during dispatch; read the latest persisted box once animation unlocks.
+function reconcileStorage(newest=false):void {pendingStorage=false;try{letters=readLetters(localStorage.getItem(STORAGE_KEY));el('letter-count').textContent=String(letters.length);if(document.body.classList.contains('in-box'))renderBox(newest);}catch{tell('Your letterbox changed in another tab but could not be read.',true);}}
+window.addEventListener('storage',e=>{if(e.storageArea!==localStorage||(e.key!==STORAGE_KEY&&e.key!==null))return;if(busy){pendingStorage=true;return;}reconcileStorage();});
 el('letter-count').textContent=String(letters.length);
