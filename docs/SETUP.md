@@ -70,3 +70,6 @@ Original-design capture optionally reuses an installed Playwright runtime and Ch
 Original-view checks: load a styled public page, inspect its image/font/layout, feed a word, scroll within the captured page, switch original/reader views and restore. Resizing scales the capture; reload the address to capture a different responsive width. Canvas/video/live interactions are outside this static-copy mode.
 
 Bloom Studio (study 12) uses its own local dependencies: root `npm run setup` runs `npm ci --prefix projects/bloom` alongside the shared toolchain. For standalone development use `npm run dev --prefix projects/bloom` (port 4185).
+
+## Prism and Dearly
+Root `npm run setup` links the shared toolchain for both. `npm run dev --prefix projects/prism` serves 4186; `npm run dev --prefix projects/dearly` serves 4187. Root `npm run check` includes their model/input tests; `npm run build` builds both, prepares gallery routes and source ZIPs, and verifies the complete catalog. Deploy the generated `projects/gallery/dist` through the existing Vercel configuration after publication is authorized.

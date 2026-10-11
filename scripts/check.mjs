@@ -9,3 +9,7 @@ const crawler=spawnSync(process.execPath,['--test',...readdirSync(`${root}projec
 const foil=spawnSync('npm',['run','test','--prefix','projects/foil'],{cwd:root,stdio:'inherit'});if(foil.status!==0)process.exit(foil.status||1);
 
 const bloom=spawnSync('npm',['run','test','--prefix','projects/bloom'],{cwd:root,stdio:'inherit'});if(bloom.status!==0)process.exit(bloom.status||1);
+
+const prism=spawnSync('npm',['run','test','--prefix','projects/prism'],{cwd:root,stdio:'inherit'});if(prism.status!==0)process.exit(prism.status||1);
+
+const dearly=spawnSync('npm',['run','test','--prefix','projects/dearly'],{cwd:root,stdio:'inherit'});if(dearly.status!==0)process.exit(dearly.status||1);

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readLetters, validateDraft, position } from '../src/model.ts';
+const letter={id:'test',to:'You',from:'Me',message:'A little thought.',stamp:'fern',paper:'ivory',x:.84,y:.25,angle:-5,date:'2026-10-11T00:00:00Z'};
+test('letters round-trip without changing user punctuation or newlines',()=>{const v={...letter,message:'<script> $&\n한국어 편지 ✉'};assert.deepEqual(readLetters(JSON.stringify([v])),[v]);});
+test('malformed browser storage is rejected without recovery overwrite',()=>{assert.throws(()=>readLetters('{'));assert.throws(()=>readLetters('{}'));assert.deepEqual(readLetters(null),[]);});
+test('unknown types, invalid dates and nonfinite coordinates are ignored',()=>{const values=[null,2,{...letter,date:'invalid'},{...letter,stamp:'unknown'},{...letter,paper:'unknown'},{...letter,x:null}];assert.deepEqual(readLetters(JSON.stringify(values)),[]);});
+test('stored text and coordinates remain within interface bounds',()=>{const [v]=readLetters(JSON.stringify([{...letter,to:'a'.repeat(500),message:'x'.repeat(3000),x:2,y:-1,angle:999}]));assert.equal(v.to.length,60);assert.equal(v.message.length,1200);assert.equal(v.x,.9);assert.equal(v.y,.16);assert.equal(v.angle,15);});
+test('a send requires a recipient, words and attached postage',()=>{assert.ok(validateDraft(' ','hello',true));assert.ok(validateDraft('You',' ',true));assert.ok(validateDraft('You','hello',false));assert.equal(validateDraft('You','hello',true),null);});
+test('postage remains within envelope margins',()=>{assert.deepEqual(position(-4,5),{x:.1,y:.8});assert.deepEqual(position(.84,.25),{x:.84,y:.25});});

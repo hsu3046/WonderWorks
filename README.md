@@ -142,3 +142,5 @@ Visual inspiration is credited separately from code and asset ownership. See the
 
 
 Skyglider (study10) adds a flying-squirrel journey, tree-crown takeoff, alpine coast, waterfalls, local scenery and grounded walking. Its standalone source and asset notices are in `projects/skyglider`; the root build publishes it alongside all nine existing studies.
+
+Prism Studio (study 13) explores nine foil finishes with image upload/URL, tint, frame, tilt and PNG export — inspired by [@davidhaz](https://x.com/davidhaz). Dearly (study 14) adds illustrated stamps, worn postmarks and a local letterbox — inspired by [@raffiki_art](https://x.com/raffiki_art). Both are included in the root build and source downloads.
