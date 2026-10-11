@@ -9,13 +9,16 @@ const eventController=new AbortController(),signal=eventController.signal;
 function message(text:string,error=false){el('status').textContent=text;el('status').classList.toggle('error',error);}
 function update(){viewer?.update(state);el('finish-label').textContent=finishes[state.finish]!.name.toUpperCase();el('finish-description').textContent=finishes[state.finish]!.detail;el('compare').setAttribute('aria-pressed',String(state.compare));el('region-controls').hidden=state.zone==='full';el('finishes').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===state.finish)));el('zones').querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.zone===state.zone)));}
 for(const [i,f] of finishes.entries()){const b=document.createElement('button');b.className='finish';b.setAttribute('aria-label',f.name);b.innerHTML=`<span class="swatch ${f.family}"></span><strong>${f.name}</strong>`;b.title=f.tag;b.addEventListener('click',()=>{state.finish=i;update();},{signal});el('finishes').append(b);}
-const sliders=['intensity','glare','scale','grain','edge'] as const;
+const sliders=['intensity','glare','scale','grain','edge','frame'] as const;
 function sync(){for(const key of sliders){el<HTMLInputElement>(key).value=String(Math.round(state[key]*100));el(`${key}-value`).textContent=key==='scale'?`${state[key].toFixed(1)}×`:`${Math.round(state[key]*100)}%`;}
  for(const key of ['top','bottom','left','right'] as const)el<HTMLInputElement>(key).value=String(state[key]*100);
+ el<HTMLInputElement>('tilt').value=String(state.tilt);el('tilt-value').textContent=`${state.tilt}°`;el<HTMLInputElement>('tint').value=state.tint;
  el<HTMLInputElement>('motion').checked=state.motion;update();}
 for(const key of sliders)el<HTMLInputElement>(key).addEventListener('input',e=>{state[key]=Number((e.target as HTMLInputElement).value)/100;sync();},{signal});
 el('zones').querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.addEventListener('click',()=>{state.zone=b.dataset.zone as Zone;update();},{signal}));
 for(const key of ['top','bottom','left','right'] as const)el<HTMLInputElement>(key).addEventListener('input',e=>{state[key]=Number((e.target as HTMLInputElement).value)/100;const [l,t,r,b]=region(state.top,state.bottom,state.left,state.right);state.left=l;state.top=t;state.right=r;state.bottom=b;sync();},{signal});
+el('tint').addEventListener('input',()=>{state.tint=el<HTMLInputElement>('tint').value;update();},{signal});
+el('tilt').addEventListener('input',()=>{state.tilt=Number(el<HTMLInputElement>('tilt').value);sync();},{signal});
 el('motion').addEventListener('change',()=>{state.motion=el<HTMLInputElement>('motion').checked;update();},{signal});
 el('compare').addEventListener('click',()=>{state.compare=!state.compare;update();},{signal});
 el('reset').addEventListener('click',()=>{state.motion=false;sync();viewer?.reset();},{signal});el('restore').addEventListener('click',()=>{Object.assign(state,defaults());sync();viewer?.reset();},{signal});

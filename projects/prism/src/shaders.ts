@@ -7,8 +7,9 @@ export const fragment=`
 precision highp float;
 uniform sampler2D uImage;
 uniform vec2 uTilt;
-uniform float uFinish,uIntensity,uScale,uGlare,uGrain,uEdge,uZone,uCompare,uAspect;
+uniform float uFinish,uIntensity,uScale,uGlare,uGrain,uEdge,uFrame,uZone,uCompare,uAspect;
 uniform vec4 uRegion;
+uniform vec3 uTint;
 varying vec2 vUv;
 float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 vec3 rainbow(float t){return .54+.46*cos(6.2831853*(t+vec3(0.0,.33,.67)));}
@@ -73,22 +74,47 @@ void main(){
    float moving=pow(max(0.0,sin(flow*26.0+tilt.x*6.0-tilt.y*3.0)),5.0);
    pattern=.2+moving*.2;engraving=lines*.11*(.4+ribbon);
    flash=pow(max(0.0,lines),12.0)*moving*.3;
- }else{
+ }else if(uFinish<5.5){
    float grain=hash(floor(pt*420.0*scale));
    float lines=sin((pt.y+sin(pt.x*30.0)*.025)*650.0*scale);
    spectral=mix(vec3(.47,.22,.025),vec3(1.0,.83,.35),hotspot*.65+ribbon*.35);
    pattern=.36;engraving=lines*.055;
    flash=step(.972,grain)*pow(max(0.0,sin(grain*32.0+tilt.x*5.0+tilt.y*3.0)),8.0)*.8;
  }
+ // Additional foil structures use static coordinates; only their light response moves.
+ if(uFinish>5.5&&uFinish<6.5){
+   vec2 orbit=pt-vec2(tilt.x*.1,tilt.y*.1);float radius=length(orbit);
+   float arc=atan(orbit.y,orbit.x);
+   spectral=rainbow(radius*2.8*scale+sin(arc)*.035+tilt.x*.4-tilt.y*.3);
+   float band=pow(.5+.5*cos(radius*20.0*scale-tilt.x*4.0),5.0);
+   response=.35+hotspot*.45;pattern=band*.25;
+   engraving=sin(radius*780.0*scale)*.035;
+   flash=band*ribbon*.25;
+ }else if(uFinish>6.5&&uFinish<7.5){
+   vec2 grid=pt*10.0*scale;vec2 cell=floor(grid),f=fract(grid)-.5;
+   float seed=hash(cell),r=length(f),a=atan(f.y,f.x);
+   float rays=pow(max(0.0,cos(a*18.0+seed*6.28)),10.0);
+   float ring=smoothstep(.10,.17,r)*(1.0-smoothstep(.32,.46,r));
+   float hit=pow(max(0.0,cos(a-tilt.x*3.0+tilt.y*2.0+seed*6.28)),6.0);
+   spectral=rainbow(phase+seed*.5+sin(a)*.08);pattern=rays*ring*(.2+hit*.5);
+   flash=rays*ring*hit*.8;engraving=ring*rays*.04;response*=.65;
+ }else if(uFinish>7.5){
+   vec2 grid=pt*180.0*scale;vec2 cell=floor(grid),f=fract(grid)-.5;
+   float seed=hash(cell),facet=1.0-smoothstep(.13,.52,length(f));
+   float hit=pow(max(0.0,cos(seed*30.0+tilt.x*7.0-tilt.y*5.0)),24.0);
+   spectral=rainbow(phase+seed*.8);pattern=facet*.18;
+   flash=facet*hit*(.4+seed*.8);engraving=0.0;response*=.6;
+ }
  float m=artMask(p);float mask=uZone<.5?1.0:(uZone<1.5?m:1.0-m);
  float lum=dot(base,vec3(.2126,.7152,.0722));
  // The printed ink remains legible: diffraction colours modulate, then reflect light.
+ spectral*=mix(vec3(1.0),uTint,.65);
  vec3 metal=base*(.58+spectral*.7)+spectral*(.12+.12*(1.0-lum));
  vec3 result=mix(base,metal,clamp((response+pattern)*uIntensity*mask,0.0,.88));
  float micro=hash(floor(pt*vec2(720.0)*scale));
  float scint=step(.985,micro)*pow(max(0.0,sin(micro*51.0+tilt.x*8.0-tilt.y*5.0)),12.0)*hotspot;
  result+=mask*uIntensity*(flash*(.25+.5*uGrain)*mix(spectral,vec3(1.0),.6)+engraving+scint*uGrain*.75);
- float rim=(1.0-smoothstep(.004,.022,-sd));
+ float rim=(1.0-smoothstep(max(0.0,uFrame-.003),max(.0001,uFrame),-sd))*step(.0001,uFrame);
  result+=rim*uEdge*uIntensity*(spectral*.5+pow(hotspot,3.0)*.25);
  // Clear lacquer is also masked, so reverse/artwork choices stay visually distinct.
  result+=mix(.2,1.0,mask)*uGlare*(vec3(1.0,.97,.9)*pow(hotspot,3.5)*.38+ribbon*.1);

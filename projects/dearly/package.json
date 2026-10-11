@@ -1,0 +1,1 @@
+{"name":"vote.aib.wonderworks-dearly","version":"0.1.0","private":true,"type":"module","license":"GPL-3.0-only","scripts":{"dev":"vite --host 127.0.0.1 --port 4187 --strictPort","check":"tsc --noEmit","build":"tsc --noEmit && vite build --base=./","test":"node --experimental-strip-types --test tests/*.test.mjs"},"devDependencies":{"typescript":"7.0.2","vite":"8.3.1"}}

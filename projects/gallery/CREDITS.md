@@ -46,3 +46,8 @@ Foil Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified b
 
 
 Bloom Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng). Original procedural bouquets and glazed vase, with AI-generated botanical thumbnails, by AIB Inc. The gallery preview records the implemented scene; the supplied reference video is not redistributed. Three.js, node-qrcode and jsQR retain their MIT licenses.
+
+
+Prism Studio — Inspired by [@davidhaz](https://x.com/davidhaz), as identified by the project owner. Additional visual/control reference: [React Bits Holo Card](https://reactbits.dev/components/holo-card). All nine GLSL finishes are independently authored; no React Bits source, Pokémon artwork or reference recording is redistributed. Original sample illustration by AIB Inc.
+
+Dearly — Inspired by [@raffiki_art](https://x.com/raffiki_art), as identified by the project owner. Original SVG stamps, stationery, postmark texture and letterbox implementation by AIB Inc. The supplied recording is private reference material and is not redistributed.

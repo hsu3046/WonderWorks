@@ -7,7 +7,7 @@ Study 013, standalone at `projects/prism`, port 4186. Original implementation ©
 - File picker, drag/drop, and direct HTTP(S) image URL. Remote loading uses browser CORS, credentials omitted and no referrer. There is no image proxy or storage service.
 - 20 MiB encoded limit including streaming responses without content-length, 20-second fetch budget, 15-second decode guard, max 80 MP decoded dimensions, 1800-pixel texture resize. Formats: JPG, PNG, WebP, AVIF, GIF (one decoded frame).
 - Every replacement owns a generation and abort controller. Only the latest successful decode replaces the texture. Old or failed loads retain the visible card. Canvas processing composites alpha over ivory and preserves aspect ratio without cropping.
-- One Three.js plane and original GLSL fragment shader. Six distinct material families: Cosmos (random reflective discs), Spectrum (parallel diffraction), Starlight (five-point foil stamps), Crystalline (Voronoi facets), Contour (curved etched grooves), Gilded (warm metal and glitter).
+- One Three.js plane and original GLSL fragment shader. Nine distinct material families: Cosmos (random reflective discs), Spectrum (parallel diffraction), Starlight (five-point foil stamps), Crystalline (Voronoi facets), Contour (curved etched grooves), Gilded (warm metal and glitter), Swirl (circular spectrum), Bursts (radial foil dashes), Glitter (dense reflecting facets).
 - Shader composes print, view-dependent spectrum, material texture, micro glints, border and lacquer. It deliberately operates on source display RGB without Three tone-mapping to preserve the original comparison. This is an artistic approximation, not a measured optical simulation of a particular card print run.
 - Full/artwork/reverse masks use an adjustable UV rectangle. This is a layout approximation, not semantic character segmentation or an exact per-card factory mask.
 - Original comparison removes all foil layers. Saved transparent PNG captures current angle/material, up to 1600px on the long side; it is a still image, not interactive holography.
@@ -38,3 +38,9 @@ Run `npm run test --prefix projects/prism` and `npm run build --prefix projects/
 - Browser: all six finishes, original comparison, automatic-tilt control, file picker, live CORS image URL, reverse coverage, PNG download and invalid-image retention checked. No browser console errors.
 - Public Pokémon card URL was used only for runtime input verification; not bundled or saved as a project asset. Saved sample PNG inspected at the current angle with reverse coverage.
 - Responsive 390×844 and desktop 1280×800 views inspected. Proof images are in ignored `docs/validation/prism/`.
+
+
+Inspired by [@davidhaz](https://x.com/davidhaz). The [React Bits Holo Card](https://reactbits.dev/components/holo-card) demo informed the circular spectrum, radial dashes, fine glitter and material controls. Implementation is original GLSL, with no copied React Bits source or card artwork. All input modes share the maximum tilt clamp; reset restores tint, frame and tilt along with the finish.
+
+### Gallery release preparation — 2026-10-11
+All nine finishes selected in the browser without WebGL errors. Frame width, metal tint, maximum tilt and reset checked; PNG snapshot downloaded successfully. Prepared gallery route loaded the sample and switched to Swirl. Root check: 106 tests and strict TypeScript passed. Root build and 14-study/16-canonical-page asset checks passed; existing large-chunk warnings remain. No remote publication performed.

@@ -11,6 +11,7 @@ export class Viewer{
   private texture:THREE.CanvasTexture|null=null;
   private target=new THREE.Vector2(.12,-.1);
   private pose=new THREE.Vector2(.12,-.1);
+  private tiltLimit=THREE.MathUtils.degToRad(24);
   private motion=false;private hovering=false;private reduced=matchMedia('(prefers-reduced-motion: reduce)');
   private resize:ResizeObserver;private controller=new AbortController();private frame=0;private last=0;private time=0;private dirty=true;private disposed=false;private failed=false;
   private pointers=new Set<number>();private pointer:number|null=null;private startX=0;private startY=0;private startPose=new THREE.Vector2();private dragging=false;private aspect=5/7;
@@ -18,7 +19,7 @@ export class Viewer{
     this.renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});
     this.renderer.setPixelRatio(Math.min(devicePixelRatio,2));this.renderer.setClearColor(0x000000,0);this.renderer.outputColorSpace=THREE.LinearSRGBColorSpace;
     this.camera.position.z=8;
-    this.material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,transparent:true,uniforms:{uImage:{value:null},uTilt:{value:new THREE.Vector2()},uFinish:{value:0},uIntensity:{value:.72},uScale:{value:1},uGlare:{value:.38},uGrain:{value:.45},uEdge:{value:.45},uZone:{value:0},uCompare:{value:0},uAspect:{value:this.aspect},uRegion:{value:new THREE.Vector4(.075,.16,.925,.64)}}});
+    this.material=new THREE.ShaderMaterial({vertexShader:vertex,fragmentShader:fragment,transparent:true,uniforms:{uImage:{value:null},uTilt:{value:new THREE.Vector2()},uFinish:{value:0},uIntensity:{value:.72},uScale:{value:1},uGlare:{value:.38},uGrain:{value:.45},uEdge:{value:.45},uFrame:{value:.02},uTint:{value:new THREE.Color()},uZone:{value:0},uCompare:{value:0},uAspect:{value:this.aspect},uRegion:{value:new THREE.Vector4(.075,.16,.925,.64)}}});
     this.card=new THREE.Mesh(new THREE.PlaneGeometry(1,1),this.material);this.scene.add(this.card);
     host.append(this.renderer.domElement);this.renderer.domElement.style.filter='drop-shadow(14px 24px 17px #0008)';
     const signal=this.controller.signal;
@@ -32,7 +33,7 @@ export class Viewer{
   private size(){const w=this.host.clientWidth,h=this.host.clientHeight;if(!w||!h)return;this.renderer.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();this.fit();this.wake();}
   private fit(){const visibleHeight=2*Math.tan(THREE.MathUtils.degToRad(15))*this.camera.position.z;const h=Math.min(visibleHeight*.78,visibleHeight*this.camera.aspect*.64/this.aspect);this.card.scale.set(h*this.aspect,h,1);}
   setImage(canvas:HTMLCanvasElement){const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.NoColorSpace;texture.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());this.texture?.dispose();this.texture=texture;this.aspect=canvas.width/canvas.height;this.material.uniforms.uImage!.value=texture;this.material.uniforms.uAspect!.value=this.aspect;this.fit();this.wake();}
-  update(s:Settings){const u=this.material.uniforms;u.uFinish!.value=s.finish;u.uIntensity!.value=s.intensity;u.uScale!.value=s.scale;u.uGlare!.value=s.glare;u.uGrain!.value=s.grain;u.uEdge!.value=s.edge;u.uZone!.value=['full','art','reverse'].indexOf(s.zone);u.uCompare!.value=s.compare?1:0;(u.uRegion!.value as THREE.Vector4).fromArray(region(s.top,s.bottom,s.left,s.right));this.motion=s.motion;this.wake();}
+  update(s:Settings){const u=this.material.uniforms;u.uFinish!.value=s.finish;u.uIntensity!.value=s.intensity;u.uScale!.value=s.scale;u.uGlare!.value=s.glare;u.uGrain!.value=s.grain;u.uEdge!.value=s.edge;u.uFrame!.value=s.frame;(u.uTint!.value as THREE.Color).setStyle(s.tint,THREE.LinearSRGBColorSpace);this.tiltLimit=THREE.MathUtils.degToRad(s.tilt);u.uZone!.value=['full','art','reverse'].indexOf(s.zone);u.uCompare!.value=s.compare?1:0;(u.uRegion!.value as THREE.Vector4).fromArray(region(s.top,s.bottom,s.left,s.right));this.motion=s.motion;this.wake();}
   reset(){this.cancel();this.hovering=false;this.target.set(0,0);this.wake();}
   private hit(x:number,y:number){const r=this.host.getBoundingClientRect();const ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1),this.camera);this.card.updateMatrixWorld();return ray.intersectObject(this.card).length>0;}
   private down=(e:PointerEvent)=>{
@@ -63,8 +64,10 @@ export class Viewer{
   private draw=(now:number)=>{
     this.frame=0;if(this.disposed||this.failed||document.hidden)return;
     const dt=this.last?Math.min((now-this.last)/1000,.05):.016;this.last=now;
-    const moving=this.motion&&!this.reduced.matches&&!this.hovering&&!this.pointers.size;
+    const moving=this.motion&&this.tiltLimit>0&&!this.reduced.matches&&!this.hovering&&!this.pointers.size;
     if(moving){this.time+=dt;this.target.set(Math.sin(this.time*.7)*.34,Math.cos(this.time*.51)*.19);}
+    // Apply the same limit to drag, hover, keyboard and automatic motion.
+    this.target.clampScalar(-this.tiltLimit,this.tiltLimit);
     this.pose.lerp(this.target,this.reduced.matches?1:1-Math.exp(-9*dt));
     this.card.rotation.set(this.pose.y,this.pose.x,-this.pose.x*.045);
     (this.material.uniforms.uTilt!.value as THREE.Vector2).set(this.pose.x*2.7,this.pose.y*2.7);
