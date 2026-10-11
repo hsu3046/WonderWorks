@@ -96,3 +96,6 @@ Web Crawler now requests a bounded Playwright/Chromium capture before reader fal
 ## Foil Studio — Study11
 
 `projects/foil` (4184) adds a foil card studio with wedding covers, an interior photograph, adjustable gloss and URL-fragment sharing. The gallery build publishes `/experiments/foil/index.html`, preview media and a source ZIP. Inspired by [@ann_nnng](https://x.com/ann_nnng). See `docs/foil/ARCHITECTURE.md`.
+
+## Prism Studio (study 13)
+`projects/prism` (4186) adds six original foil shaders with local/URL image input and PNG export. The gallery publishes its experiment, preview and source ZIP. See `docs/prism/ARCHITECTURE.md`.
