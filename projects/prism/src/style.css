@@ -10,3 +10,9 @@
 .swatch.bursts{background:repeating-conic-gradient(from 10deg,#bdc8ea 0deg 8deg,#ebe5c3 8deg 12deg,#9ba3c3 12deg 20deg)}
 .swatch.glitter{background:radial-gradient(circle,#fff9 1px,transparent 1.5px) 0 0/4px 5px,linear-gradient(120deg,#b9c2d9,#ceb0bd,#accdc5)}
 .tint-row{display:flex;align-items:center;justify-content:space-between;margin:16px 0 20px;font-size:12px}.tint-row input{width:44px;height:28px;border:1px solid #ffffff30;border-radius:5px;background:transparent;cursor:pointer}
+
+/* Collection controls are siblings of the drag surface, so clicks never start a tilt. */
+.card-nav{position:absolute;z-index:3;top:49%;transform:translateY(-50%);width:44px;height:44px;border:1px solid #afc3a640;border-radius:50%;background:#172019d9;color:#d8e9c7;font:32px/1 Georgia,serif;display:grid;place-items:center;transition:background .2s,border-color .2s}.card-nav:hover{background:#354332;border-color:#bdd2aa}.card-nav.previous{left:4%}.card-nav.next{right:4%}
+.collection-caption{position:absolute;left:0;right:0;bottom:77px;display:flex;justify-content:center;align-items:center;gap:10px;font-size:9px;letter-spacing:1.2px;pointer-events:none;color:#95a88c}.collection-caption strong{font-weight:500;color:#d5e0c9}.collection-caption #card-number{font-variant-numeric:tabular-nums;color:#c0cdae}.collection-caption #card-species{font-size:7px;letter-spacing:1px}
+@media(min-width:1100px){.card-nav.previous{left:17%}.collection-caption{left:13%}}
+@media(max-width:760px){.card-nav{top:55%;width:40px;height:44px}.card-nav.previous{left:10px}.card-nav.next{right:10px}.collection-caption{bottom:91px;gap:8px;font-size:8px}.collection-caption #card-species{display:none}.card-caption{bottom:69px}#stage{bottom:108px}}

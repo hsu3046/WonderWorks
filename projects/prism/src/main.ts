@@ -3,8 +3,10 @@ import './style.css';
 import {Viewer} from './viewer';
 import {defaults,finishes,imageAddress,region,type Zone} from './settings';
 import {decode,remoteImage} from './image';
+import {cards,stepCard} from './cards';
 const el=<T extends HTMLElement>(id:string)=>{const n=document.getElementById(id);if(!n)throw new Error(`Missing ${id}`);return n as T;};
 const state=defaults();let viewer:Viewer|undefined;let generation=0;let controller:AbortController|undefined;let hasImage=false;
+let displayedCard:number|null=null;let requestedCard:number|null=null;
 const eventController=new AbortController(),signal=eventController.signal;
 function message(text:string,error=false){el('status').textContent=text;el('status').classList.toggle('error',error);}
 function update(){viewer?.update(state);el('finish-label').textContent=finishes[state.finish]!.name.toUpperCase();el('finish-description').textContent=finishes[state.finish]!.detail;el('compare').setAttribute('aria-pressed',String(state.compare));el('region-controls').hidden=state.zone==='full';el('finishes').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===state.finish)));el('zones').querySelectorAll<HTMLButtonElement>('button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.zone===state.zone)));}
@@ -22,18 +24,28 @@ el('tilt').addEventListener('input',()=>{state.tilt=Number(el<HTMLInputElement>(
 el('motion').addEventListener('change',()=>{state.motion=el<HTMLInputElement>('motion').checked;update();},{signal});
 el('compare').addEventListener('click',()=>{state.compare=!state.compare;update();},{signal});
 el('reset').addEventListener('click',()=>{state.motion=false;sync();viewer?.reset();},{signal});el('restore').addEventListener('click',()=>{Object.assign(state,defaults());sync();viewer?.reset();},{signal});
-async function load(get:(abort:AbortSignal)=>Promise<Blob>,name:string){
+function collectionLabel(){
+ const card=displayedCard===null?null:cards[displayedCard];
+ el('card-name').textContent=card?card.name:'Your image';
+ el('card-number').textContent=card?`${String(displayedCard!+1).padStart(2,'0')} / ${cards.length}`:`— / ${cards.length}`;
+ el('card-species').textContent=card?card.species:'EXPLORE THE COLLECTION';
+}
+async function load(get:(abort:AbortSignal)=>Promise<Blob>,name:string,cardIndex:number|null=null){
+ requestedCard=cardIndex;
  const ticket=++generation;controller?.abort();const current=new AbortController();controller=current;
  const timer=setTimeout(()=>current.abort(),20000);message('Preparing your image…');el('stage').setAttribute('aria-busy','true');
- try{const blob=await get(current.signal);if(ticket!==generation)return;const image=await decode(blob);if(ticket!==generation||current.signal.aborted){if(current.signal.aborted&&ticket===generation)throw new Error('Image loading timed out. Try uploading the file.');return;}if(!viewer)throw new Error('WebGL is unavailable. Please use a browser with hardware acceleration.');viewer.setImage(image);hasImage=true;el('source').textContent=name;el('loading').hidden=true;el<HTMLButtonElement>('save').disabled=false;message('Your card, in a different light.');
- }catch(error){if(ticket!==generation)return;const fallback=current.signal.aborted?'Image loading timed out. Try uploading the file.':error instanceof TypeError?'This server does not allow image access. Download the image and upload it here.':error instanceof Error?error.message:'The image could not be loaded.';message(fallback,true);if(!hasImage){el('loading').textContent='Drop a card image to begin.';}}
+ try{const blob=await get(current.signal);if(ticket!==generation)return;const image=await decode(blob);if(ticket!==generation||current.signal.aborted){if(current.signal.aborted&&ticket===generation)throw new Error('Image loading timed out. Try uploading the file.');return;}if(!viewer)throw new Error('WebGL is unavailable. Please use a browser with hardware acceleration.');viewer.setImage(image);hasImage=true;displayedCard=cardIndex;collectionLabel();el('source').textContent=name;el('loading').hidden=true;el<HTMLButtonElement>('save').disabled=false;message('Your card, in a different light.');
+ }catch(error){if(ticket!==generation)return;requestedCard=displayedCard;const fallback=current.signal.aborted?'Image loading timed out. Try uploading the file.':error instanceof TypeError?'This server does not allow image access. Download the image and upload it here.':error instanceof Error?error.message:'The image could not be loaded.';message(fallback,true);if(!hasImage){el('loading').textContent='Drop a card image to begin.';}}
  finally{clearTimeout(timer);if(ticket===generation)el('stage').removeAttribute('aria-busy');}
 }
 function fileLoad(file:File){void load(async()=>file,file.name);}
-function sample(){void load(s=>remoteImage(new URL('./art/lunara.jpg',document.baseURI).href,s),'Lunara · Original sample');}
+function sample(index=0){const card=cards[index];if(!card)return;void load(s=>remoteImage(new URL(card.image,document.baseURI).href,s),`${card.name} · ${card.species}`,index);}
+function browse(delta:number){const index=stepCard(requestedCard,delta);if(index!==null)sample(index);}
+el('card-prev').addEventListener('click',()=>browse(-1),{signal});
+el('card-next').addEventListener('click',()=>browse(1),{signal});
 el('upload').addEventListener('click',()=>el<HTMLInputElement>('file').click(),{signal});
 el<HTMLInputElement>('file').addEventListener('change',e=>{const input=e.target as HTMLInputElement;const file=input.files?.[0];if(file)fileLoad(file);input.value='';},{signal});
-el('sample').addEventListener('click',sample,{signal});
+el('sample').addEventListener('click',()=>sample(),{signal});
 el('url-form').addEventListener('submit',e=>{e.preventDefault();try{const address=imageAddress(el<HTMLInputElement>('image-url').value);void load(s=>remoteImage(address,s),'Your linked image');}catch(error){message(error instanceof Error?error.message:'Check the image URL.',true);}},{signal});
 // Document-level drop prevention stops a card file from navigating away from the studio.
 let dragDepth=0;

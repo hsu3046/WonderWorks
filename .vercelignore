@@ -3,6 +3,7 @@
 .codex
 .vercel
 /assets/
+/local-assets/
 docs/validation
 docs/references
 docs/reference

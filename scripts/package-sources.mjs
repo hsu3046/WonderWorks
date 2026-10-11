@@ -3,7 +3,7 @@ import {readdir,access} from 'node:fs/promises';
 import {resolve,relative} from 'node:path';
 import {zipFiles} from './zip.mjs';
 const root=resolve(import.meta.dirname,'..'),downloads=resolve(root,'projects/gallery/public/downloads');
-const excluded=new Set(['node_modules','dist','.git','.vercel','.Codex','.codex','.DS_Store','Untitled.blend']);
+const excluded=new Set(['node_modules','dist','.git','.vercel','.Codex','.codex','.DS_Store','Untitled.blend','local-assets']);
 export async function collect(directory){const files=[];for(const item of await readdir(directory,{withFileTypes:true})){if(excluded.has(item.name)||item.name.endsWith('.blend1')||item.name.startsWith('.env')&&item.name!=='.env.example')continue;const path=resolve(directory,item.name),rel=relative(root,path);if(['assets','docs/references','docs/reference','docs/validation','projects/gallery/public/experiments','projects/gallery/public/downloads'].some(prefix=>rel===prefix||rel.startsWith(prefix+'/')))continue;if(item.isDirectory())files.push(...await collect(path));else if(item.isFile())files.push(path);}return files.sort();}
 for(const [folder,name] of [['shabon','bubble-day'],['fish','ocean-shoal'],['jelly','fruit-jelly'],['chroma','chroma-motion'],['harbor','tidelight-harbor'],['foliage','through-the-seasons'],['pond','stillwater'],['lightning','fulgur'],['crawler','webcrawler'],['skyglider','skyglider'],['foil','foil-studio'],['bloom','bloom-studio'],['prism','prism-studio'],['dearly','dearly-post']]){
  const directory=resolve(root,'projects',folder),files=(await collect(directory)).map(path=>({path,name:`${name}/${relative(directory,path)}`}));

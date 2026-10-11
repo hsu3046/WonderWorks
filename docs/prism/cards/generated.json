@@ -1,0 +1,272 @@
+[
+  {
+    "id": "solvyr",
+    "number": 1,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-737bb48a-b849-4c9b-b3ee-16a902ed7b69.png",
+    "asset": "projects/prism/public/art/cards/solvyr.jpg",
+    "original": "local-assets/prism-originals/01-solvyr.png",
+    "originalSha256": "33eee41d830b8a0a5ecfbd5f1f092185ce42516be67f75406280ae1a9faadeb5",
+    "originalBytes": 3828838
+  },
+  {
+    "id": "nerissa",
+    "number": 2,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-0bd1b831-58f3-4567-9bc9-b010363d95b6.png",
+    "asset": "projects/prism/public/art/cards/nerissa.jpg",
+    "original": "local-assets/prism-originals/02-nerissa.png",
+    "originalSha256": "df4f7c972bdb44dc4e23202191a37cbc8bbce47f3886d7ffee1a885163bbac79",
+    "originalBytes": 3801807
+  },
+  {
+    "id": "sylvara",
+    "number": 3,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-dd8a57c3-8fbf-4728-a238-3a76e7cf824f.png",
+    "asset": "projects/prism/public/art/cards/sylvara.jpg",
+    "original": "local-assets/prism-originals/03-sylvara.png",
+    "originalSha256": "de0593b11c0f512fbcaf878ef19d96985e71bbd99f4c2e946d9090e80b9d7bcf",
+    "originalBytes": 3785558
+  },
+  {
+    "id": "vespera",
+    "number": 4,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-dce2d801-0441-41a6-8962-07daefc2d12f.png",
+    "asset": "projects/prism/public/art/cards/vespera.jpg",
+    "original": "local-assets/prism-originals/04-vespera.png",
+    "originalSha256": "5ee41b4558cb77db94630a182c5c98dcf69ca651b198b60347717fdea9d382f1",
+    "originalBytes": 3581229
+  },
+  {
+    "id": "ignivar",
+    "number": 5,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-3d64687a-3104-475d-8b65-ac0d6eec365d.png",
+    "asset": "projects/prism/public/art/cards/ignivar.jpg",
+    "original": "local-assets/prism-originals/05-ignivar.png",
+    "originalSha256": "c4d40e879e73a8bbe733c0c40c6284247afac54093df785d66710fc6bee0d6d9",
+    "originalBytes": 3793793
+  },
+  {
+    "id": "glacielle",
+    "number": 6,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-14ba54e5-cf06-4884-b0fd-16392f2d5761.png",
+    "asset": "projects/prism/public/art/cards/glacielle.jpg",
+    "original": "local-assets/prism-originals/06-glacielle.png",
+    "originalSha256": "983a158cb125cdcf77c5ca533506b0b1903a08f2959b8ca11b1da473c871b4f4",
+    "originalBytes": 3949589
+  },
+  {
+    "id": "aureon",
+    "number": 7,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-e78b614e-9c71-476b-b683-e676738e9722.png",
+    "asset": "projects/prism/public/art/cards/aureon.jpg",
+    "original": "local-assets/prism-originals/07-aureon.png",
+    "originalSha256": "6ce65ca25c8e9db9234b798fa7debefd2e26fef898b4b8f1b12494ff4e4c2cca",
+    "originalBytes": 3868212
+  },
+  {
+    "id": "zephyra",
+    "number": 8,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-783c3b3b-4ba0-437d-b030-1c45a89442d5.png",
+    "asset": "projects/prism/public/art/cards/zephyra.jpg",
+    "original": "local-assets/prism-originals/08-zephyra.png",
+    "originalSha256": "028d20f79cec665c93e4651e01b4b8a4bb1bcfc0852f51e93dc0c0c4f3de38d4",
+    "originalBytes": 3514526
+  },
+  {
+    "id": "noctelle",
+    "number": 9,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-8ba94ec9-e11c-492b-a5dd-159dc1463ff1.png",
+    "asset": "projects/prism/public/art/cards/noctelle.jpg",
+    "original": "local-assets/prism-originals/09-noctelle.png",
+    "originalSha256": "8986dd842f426d5297876833db7124c9fdee87480a8538d4b3b0dd5de5bf51b4",
+    "originalBytes": 3613186
+  },
+  {
+    "id": "mosswick",
+    "number": 10,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-1c79e880-639f-4065-8234-36a4bf927309.png",
+    "asset": "projects/prism/public/art/cards/mosswick.jpg",
+    "original": "local-assets/prism-originals/10-mosswick.png",
+    "originalSha256": "2cb6ac13da0e3ae81699b78cafe9aedce8f683ff4b6d50a046bce1702cbc5b4e",
+    "originalBytes": 3700711
+  },
+  {
+    "id": "corallin",
+    "number": 11,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-9321ed83-2889-4c99-92ce-045bef2222d0.png",
+    "asset": "projects/prism/public/art/cards/corallin.jpg",
+    "original": "local-assets/prism-originals/11-corallin.png",
+    "originalSha256": "1b77ff5b62d10abbba27431d7f05a847c0155d8502b95da367f840171652a495",
+    "originalBytes": 3793175
+  },
+  {
+    "id": "thundrel",
+    "number": 12,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-2d77be6f-f8c5-4910-b4ab-30540ba995e5.png",
+    "asset": "projects/prism/public/art/cards/thundrel.jpg",
+    "original": "local-assets/prism-originals/12-thundrel.png",
+    "originalSha256": "66cef451eac2c758ab5cc7bdee591ee48506d85a2ba01d7016a6ae0dc5ec7b1d",
+    "originalBytes": 3718390
+  },
+  {
+    "id": "opalith",
+    "number": 13,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-62a63cb7-2b32-4272-a820-08d1f5dc31f9.png",
+    "asset": "projects/prism/public/art/cards/opalith.jpg",
+    "original": "local-assets/prism-originals/13-opalith.png",
+    "originalSha256": "890c11ac01c519e7d110db22fe357030e2448db4a89c2cf39ac153b40306cec6",
+    "originalBytes": 3706573
+  },
+  {
+    "id": "rosetta",
+    "number": 14,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-3a8ed8fb-750b-48c2-aad6-4b503631ef0a.png",
+    "asset": "projects/prism/public/art/cards/rosetta.jpg",
+    "original": "local-assets/prism-originals/14-rosetta.png",
+    "originalSha256": "cae268be18b87e369bac51d3dad3fed00200c8762dda0fe691d0980b2205578c",
+    "originalBytes": 3784036
+  },
+  {
+    "id": "umbriel",
+    "number": 15,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-4d9fad08-8ba3-44ad-80e3-a89a3093fd8a.png",
+    "asset": "projects/prism/public/art/cards/umbriel.jpg",
+    "original": "local-assets/prism-originals/15-umbriel.png",
+    "originalSha256": "ee532e7aa810e18b4897e1b82d620357c6b55f44c0a28f26a1a0eaedf8f6641b",
+    "originalBytes": 3832290
+  },
+  {
+    "id": "marisol",
+    "number": 16,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-3433e208-0dbd-4c69-b93a-da8871d4732a.png",
+    "asset": "projects/prism/public/art/cards/marisol.jpg",
+    "original": "local-assets/prism-originals/16-marisol.png",
+    "originalSha256": "4d9930e280b517e9c18ab93d5ee02329b76d7d926c0879b9843e47eb621c25cf",
+    "originalBytes": 3898777
+  },
+  {
+    "id": "citrinel",
+    "number": 17,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-9606f072-73ed-492a-bf41-43e0c6950715.png",
+    "asset": "projects/prism/public/art/cards/citrinel.jpg",
+    "original": "local-assets/prism-originals/17-citrinel.png",
+    "originalSha256": "c0024d09001965c164f1a49b9b743c51cbf8e18eb93ac4f8747dcc2c0eacd55b",
+    "originalBytes": 3600656
+  },
+  {
+    "id": "luneth",
+    "number": 18,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-fa80077e-2a17-47a0-9a67-9083f3f61833.png",
+    "asset": "projects/prism/public/art/cards/luneth.jpg",
+    "original": "local-assets/prism-originals/18-luneth.png",
+    "originalSha256": "38266dbb3b3a10c9466719507360345e78399f57fcd7fd4a5449fe5cbd90c39a",
+    "originalBytes": 3691950
+  },
+  {
+    "id": "bramble",
+    "number": 19,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-b18011f8-fd44-4e94-b93b-3ee8bed78a6e.png",
+    "asset": "projects/prism/public/art/cards/bramble.jpg",
+    "original": "local-assets/prism-originals/19-bramble.png",
+    "originalSha256": "82a9f7a4e062d10af35c0e70e6c82ea4b609a71650f33aea5da141002af85d6e",
+    "originalBytes": 3878514
+  },
+  {
+    "id": "elysian",
+    "number": 20,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-dad3e5b4-5194-4482-9f4f-398fee015ef5.png",
+    "asset": "projects/prism/public/art/cards/elysian.jpg",
+    "original": "local-assets/prism-originals/20-elysian.png",
+    "originalSha256": "7a7b6cafa494e71610b9fd95777fd7a065fc94e51fd21fcb7507f74c2d608379",
+    "originalBytes": 3837717
+  },
+  {
+    "id": "prismara",
+    "number": 21,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-6d840652-69de-4894-bb50-009c6d5fa8db.png",
+    "asset": "projects/prism/public/art/cards/prismara.jpg",
+    "original": "local-assets/prism-originals/21-prismara.png",
+    "originalSha256": "219b1ebc49d5fd9e8c8ac4c73e4be9e60a312e3b56fd27271ee2b61e087d8897",
+    "originalBytes": 3559326
+  },
+  {
+    "id": "pyrella",
+    "number": 22,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-32fe5c35-6a7b-4e5a-aba9-2afce162e45e.png",
+    "asset": "projects/prism/public/art/cards/pyrella.jpg",
+    "original": "local-assets/prism-originals/22-pyrella.png",
+    "originalSha256": "456221ef79a2ae99a6089ba54e3e28fb9137aa881baae297d18fc97da4b6b91e",
+    "originalBytes": 3646286
+  },
+  {
+    "id": "wisterin",
+    "number": 23,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-4bba0438-4e1e-4fb2-be2b-83502751a5ba.png",
+    "asset": "projects/prism/public/art/cards/wisterin.jpg",
+    "original": "local-assets/prism-originals/23-wisterin.png",
+    "originalSha256": "8d7b1d0b55e65f6f742ec97b4a969efb5a8eb1b14ec54b91954b5f9b9c9db0d0",
+    "originalBytes": 3910957
+  },
+  {
+    "id": "thalora",
+    "number": 24,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-00048498-9106-4e73-b67b-e4d7c7b67386.png",
+    "asset": "projects/prism/public/art/cards/thalora.jpg",
+    "original": "local-assets/prism-originals/24-thalora.png",
+    "originalSha256": "b941bdc18fdf345e0bdb24eef8a41ba3619e189ad132373fa5e5af9747a01a4d",
+    "originalBytes": 3574599
+  },
+  {
+    "id": "celestine",
+    "number": 25,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-f5e54fe7-fbc7-434d-ade8-c71990486c13.png",
+    "asset": "projects/prism/public/art/cards/celestine.jpg",
+    "original": "local-assets/prism-originals/25-celestine.png",
+    "originalSha256": "be522441552d2a98f55298368850f090112a23ec851317809c3c79132540b2b4",
+    "originalBytes": 3821284
+  },
+  {
+    "id": "saffra",
+    "number": 26,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-8caeb2f9-53ac-447e-937a-7a6acfb3b916.png",
+    "asset": "projects/prism/public/art/cards/saffra.jpg",
+    "original": "local-assets/prism-originals/26-saffra.png",
+    "originalSha256": "62fc4499fea05a2e4b83a827f39f13aa46d8d85efed3f0aebf00bc8f39d1a159",
+    "originalBytes": 3699320
+  },
+  {
+    "id": "florielle",
+    "number": 27,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-af46db95-2f1b-4326-a2d9-94a74f7d2ae3.png",
+    "asset": "projects/prism/public/art/cards/florielle.jpg",
+    "original": "local-assets/prism-originals/27-florielle.png",
+    "originalSha256": "f388956364b2a28f5a17b50ee01230e26e1b80bc8eeac576bb1f41760be66754",
+    "originalBytes": 3624266
+  },
+  {
+    "id": "onyxar",
+    "number": 28,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-e36ca26b-ade8-47bd-a380-3b1130c98464.png",
+    "asset": "projects/prism/public/art/cards/onyxar.jpg",
+    "original": "local-assets/prism-originals/28-onyxar.png",
+    "originalSha256": "44d399e0f64cabba4c937a777cafedae772b41cd05a8e9afb2fe3a8cb8541891",
+    "originalBytes": 3673282
+  },
+  {
+    "id": "aurielle",
+    "number": 29,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-9adc74bd-3978-481e-ba5d-3bd8cb4d1496.png",
+    "asset": "projects/prism/public/art/cards/aurielle.jpg",
+    "original": "local-assets/prism-originals/29-aurielle.png",
+    "originalSha256": "2fe78e388cea68b2784b6d6b7bdd96788c542b10a8b6a4902c001bc4e453de78",
+    "originalBytes": 3656524
+  },
+  {
+    "id": "astralis",
+    "number": 30,
+    "source": "/Users/yuhitomi/.codex/generated_images/01a12016-d8e9-7480-88f2-c32419c24fa2/exec-2c7ee282-bca5-454e-9986-cdda2e342851.png",
+    "asset": "projects/prism/public/art/cards/astralis.jpg",
+    "original": "local-assets/prism-originals/30-astralis.png",
+    "originalSha256": "70c31e9be3b8116601087adb2e23c2d8efb12ab0c62ca3462a2245f494967ec5",
+    "originalBytes": 3796909
+  }
+]

@@ -44,3 +44,7 @@ Inspired by [@davidhaz](https://x.com/davidhaz). The [React Bits Holo Card](http
 
 ### Gallery release preparation — 2026-10-11
 All nine finishes selected in the browser without WebGL errors. Frame width, metal tint, maximum tilt and reset checked; PNG snapshot downloaded successfully. Prepared gallery route loaded the sample and switched to Swirl. Root check: 106 tests and strict TypeScript passed. Root build and 14-study/16-canonical-page asset checks passed; existing large-chunk warnings remain. No remote publication performed.
+
+
+### Prism Archive — 2026-10-11
+Thirty generated fantasy card images are indexed in `src/cards.ts`. Previous/next buttons wrap and preserve rendering state. Requested and displayed indices are separate: a rapid selection advances from the pending request, while the label commits only after successful decoding. Generation/abort guards cover sample navigation, uploads and URL replacement together. Empty/single-entry and wrap behavior are tested alongside manifest identity and asset uniqueness. Exact prompts and provenance: `docs/prism/cards/`. Lossless original PNGs are stored in ignored `local-assets/prism-originals/`; all 30 SHA-256 hashes match generator output. Public JPEGs are independent delivery copies.
