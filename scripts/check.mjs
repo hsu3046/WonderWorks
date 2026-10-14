@@ -13,3 +13,5 @@ const bloom=spawnSync('npm',['run','test','--prefix','projects/bloom'],{cwd:root
 const prism=spawnSync('npm',['run','test','--prefix','projects/prism'],{cwd:root,stdio:'inherit'});if(prism.status!==0)process.exit(prism.status||1);
 
 const dearly=spawnSync('npm',['run','test','--prefix','projects/dearly'],{cwd:root,stdio:'inherit'});if(dearly.status!==0)process.exit(dearly.status||1);
+
+const cassette=spawnSync('npm',['run','test','--prefix','projects/cassette'],{cwd:root,stdio:'inherit'});if(cassette.status!==0)process.exit(cassette.status||1);

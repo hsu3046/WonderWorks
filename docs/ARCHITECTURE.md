@@ -102,3 +102,6 @@ Web Crawler now requests a bounded Playwright/Chromium capture before reader fal
 
 ## Dearly (study 14)
 `projects/dearly` (4187) is the local stationery and letterbox study. Root setup/check/build and source packaging include it at `/experiments/dearly/index.html`. See `docs/dearly/ARCHITECTURE.md`.
+
+## Cassette (study 15)
+`projects/cassette` (4188) is a procedural translucent cassette with an original holographic label shader, reel mechanics and free 360° rotation. Root setup/check/build and source packaging include it at `/experiments/cassette/index.html`. See `docs/cassette/ARCHITECTURE.md`.

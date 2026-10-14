@@ -51,3 +51,5 @@ Bloom Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng). Original proce
 Prism Studio — Inspired by [@davidhaz](https://x.com/davidhaz), as identified by the project owner. Additional visual/control reference: [React Bits Holo Card](https://reactbits.dev/components/holo-card). All nine GLSL finishes are independently authored; no React Bits source, Pokémon artwork or reference recording is redistributed. Original sample illustration by AIB Inc.
 
 Dearly — Inspired by [@raffiki_art](https://x.com/raffiki_art), as identified by the project owner. Original SVG stamps, stationery, postmark texture and letterbox implementation by AIB Inc. The supplied recording is private reference material and is not redistributed.
+
+Cassette — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The procedural cassette body, label artwork, reel mechanics and holographic GLSL are original AIB work; the public reference recording showed AI-generated renders of a photographed cassette, none of which is redistributed. © 2026 AIB Inc., GNU GPL v3.

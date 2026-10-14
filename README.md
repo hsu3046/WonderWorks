@@ -44,6 +44,7 @@ A beautiful animation often leaves you wondering how it works. Wonderworks turns
 | Stillwater | Explore a garden pond, feed fish and startle a leaping frog | Blender morphs, PBR, reflection/refraction |
 | Fulgur | Direct branching lightning beneath a drifting thundercloud | Volumetric GLSL, seeded growth, HDR bloom |
 | Web Crawler | Give wireframe spiders a website and watch them eat its words | Canvas 2D, inverse kinematics, public HTML reader |
+| Cassette | Turn a translucent holographic cassette and watch the reels rewind | Three.js, original GLSL, physical materials |
 
 ## 🚀 Try It Now
 
