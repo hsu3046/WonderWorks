@@ -68,3 +68,9 @@
 ## 2026-10-03 — Skyglider gallery release
 - Integrated latest origin/main0c09367, retaining Fulgur08/Webcrawler09. Study10Skyglider: actual scene movie/poster, native same-origin live preview, source download, root build/setup/check/copy/package integration and static regression presence check.
 - Full strict checks+79tests and production build passed:10studies/10sourcearchives/12canonicalpages. No dependency version change; reused existing project-local fish toolchain. Private references/rawassets/validation stay ignored. GPL/AIB and external asset notices preserved.
+
+## 2026-10-15 — Cassette (study 15)
+- 사용자 요청으로 @ann_nnng 의 X 영상(4개 AI 모델이 만든 홀로그램 카세트 비교)을 참고해 `projects/cassette`(4188) 를 옵션 A(절차적 본체 + Canvas 2D 라벨 + 자체 GLSL 홀로) 로 구현. 사진·원작 코드 미사용, 새 의존성 없음. 브랜치 `feat/cassette-holo-study`.
+- 함정 2건: ShapeGeometry 의 창 구멍과 허브 구멍이 겹쳐 창이 막힘(→ 넓은 창 하나 + 유리판에만 허브 구멍); 측면에서 "두 판" 으로 보이는 원인은 슬립 시트가 벽 끝까지 뻗어 반투명 벽 너머로 띠로 비친 것(→ 안쪽으로 축소).
+- 프리뷰 MP4/JPG 는 headless Playwright `channel:'chromium'`(Metal) 로 1200×1200 캔버스 캡처. headless shell 은 WebGL 생성 실패.
+- Bash 로 소스 작성 시 `\uXXXX` 가 실제 문자로 기록돼 정규식이 깨짐 → 코드포인트 헬퍼(`String.fromCodePoint`) 로 작성(TOOL_GOTCHAS 기존 항목).
