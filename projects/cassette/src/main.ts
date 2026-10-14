@@ -12,6 +12,7 @@ function syncShell(){el('shells').querySelectorAll('button').forEach((b,i)=>b.se
 for(const [i,shell] of shells.entries()){const b=document.createElement('button');b.type='button';b.className='swatch';b.style.setProperty('--swatch',shell.color);b.setAttribute('aria-label',`${shell.name} shell`);b.title=shell.name;b.addEventListener('click',()=>{state.shell=i;viewer?.setShell(shell);syncShell();status(`${shell.name} shell.`);},{signal});el('shells').append(b);}
 try{
  viewer=new Viewer(el('stage'),message=>status(message,true),transport=>{state.transport=transport;syncTransport();status(transport==='play'?'End of tape. Auto-reverse: playing.':'End of tape. Auto-reverse: rewinding.');});
+ if(viewer.prefersStill){state.transport='stop';state.auto=false;status('Holding still. Press play or drag to move.');}
  viewer.setTitle(state.title);viewer.setShell(shells[state.shell]!);viewer.setHolo(state.holo);viewer.setAuto(state.auto);viewer.setTransport(state.transport);
  el('loading').hidden=true;
 }catch(error){
@@ -23,10 +24,12 @@ el('auto').addEventListener('click',()=>{state.auto=!state.auto;el('auto').setAt
 el('reset').addEventListener('click',()=>{viewer?.reset();status('Back to the front.');},{signal});
 el('holo').addEventListener('input',()=>{state.holo=Number(el<HTMLInputElement>('holo').value)/100;el('holo-value').textContent=`${Math.round(state.holo*100)}%`;viewer?.setHolo(state.holo);},{signal});
 const titleInput=el<HTMLInputElement>('title');titleInput.maxLength=MAX_TITLE;titleInput.value=state.title;
-titleInput.addEventListener('input',()=>{window.clearTimeout(titleTimer);titleTimer=window.setTimeout(()=>{const title=cleanTitle(titleInput.value);if(title===state.title)return;state.title=title;viewer?.setTitle(title);},180);},{signal});
-titleInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();titleInput.blur();}},{signal});
+function applyTitle(){window.clearTimeout(titleTimer);titleTimer=0;const title=cleanTitle(titleInput.value);if(title===state.title)return;state.title=title;viewer?.setTitle(title);}
+titleInput.addEventListener('input',()=>{window.clearTimeout(titleTimer);titleTimer=window.setTimeout(applyTitle,180);},{signal});
+titleInput.addEventListener('blur',applyTitle,{signal});
+titleInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyTitle();titleInput.blur();}},{signal});
 el('save').addEventListener('click',async()=>{
- const button=el<HTMLButtonElement>('save');if(!viewer||button.disabled)return;button.disabled=true;status('Saving a picture…');
+ const button=el<HTMLButtonElement>('save');if(!viewer||button.disabled)return;applyTitle();button.disabled=true;status('Saving a picture…');
  try{const blob=await viewer.snapshot();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`cassette-${state.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'tape'}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);status('Saved. A little tape, kept.');}
  catch(error){status(error instanceof Error?error.message:'Could not save this picture.',true);}
  finally{button.disabled=false;}

@@ -61,6 +61,8 @@ export class Viewer{
   const half=Math.tan(THREE.MathUtils.degToRad(this.camera.fov/2));
   this.baseDistance=clamp(Math.max(WIDTH*1.7/2/(half*this.camera.aspect),HEIGHT*2/2/half),5.6,16);
  }
+ /** True when the visitor prefers reduced motion; autonomous turning and the default reel motion stay off. */
+ get prefersStill(){return this.reduced.matches;}
  setTitle(title:string){const texture=new THREE.CanvasTexture(drawLabel(title));texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(8,this.renderer.capabilities.getMaxAnisotropy());this.cassette.setLabel(texture);this.labelTexture?.dispose();this.labelTexture=texture;this.wake();}
  setShell(shell:Shell){this.cassette.setShell(shell);this.wake();}
  setHolo(value:number){this.cassette.label.uniforms.uHolo!.value=clamp(value,0,1.4);this.wake();}
@@ -70,7 +72,7 @@ export class Viewer{
  private down=(e:PointerEvent)=>{
   if(e.button!==0)return;
   this.pointers.add(e.pointerId);this.host.setPointerCapture(e.pointerId);
-  if(this.pointers.size>1){this.pointer=null;this.dragging=false;this.grabbed=false;return;}
+  if(this.pointers.size>1){this.abandon();return;}
   this.pointer=e.pointerId;this.startX=this.lastX=e.clientX;this.startY=this.lastY=e.clientY;this.lastMove=e.timeStamp;
   // Sensitivity is fixed per gesture: dragging across the stage turns the cassette about 165°.
   this.radPerPx=2.9/Math.max(this.host.clientWidth,200);
@@ -81,7 +83,7 @@ export class Viewer{
   if(!this.dragging){
    const dx=e.clientX-this.startX,dy=e.clientY-this.startY;if(Math.hypot(dx,dy)<8)return;
    // Mostly vertical touch movement belongs to the page.
-   if(Math.abs(dx)<Math.abs(dy)*1.2){this.pointer=null;this.grabbed=false;this.wake();return;}
+   if(Math.abs(dx)<Math.abs(dy)*1.2){this.abandon();this.wake();return;}
    this.dragging=true;this.lastX=e.clientX;this.lastY=e.clientY;this.lastMove=e.timeStamp;
   }
   const dx=e.clientX-this.lastX,dy=e.clientY-this.lastY;if(!dx&&!dy)return;
@@ -99,7 +101,9 @@ export class Viewer{
   if(!this.pointers.size)this.grabbed=false;this.wake();
  };
  private lost=(e:PointerEvent)=>{if(e.target===this.host&&this.pointers.has(e.pointerId))this.up(e);};
- private cancel=()=>{this.pointer=null;this.dragging=false;this.grabbed=false;const ids=[...this.pointers];this.pointers.clear();for(const id of ids)if(this.host.hasPointerCapture(id))this.host.releasePointerCapture(id);};
+ /** Give up the current drag without a fling: a second finger, a vertical page stroke, blur or resize. */
+ private abandon(){this.pointer=null;this.dragging=false;this.grabbed=false;this.spin.speed=0;}
+ private cancel=()=>{this.abandon();const ids=[...this.pointers];this.pointers.clear();for(const id of ids)if(this.host.hasPointerCapture(id))this.host.releasePointerCapture(id);};
  private wheel=(e:WheelEvent)=>{e.preventDefault();const step=e.deltaMode===1?e.deltaY*16:e.deltaY;this.zoom=clamp(this.zoom*Math.exp(step*.0011),.7,1.7);this.wake();};
  private key=(e:KeyboardEvent)=>{
   const k=e.key;if(k.toLowerCase()==='r'){e.preventDefault();this.reset();return;}
@@ -134,7 +138,7 @@ export class Viewer{
  private updateShadow(){
   let x=0,z=0;const v=new THREE.Vector3();
   for(const corner of this.corners){v.copy(corner).applyQuaternion(this.orientation);x=Math.max(x,Math.abs(v.x));z=Math.max(z,Math.abs(v.z));}
-  this.shadow.scale.set(x*2*1.08+.7,z*2*1.1+1.1,1);
+  this.shadow.scale.set(x*2*1.08+.7,1,z*2*1.1+1.1);
   this.shadow.material.opacity=clamp(1.05-this.sway.position.y*6,.6,1);
  }
  async snapshot():Promise<Blob>{
