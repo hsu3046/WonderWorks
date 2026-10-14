@@ -104,7 +104,7 @@ export class Viewer{
  /** Give up the current drag without a fling: a second finger, a vertical page stroke, blur or resize. */
  private abandon(){this.pointer=null;this.dragging=false;this.grabbed=false;this.spin.speed=0;}
  private cancel=()=>{this.abandon();const ids=[...this.pointers];this.pointers.clear();for(const id of ids)if(this.host.hasPointerCapture(id))this.host.releasePointerCapture(id);};
- private wheel=(e:WheelEvent)=>{e.preventDefault();const step=e.deltaMode===1?e.deltaY*16:e.deltaY;this.zoom=clamp(this.zoom*Math.exp(step*.0011),.7,1.7);this.wake();};
+ private wheel=(e:WheelEvent)=>{e.preventDefault();const step=e.deltaMode===1?e.deltaY*16:e.deltaMode===2?e.deltaY*Math.max(this.host.clientHeight,200):e.deltaY;this.zoom=clamp(this.zoom*Math.exp(step*.0011),.7,1.7);this.wake();};
  private key=(e:KeyboardEvent)=>{
   const k=e.key;if(k.toLowerCase()==='r'){e.preventDefault();this.reset();return;}
   const map:Record<string,[number,number]>={ArrowLeft:[-26,0],ArrowRight:[26,0],ArrowUp:[0,-26],ArrowDown:[0,26]};const step=map[k];if(!step)return;
