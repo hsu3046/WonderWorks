@@ -14,3 +14,9 @@ docs/reference
 projects/harbor/blender/Untitled.blend
 projects/gallery/public/experiments
 projects/gallery/public/downloads
+
+.claude
+projects/golden-temple/out
+projects/golden-temple/shots
+projects/golden-temple/ref
+projects/golden-temple/assets_audio

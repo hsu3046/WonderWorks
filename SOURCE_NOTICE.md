@@ -29,3 +29,6 @@ Bubble Day는 @akakuma0219의 제공된 원본 코드를 사용한다. 원본의
 
 
 Foil Studio — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The supplied recording is private reference material and is not redistributed. Implementation, botanical samples and generated wedding artwork are original AIB work; prompts and provenance are in `docs/foil/`. © 2026 AIB Inc., GNU GPL v3.
+
+
+Golden Temple — Original code by [@LexnLin](https://x.com/LexnLin) (Leon Lin), as identified by the project owner. Upstream: https://github.com/Leonxlnx/golden-temple. Original MIT license retained. Local realtime adaptations © 2026 AIB Inc., GNU GPL v3. Gallery poster captured from the locally rendered scene.

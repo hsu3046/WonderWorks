@@ -8,12 +8,12 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
  const video=document.createElement('video');video.muted=true;video.defaultMuted=true;video.playsInline=true;video.loop=true;video.preload='none';video.setAttribute('aria-hidden','true');video.tabIndex=-1;
  let current:Entry|null=null,wanted:Entry|null=null,blocked=false,disposed=false,ticket=0,enterTimer=0,loadTimer=0;
  const image=(e:Entry)=>e.host.querySelector<HTMLImageElement>('img')!;
- const idle=()=>reduced.matches?'Open experience':hover.matches?'Hover to preview':'Tap to open';
+ const idle=(e:Entry)=>!e.variant.movie?'Open experience':reduced.matches?'Open experience':hover.matches?'Hover to preview':'Tap to open';
  const label=(e:Entry,text:string)=>{const el=e.host.querySelector('.preview-label');if(el)el.textContent=text;};
  function pause(){
   ticket++;clearTimeout(enterTimer);clearTimeout(loadTimer);wanted=null;video.pause();
   // Hide the old frame before seeking so pointer leave immediately restores the poster.
-  if(current){current.host.classList.remove('video-ready','playing');image(current).src=current.variant.image;label(current,idle());}
+  if(current){current.host.classList.remove('video-ready','playing');image(current).src=current.variant.image;label(current,idle(current));}
   if(video.readyState>=1)video.currentTime=0;
   onBusy(false);
  }
@@ -25,7 +25,7 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
   if(current!==e)return;pause();release();label(e,'Open experience');
  }
  async function play(e:Entry){
-  if(disposed||blocked||document.hidden||reduced.matches||!hover.matches||wanted!==e)return;
+  if(disposed||blocked||document.hidden||reduced.matches||!hover.matches||wanted!==e||!e.variant.movie)return;
   const request=++ticket;
   if(current!==e){
    release();current=e;video.poster=e.variant.image;video.src=e.variant.movie;e.host.append(video);
@@ -33,7 +33,7 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
   label(e,'Loading preview…');onBusy(true);
   clearTimeout(loadTimer);loadTimer=window.setTimeout(()=>{if(ticket===request)fail(e);},8000);
   try{await video.play();}catch(error){
-   if(ticket!==request||wanted!==e)return;
+   if(ticket!==request||wanted!==e||!e.variant.movie)return;
    console.warn('Preview playback unavailable',error);fail(e);
   }
  }
@@ -46,20 +46,20 @@ export function createPreviews(onBusy:(busy:boolean)=>void){
   for(const change of changes)if(!change.isIntersecting&&current?.host===change.target){pause();release();}
  },{threshold:.01});
  const visibility=()=>{if(document.hidden){pause();release();}};
- const motion=()=>{if(reduced.matches){pause();release();}entries.forEach(e=>label(e,idle()));};
+ const motion=()=>{if(reduced.matches){pause();release();}entries.forEach(e=>label(e,idle(e)));};
  document.addEventListener('visibilitychange',visibility);reduced.addEventListener('change',motion);
  return {
   add(host:HTMLElement,variant:Variant){
-   const e:Entry={host,variant};entries.push(e);label(e,idle());observer.observe(host);
+   const e:Entry={host,variant};entries.push(e);label(e,e.variant.movie?idle(e):'Open experience');observer.observe(host);
    host.addEventListener('pointerenter',()=>{
-    if(blocked||reduced.matches||!hover.matches)return;
+    if(blocked||reduced.matches||!hover.matches||!e.variant.movie)return;
     pause();wanted=e;enterTimer=window.setTimeout(()=>void play(e),140);
    });
    host.addEventListener('pointerleave',()=>{if(wanted===e||current===e)pause();});
   },
   select(host:HTMLElement,variant:Variant){
    const e=entries.find(e=>e.host===host);if(!e)return;
-   if(current===e||wanted===e){pause();release();}e.variant=variant;image(e).src=variant.image;label(e,idle());
+   if(current===e||wanted===e){pause();release();}e.variant=variant;image(e).src=variant.image;label(e,e.variant.movie?idle(e):'Open experience');
   },
   suspend(value:boolean){blocked=value;if(value){pause();release();}else onBusy(false);},
   poster(variant:Variant){return variant.image;},
