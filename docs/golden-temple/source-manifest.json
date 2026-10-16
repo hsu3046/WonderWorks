@@ -1,0 +1,611 @@
+{
+  "source": "https://github.com/Leonxlnx/golden-temple",
+  "commit": "97fd9ec35ee5c0f02769addb4e35cb5e22f951dd",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 190,
+      "sha256": "2ebe8979f22a97377b915ceb482ddbdcdeee223e7a53389ea7fbff1e443c2e28"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 590,
+      "sha256": "a8cfc464b3b534f1cac616fe2d420476e34e02fe7de9db9bbb4847843d7d09a8"
+    },
+    {
+      "path": "CREDITS.txt",
+      "bytes": 1215,
+      "sha256": "15bf21b8125da509839c4c591b966f9d1c3ca0f0f2abb4e8e008b3a89ee80234"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1065,
+      "sha256": "d9177365c7471d18ecd623ce7b8849e26ab8d7e7fea13e1fcbda62397ecb9db8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 16949,
+      "sha256": "eedf26d3f189b2cf988b5fcfe2bcaeed38d02cf08222e3a9ee9d1fdea7b44dbb"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "bytes": 25381,
+      "sha256": "84a876acc5390666db0a89f072f5ba1206305e614bbd3b5f2b34a9b10d17211f"
+    },
+    {
+      "path": "docs/images/buddha.jpg",
+      "bytes": 132281,
+      "sha256": "6c61ae338a837171930ca98fee02162ec053c8abdc84eaf867fdedfed9f4d9d5"
+    },
+    {
+      "path": "docs/images/film-contact-sheet.jpg",
+      "bytes": 565660,
+      "sha256": "28c251fabbbad00b0c73262997065b67e0cd50bbccca5b9aa5dd33752880775d"
+    },
+    {
+      "path": "docs/images/finale.jpg",
+      "bytes": 343630,
+      "sha256": "0a27732b8e6a5715ae5a519a59d1b50ab6c6cdb0b43b788e4ab02d09dd38734c"
+    },
+    {
+      "path": "docs/images/gate-fitting.jpg",
+      "bytes": 248519,
+      "sha256": "cd4ed63657cee047b01205dfd466644f5dce2e77e46e8f07c8ae81b0983c23be"
+    },
+    {
+      "path": "docs/images/giboshi.jpg",
+      "bytes": 114852,
+      "sha256": "2cd6039189f970602f50b4680c25554e495797188d04fbd6a644857cd71e0ff0"
+    },
+    {
+      "path": "docs/images/hall-eave.jpg",
+      "bytes": 142322,
+      "sha256": "2a94ec70e20229d09447cabcdb0e12971f97338ec5106a346526c118f10797ec"
+    },
+    {
+      "path": "docs/images/hero.jpg",
+      "bytes": 526423,
+      "sha256": "ab989cbb6f2b51854a10610d33f68d3035db916b744048df4eeec3d894afbf84"
+    },
+    {
+      "path": "docs/images/lantern.jpg",
+      "bytes": 138172,
+      "sha256": "7374ed0da626e434421f75e3fcd002d483f98c956b83fe58b25cd22ea3f11909"
+    },
+    {
+      "path": "docs/images/lotus.jpg",
+      "bytes": 90011,
+      "sha256": "98e4fb3097c4a5e39d0cfac16a2fcb9205b371cb1cb65d59fb164ea5cfa33ccd"
+    },
+    {
+      "path": "docs/images/mirror-pond.jpg",
+      "bytes": 227929,
+      "sha256": "92a80cc9488a7ad6ed10e889c0adf1639f3fad1d2de6c3e6f39584954e7bdcba"
+    },
+    {
+      "path": "docs/images/pagoda.jpg",
+      "bytes": 354555,
+      "sha256": "03979b64088e4b629416152a8ce543b5a11230fcad4e3dbd0783b2c2a28baa7e"
+    },
+    {
+      "path": "docs/images/sanctum.jpg",
+      "bytes": 311448,
+      "sha256": "d13790ac922d56b3799238de4c92d37cc6f011addb8811bb8ee53815baf690bb"
+    },
+    {
+      "path": "docs/images/wind-bell.jpg",
+      "bytes": 135633,
+      "sha256": "a715b936e3e286e67312edc5510e36283fd39aff85f571905ec83e4b9692ead6"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1061,
+      "sha256": "1576cfdb0802d02391c19d35c74c9e65e8f99df7ff47b4f320018d324ee908c4"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 37239,
+      "sha256": "d2e3012691a54f4388f54308e34290e9aa968ae61eff20d2cff72587448b7806"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1298,
+      "sha256": "c8cc298518ecf761b87d140eaa8deaef6dd735181a5683b3b9f77d2e32849558"
+    },
+    {
+      "path": "src/core/env.js",
+      "bytes": 2445,
+      "sha256": "fb98cee3698a5f1e27b1d60a46d1e6f0d4c89d1b83a06d5e6c0c94b6c9506cf8"
+    },
+    {
+      "path": "src/core/fog.js",
+      "bytes": 5768,
+      "sha256": "6a149531d8cfeae9ea93bd54edb61292cdeca37491238d70c9c1cbe1131e33b3"
+    },
+    {
+      "path": "src/core/geom.js",
+      "bytes": 5362,
+      "sha256": "a9d07893b7b6a4568d6c4014fe91500f2d6d39f01ac2d3312f154c770f932d32"
+    },
+    {
+      "path": "src/core/glsl.js",
+      "bytes": 5652,
+      "sha256": "bbf55fc8d0e8b323447e087c8239ec50b35d06b68e86bcb78df89f895e5293e2"
+    },
+    {
+      "path": "src/core/lighting.js",
+      "bytes": 3155,
+      "sha256": "9383334dffc4b9073e0604811024612e5cb68f7fabf9b987975870463293b447"
+    },
+    {
+      "path": "src/core/materials.js",
+      "bytes": 17903,
+      "sha256": "7fc56403979ed5823e736c3f679a9fbe4176e3e24816790d4ba3a0528b8d8d12"
+    },
+    {
+      "path": "src/core/post.js",
+      "bytes": 34413,
+      "sha256": "186ef6aadf4083269084e7bdb909902febad65dd16eb93d8a797f279381e5a7a"
+    },
+    {
+      "path": "src/core/rng.js",
+      "bytes": 2505,
+      "sha256": "0a28b0c73644599468a672b991593e9e0ad07fe56562f105bd53115b75c4dba7"
+    },
+    {
+      "path": "src/core/sky.js",
+      "bytes": 7651,
+      "sha256": "2dcb17eb633ad750aff2464dc8a87f4fe5e2fbc62cc5187d6c2247b9b7cb5bb5"
+    },
+    {
+      "path": "src/layout.js",
+      "bytes": 5980,
+      "sha256": "299102c9656e0c42e70e91794269637570cf7af4ecee668d0b993eafe63d605b"
+    },
+    {
+      "path": "src/main.js",
+      "bytes": 20583,
+      "sha256": "85327719385a14e2d86717382c2ac2e19f090efcea9f2cc30971535a149afcb3"
+    },
+    {
+      "path": "src/shotkeys/bridge.js",
+      "bytes": 1404,
+      "sha256": "a52b92e7f11499b9e393ca251f5e46c617e8f3e163630f1803b82f313524380e"
+    },
+    {
+      "path": "src/shotkeys/buildings.js",
+      "bytes": 1756,
+      "sha256": "8ad4382cf7cccf57f017b61c0fc584c4fc465e603ff05608e353d49f5297dc91"
+    },
+    {
+      "path": "src/shotkeys/hall.js",
+      "bytes": 1218,
+      "sha256": "f49053a17d1b6c063578db0a62ed80d1b9ed7773216c3511e1e9c43778b2b8e3"
+    },
+    {
+      "path": "src/shotkeys/index.js",
+      "bytes": 381,
+      "sha256": "c80b2f6f187320496242ba82d7ff970717559f9a32059e70213ca2d4b26c130c"
+    },
+    {
+      "path": "src/shotkeys/interior.js",
+      "bytes": 4104,
+      "sha256": "348b1f005b035876cc3ea6eda9331191775d4533dcdc440be4c581cbca133e80"
+    },
+    {
+      "path": "src/shotkeys/pagoda.js",
+      "bytes": 1095,
+      "sha256": "93cb2690db3192b8780589b5a5ee89e2ac7a9c81e1bb8a46196c4be0c3fe55ad"
+    },
+    {
+      "path": "src/shotkeys/pond.js",
+      "bytes": 2287,
+      "sha256": "e03ea8958e94dc49d53c81407c0a9247380801d0732e4040849cbe3bae364086"
+    },
+    {
+      "path": "src/shotkeys/terrain.js",
+      "bytes": 244,
+      "sha256": "042440b6a60f463bcb270a0a35cccdb4587b7e16d0d2eca71226a7adb8c5dee3"
+    },
+    {
+      "path": "src/shotkeys/vegetation.js",
+      "bytes": 3996,
+      "sha256": "da3b7d8c4fb93b54214fd398df0b016e6037f98d9b0138f0b517a5534bb19e50"
+    },
+    {
+      "path": "src/shots.js",
+      "bytes": 9210,
+      "sha256": "f04cd582044587ca76aab24af3a4c7698d378c0618b777583cf7ba733e4a3585"
+    },
+    {
+      "path": "src/world/bridge.js",
+      "bytes": 91491,
+      "sha256": "4f3847f254698b8c34ea0d651dd56fef4497f5fc0fd1d527aaeec089294a27af"
+    },
+    {
+      "path": "src/world/buildings-arch.js",
+      "bytes": 30112,
+      "sha256": "ec154cb9114a020e05516bdb5da0aa1beb2149a2676d840d242c1b81536642d9"
+    },
+    {
+      "path": "src/world/buildings-corridor.js",
+      "bytes": 16120,
+      "sha256": "19d74366a25939e7359b5260c6f895d94bdb10b1c7ff88ac7e928b34a37d2eac"
+    },
+    {
+      "path": "src/world/buildings-halls.js",
+      "bytes": 42652,
+      "sha256": "5751845363825408d5226be7d4567fe1f7d8b147d8121fee54ac6a1112a6b733"
+    },
+    {
+      "path": "src/world/buildings-kanagu.js",
+      "bytes": 22845,
+      "sha256": "de960c000d3cbb6f5261a3bdf63733e26a462eaa89a7a5b0d07aef659cdf7ae7"
+    },
+    {
+      "path": "src/world/buildings-kit.js",
+      "bytes": 28542,
+      "sha256": "7d3fdd41f802f8a29b6e563b9c88bb4e32ec24501b979717468a5b2c0938c0b9"
+    },
+    {
+      "path": "src/world/buildings-mat.js",
+      "bytes": 13975,
+      "sha256": "a6da23731f131ccdb5f6d81004ecf4ca88c9f9d70cc067c49a975a01b7da3ac4"
+    },
+    {
+      "path": "src/world/buildings.js",
+      "bytes": 24876,
+      "sha256": "e1a939e817267910bf0ad574b749503d972f43c55280021e487a9addc566e054"
+    },
+    {
+      "path": "src/world/hall-body.js",
+      "bytes": 35342,
+      "sha256": "c15b99a87268903255fb25e9018d4051c474bae0adcba782b50d2b1d68d93619"
+    },
+    {
+      "path": "src/world/hall-bracket.js",
+      "bytes": 6857,
+      "sha256": "089383d685c863855d9db084fccd6b428f2ee98b3b4982e759beb8ffaa284f55"
+    },
+    {
+      "path": "src/world/hall-carve.js",
+      "bytes": 11954,
+      "sha256": "761f44b498060bf2566768d509d26a30fe898081aa3a300ab543de664b97d5a9"
+    },
+    {
+      "path": "src/world/hall-detail.js",
+      "bytes": 7308,
+      "sha256": "06665905d74e9b9e603a4ee7e99af8f21f11ddebdad4e0de51e61ccab78adb9d"
+    },
+    {
+      "path": "src/world/hall-gable.js",
+      "bytes": 4895,
+      "sha256": "3438cee5fd9be3775927b36aa6be805a609373b13edadbae7a8b2292b0ca82be"
+    },
+    {
+      "path": "src/world/hall-kara.js",
+      "bytes": 19230,
+      "sha256": "75c7aaf1942b20e50ef303af734b4213f11c5b7b178d274e89b9fbe3454143a3"
+    },
+    {
+      "path": "src/world/hall-lib.js",
+      "bytes": 21627,
+      "sha256": "cae041c004b917a5004034b6466b1c0277e894cb552095004b28be5bad7eafba"
+    },
+    {
+      "path": "src/world/hall-mats.js",
+      "bytes": 12309,
+      "sha256": "f810fcfd647ea8b1e4a8e43e01940138d4efc1abd624812bb299ab91893eacdd"
+    },
+    {
+      "path": "src/world/hall-orn.js",
+      "bytes": 20870,
+      "sha256": "ef6de56d03c45b2693ce57e5905ce0a2fbbfddfa71dd0fb3b282641cf3bcd54b"
+    },
+    {
+      "path": "src/world/hall-roof.js",
+      "bytes": 29738,
+      "sha256": "220841f3735aa38cf5c90efd91c2a7f33f8c975a096142c6faecc5ae6fec7059"
+    },
+    {
+      "path": "src/world/hall-stair.js",
+      "bytes": 4242,
+      "sha256": "fb00f1ff515ec6f6a552b7b8739dd60fedff627c83f39ce77f6224f3b4f3d486"
+    },
+    {
+      "path": "src/world/hall.js",
+      "bytes": 20616,
+      "sha256": "ca21bedff27908cc0761c4391176252175154fdd2bdd176b663a7fc3c9e004f4"
+    },
+    {
+      "path": "src/world/interior-altar.js",
+      "bytes": 31043,
+      "sha256": "cf14f16e75be61c20c523ba1564511a7aab4464b6ca2776018d70f26ec387871"
+    },
+    {
+      "path": "src/world/interior-arch.js",
+      "bytes": 12236,
+      "sha256": "511d6cc2d462d1033b67eee75d28143080fd79a7f22f0c9608a773c478cae8c7"
+    },
+    {
+      "path": "src/world/interior-fx.js",
+      "bytes": 16299,
+      "sha256": "2f7316a0f6dc1f1d895fee000dfd200b749e1ea5da7fce0662f041a22abdbd9e"
+    },
+    {
+      "path": "src/world/interior-geo.js",
+      "bytes": 5426,
+      "sha256": "c1cafd044dc7fe548147b879ef9af44240a93b297df301c18799c6e2111aa677"
+    },
+    {
+      "path": "src/world/interior-hang.js",
+      "bytes": 17756,
+      "sha256": "12ced5860a7cdf8cb429ae3c5597898c4d1a0cc2f4820ca5a4924c5a9c73f755"
+    },
+    {
+      "path": "src/world/interior-mats.js",
+      "bytes": 34331,
+      "sha256": "b4e30b3cc499fd4da0640b3f1318070e7827385cc09fb8e72facb920544e724a"
+    },
+    {
+      "path": "src/world/interior-sdf.js",
+      "bytes": 11354,
+      "sha256": "cfdd3b9a2b581e10c148d3ed1c74fceffa34d71aced20ea9b7f5664ce14400f2"
+    },
+    {
+      "path": "src/world/interior-sdfworker.js",
+      "bytes": 762,
+      "sha256": "a6b25f5759337e878c51137a4883a5f26655e7a9ae23f8880304e68e4996ee62"
+    },
+    {
+      "path": "src/world/interior-shapes.js",
+      "bytes": 22887,
+      "sha256": "67ce15df0bd771bd26035ca2c5974b5b1994c8aa3c4a331bd150a3311fb16ed2"
+    },
+    {
+      "path": "src/world/interior-testshell.js",
+      "bytes": 2620,
+      "sha256": "7e8abd84ee914f40e1675280a7ef77cc299b9007a1fc821acea13d31a98213cd"
+    },
+    {
+      "path": "src/world/interior.js",
+      "bytes": 34088,
+      "sha256": "4cec0607f9641ec06d5214c6a54a81465337ba0d4d2682622f2e88c71b1e56fa"
+    },
+    {
+      "path": "src/world/pagoda-mat.js",
+      "bytes": 9829,
+      "sha256": "15e76ccb5520a7214561bc86107dfce4a6ed944bfb3c110baa556346eb18466d"
+    },
+    {
+      "path": "src/world/pagoda-parts.js",
+      "bytes": 26249,
+      "sha256": "ce5fbd5643cf9ad53c1a4e8bd290458195e169b294a7c2cc0b211203c68c3729"
+    },
+    {
+      "path": "src/world/pagoda.js",
+      "bytes": 52392,
+      "sha256": "854748936ab26eda2f186c11bd9f3f3d686ba4471eb973496ae95964ba1bd577"
+    },
+    {
+      "path": "src/world/pond-beads.js",
+      "bytes": 8555,
+      "sha256": "d8a67dc79cad6959d848d2875efd11f62851528ff84bb03c1f3b8c9c706c9e85"
+    },
+    {
+      "path": "src/world/pond-koi.js",
+      "bytes": 26535,
+      "sha256": "02bcdfe5a11ac52d13eff19c3fab1341b198a1bd51058814bda2771c8aabeee0"
+    },
+    {
+      "path": "src/world/pond-lotus.js",
+      "bytes": 58016,
+      "sha256": "d1404ecff0066d2b23c45d80c596b0dad6497582cbd32c69416f597ea5cdf5f8"
+    },
+    {
+      "path": "src/world/pond-lotusgeo.js",
+      "bytes": 21589,
+      "sha256": "351334b2284af0d274c47beda252790fe7ecd7e93f9ed852ce505535840a958b"
+    },
+    {
+      "path": "src/world/pond-lotusplan.js",
+      "bytes": 25503,
+      "sha256": "7fbc50ae756180e8ed3dfe8fd30d522ca95358ed5f85918ef43b5a6ddcd947a0"
+    },
+    {
+      "path": "src/world/pond-shore.js",
+      "bytes": 10279,
+      "sha256": "0fc943ee9352eb06a54ae722f1f71048b0a65a47368e2d3d000a42653819b466"
+    },
+    {
+      "path": "src/world/pond-stone.js",
+      "bytes": 23047,
+      "sha256": "c01296bf085ec919f31a74c616b69cab40ca459f70acfea1218a25943d4d6858"
+    },
+    {
+      "path": "src/world/pond-util.js",
+      "bytes": 9435,
+      "sha256": "2147a210248c2d643ccf3328cf21af102ee4c674dd678370dd97018de9cce2e7"
+    },
+    {
+      "path": "src/world/pond-water.js",
+      "bytes": 21775,
+      "sha256": "2cd0f3931665a99ee6cec3f3d4b0470995c2213c9c75cc8a3150fa0162a53d8c"
+    },
+    {
+      "path": "src/world/pond.js",
+      "bytes": 14824,
+      "sha256": "1d9a8c0a66c3e5986bfbdc02e3e61aa6d36cd63df19dc5f8c828f5c01ceef29b"
+    },
+    {
+      "path": "src/world/props-geo.js",
+      "bytes": 29970,
+      "sha256": "0022c5b8b4a93616bb8aa128c07f8f9a4f0db12c832df832ff3d43d6509cc511"
+    },
+    {
+      "path": "src/world/props-hang.js",
+      "bytes": 11432,
+      "sha256": "a7d336553710bd23a39086da7bf606602d25290b860565a42f47249a28fa890c"
+    },
+    {
+      "path": "src/world/props-mat.js",
+      "bytes": 39023,
+      "sha256": "c4c4fd6387f7c39dbbd558efcbf2ad9cd7ab83b45814dbefd426ed1cee1cfb78"
+    },
+    {
+      "path": "src/world/props-plaza.js",
+      "bytes": 15290,
+      "sha256": "6ec303c8dc4c5617ced6ceeab52ab37118af5ab4164e0252f3a82b05df13b527"
+    },
+    {
+      "path": "src/world/props-stone.js",
+      "bytes": 26900,
+      "sha256": "e20f9c92419066d46c1662724dd2ec6ce9d401f812df29e3527838fab7d45359"
+    },
+    {
+      "path": "src/world/props.js",
+      "bytes": 19490,
+      "sha256": "d7802a6d1fc918f434881f2416bf699916c76083644422864eda7af136b60eb2"
+    },
+    {
+      "path": "src/world/terrain-cover.js",
+      "bytes": 32310,
+      "sha256": "4e7476b73db1abf11f7c09410445c920d216b273d336e3b57de0b214c2218d06"
+    },
+    {
+      "path": "src/world/terrain-field.js",
+      "bytes": 30347,
+      "sha256": "2afc2dda6b3ca78caaf5a33abbdad743b9e4985ba5df94ab650b1d85c7d4caaf"
+    },
+    {
+      "path": "src/world/terrain-forest.js",
+      "bytes": 22810,
+      "sha256": "44fd65167468afb4b43ffa0d554a6eb8ae11353e95affcf4d3f45f46d392aaf4"
+    },
+    {
+      "path": "src/world/terrain-glsl.js",
+      "bytes": 8194,
+      "sha256": "87486d8f96cdc50ce5507905bf83ea40f98af30d46e83903674ee75302c90db3"
+    },
+    {
+      "path": "src/world/terrain-ground.js",
+      "bytes": 29531,
+      "sha256": "a920610f3b7f7c05e7a27addf769366e5173992019cd34c7321b2535477987e1"
+    },
+    {
+      "path": "src/world/terrain-gutter.js",
+      "bytes": 11710,
+      "sha256": "3ac5315c974268303c5b4b1197b99f53550eb3b1e8f6c26175e953f1732fdb77"
+    },
+    {
+      "path": "src/world/terrain-land.js",
+      "bytes": 22662,
+      "sha256": "f377265bf9af731f119b39f893feecc5ea09c2da85fa468a825b1d0d5d363973"
+    },
+    {
+      "path": "src/world/terrain-paving.js",
+      "bytes": 18340,
+      "sha256": "6a8f95ac0b12a547eef2b4250f485cd38d84fd91ae9a4295819b5b09d5363c20"
+    },
+    {
+      "path": "src/world/terrain-stonegeo.js",
+      "bytes": 4567,
+      "sha256": "060abc7375daff39df3e847bd0ac1c99819c43b9e7038b1e58506279c2393955"
+    },
+    {
+      "path": "src/world/terrain-tex.js",
+      "bytes": 8954,
+      "sha256": "5c705c707f228ce7cf29b7b170cee76d9917156877bccd9748060b0b1444d030"
+    },
+    {
+      "path": "src/world/terrain.js",
+      "bytes": 2112,
+      "sha256": "453b33827a231e42d5ef6431c97e0d6fe2cff0db6d80127122b2aa7679772aa2"
+    },
+    {
+      "path": "src/world/vegetation-core.js",
+      "bytes": 2759,
+      "sha256": "718d039336f38020efb5f09ad141ee733e2b608aaf68b2a00102bb3681a2c9ab"
+    },
+    {
+      "path": "src/world/vegetation-hero.js",
+      "bytes": 13350,
+      "sha256": "559a1781822804a199d06283019f8f50579a10b05a58c77a98baacb37574d8a2"
+    },
+    {
+      "path": "src/world/vegetation-tex.js",
+      "bytes": 44834,
+      "sha256": "29927b72ee30213a9089e11a3d43e0e53c4b36146736b064ba98cbd8e2995f9b"
+    },
+    {
+      "path": "src/world/vegetation-tree.js",
+      "bytes": 46156,
+      "sha256": "149f6e1647eb0db6fc71f7cfcbd13e917675d6275cd20e87114a13cc4790ea1d"
+    },
+    {
+      "path": "src/world/vegetation.js",
+      "bytes": 98063,
+      "sha256": "885108895daa201446e6aabc362c2d81001b4c43e9a9fddac95c318c93204adb"
+    },
+    {
+      "path": "tools/camcheck.mjs",
+      "bytes": 1424,
+      "sha256": "071c5c722a40f32617e9f1eb2af4b81ea9c81d39471f030d47ca05449112b62e"
+    },
+    {
+      "path": "tools/fetch-music.mjs",
+      "bytes": 2736,
+      "sha256": "e7adfacd2af3b1861614af8822ddc960b6819414dffe5c7bc1931f74fad61117"
+    },
+    {
+      "path": "tools/flickercheck.mjs",
+      "bytes": 2024,
+      "sha256": "a95f3c3063c71cba96cd985becde99dc0ec20f278f0caca320a324f3c0f469d1"
+    },
+    {
+      "path": "tools/lib/chrome.mjs",
+      "bytes": 3941,
+      "sha256": "93b3da83ad53405e036931152094e793e66c9e2d20ecdc2c9189955904b829e0"
+    },
+    {
+      "path": "tools/lumaflicker.mjs",
+      "bytes": 2076,
+      "sha256": "73da3a0bc7cab006bb4b014fb1039886dbf9d5a4ba19fe9b0fa4b0ba56c97539"
+    },
+    {
+      "path": "tools/mcflicker.mjs",
+      "bytes": 1906,
+      "sha256": "67916d45dbbd59e35140a12a913a16cbeda9f93b0677a4599c2d861df1128edf"
+    },
+    {
+      "path": "tools/render.mjs",
+      "bytes": 6045,
+      "sha256": "b5f14b69c658171333e14f22d39b53c698f29c09c12c7e9f44f9806753548841"
+    },
+    {
+      "path": "tools/score.mjs",
+      "bytes": 3298,
+      "sha256": "82a5416260ef941fee289ee6c004a9db8e986a2514f80eeb1d60a644fcf5ca14"
+    },
+    {
+      "path": "tools/sheet.mjs",
+      "bytes": 2593,
+      "sha256": "8723725a340d1cf775f5ffab89db562439f2dc4d728c3bbe022d37d42cd38a81"
+    },
+    {
+      "path": "tools/snap.mjs",
+      "bytes": 5676,
+      "sha256": "a9c7d51940ea3c56a165eb256460582f9d33da704b95a8eb1d229154b2bf5628"
+    },
+    {
+      "path": "tools/splice.mjs",
+      "bytes": 2027,
+      "sha256": "6635268196cfe1bebd56012816bb8bcb1ff578c99ff5e482e64fe2afddefc46b"
+    },
+    {
+      "path": "vite.config.js",
+      "bytes": 246,
+      "sha256": "e6d475734d42b740f053f5b1b59ed3b1c2041343c16bd8b62eac8f6c50fcab92"
+    }
+  ]
+}

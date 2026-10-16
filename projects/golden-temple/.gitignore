@@ -1,0 +1,47 @@
+# dependencies
+node_modules/
+
+# renders, stills, contact sheets, logs, headless Chrome profiles, GPU lock
+out/
+shots/
+*.log
+
+# third-party reference images (not redistributable)
+ref/
+
+# music (fetched by `npm run fetch-music`, CC BY 4.0, not redistributed) and raw decodes
+assets_audio/
+
+# media / intermediate files
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.wav
+*.mp3
+*.flac
+*.aac
+*.m4a
+*.raw
+*.y4m
+
+# build output and tool caches
+dist/
+.vite/
+*.tsbuildinfo
+.eslintcache
+coverage/
+
+# env / local config
+.env
+.env.*
+!.env.example
+
+# editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

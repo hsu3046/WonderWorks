@@ -53,3 +53,6 @@ Prism Studio — Inspired by [@davidhaz](https://x.com/davidhaz), as identified 
 Dearly — Inspired by [@raffiki_art](https://x.com/raffiki_art), as identified by the project owner. Original SVG stamps, stationery, postmark texture and letterbox implementation by AIB Inc. The supplied recording is private reference material and is not redistributed.
 
 Cassette — Inspired by [@ann_nnng](https://x.com/ann_nnng), as identified by the project owner. The procedural cassette body, label artwork, reel mechanics and holographic GLSL are original AIB work; the public reference recording showed AI-generated renders of a photographed cassette, none of which is redistributed. © 2026 AIB Inc., GNU GPL v3.
+
+
+Golden Temple — Original code by [@LexnLin](https://x.com/LexnLin) (Leon Lin), as identified by the project owner. Upstream: https://github.com/Leonxlnx/golden-temple. Original MIT license retained. Local realtime adaptations © 2026 AIB Inc., GNU GPL v3. Gallery poster captured from the locally rendered scene.

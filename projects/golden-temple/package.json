@@ -1,0 +1,50 @@
+{
+  "name": "golden-temple",
+  "version": "1.0.0",
+  "description": "A photoreal golden-hour Japanese temple complex built entirely in code with Three.js (no models, textures or HDRIs), rendered offline into a 70-second 1080p60 film.",
+  "license": "MIT",
+  "author": "Leon Lin",
+  "private": true,
+  "type": "module",
+  "homepage": "https://github.com/Leonxlnx/golden-temple#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Leonxlnx/golden-temple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Leonxlnx/golden-temple/issues"
+  },
+  "keywords": [
+    "threejs",
+    "webgl",
+    "procedural",
+    "procedural-generation",
+    "offline-rendering",
+    "cinematic",
+    "japanese-architecture",
+    "golden-hour"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite --port 5173 --strictPort",
+    "build": "vite build",
+    "snap": "node tools/snap.mjs",
+    "sheet": "node tools/sheet.mjs",
+    "render": "node tools/render.mjs",
+    "fetch-music": "node tools/fetch-music.mjs",
+    "score": "node tools/score.mjs",
+    "camcheck": "node tools/camcheck.mjs",
+    "flicker": "node tools/lumaflicker.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "bake:sdf": "node tools/bake-sdf.mjs"
+  },
+  "dependencies": {
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "puppeteer-core": "25.13.0",
+    "vite": "8.3.4"
+  }
+}

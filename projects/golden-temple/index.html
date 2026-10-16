@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Golden Temple</title>
+  <style>
+    html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+    canvas { display: block; }
+    #status, #hud { position: fixed; left: 10px; color: #f3e2c0; font: 12px/1.4 ui-monospace, monospace; text-shadow: 0 1px 2px #000; pointer-events: none; }
+    #status { top: 8px; }
+    #hud { bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div id="status">loading...</div>
+  <div id="hud"></div>
+  <script>
+    // fail fast (for tools/snap.mjs) if the module graph cannot load
+    window.addEventListener("error", function (e) { if (e.target && e.target.tagName === "SCRIPT") { window.__ERROR = "module load failed"; window.__READY = true; } }, true);
+    window.addEventListener("unhandledrejection", function (e) { console.error("[fatal] " + (e.reason && e.reason.stack || e.reason)); });
+  </script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

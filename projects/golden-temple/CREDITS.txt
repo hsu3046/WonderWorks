@@ -1,0 +1,30 @@
+Golden Temple - credits
+=======================
+
+Music
+-----
+"Finding Movement" Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0
+https://creativecommons.org/licenses/by/4.0/
+
+Edited for length (two sections joined with a crossfade, fades, loudness-normalised) by tools/score.mjs.
+The track is not redistributed in this repository; tools/fetch-music.mjs downloads it from incompetech.com.
+Keep this credit with any copy of the film that contains the music.
+
+Software
+--------
+three.js (https://threejs.org), the only runtime library
+MIT License, Copyright (c) 2010-2026 three.js authors
+
+Development tools, installed through npm and not redistributed here:
+Vite (https://vite.dev), MIT License
+Puppeteer (https://pptr.dev), Apache License 2.0
+FFmpeg (https://ffmpeg.org) is used as an external program for encoding and is not included.
+
+Visuals
+-------
+Everything you see is procedural three.js code in this repository: no external 3D models, textures,
+HDRIs or images are used. All geometry, materials, trees, water, sky and clouds are generated at load time.
+
+The project was built with Claude Code (Claude Opus 5.5).
+Code: MIT License, Copyright (c) 2026 Leon Lin. See LICENSE.

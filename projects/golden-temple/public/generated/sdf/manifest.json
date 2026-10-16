@@ -1,0 +1,22 @@
+{
+  "source": "Leonxlnx/golden-temple @ 97fd9ec35ee5c0f02769addb4e35cb5e22f951dd",
+  "generator": "npm run bake:sdf",
+  "license": "Original procedural shapes: MIT, Leon Lin. Cache tooling: GPL-3.0-only, AIB Inc.",
+  "files": [
+    {
+      "file": "17ae092e.bin",
+      "bytes": 2085220,
+      "sha256": "09cc3b9c696a68ebc78513e29b2330e9a641a760a560831193758f9445d44d17"
+    },
+    {
+      "file": "849787d3.bin",
+      "bytes": 1123960,
+      "sha256": "b63276b2e92e2991d8792036c90a070b144a92e8348b071adda7bd0ee99f0942"
+    },
+    {
+      "file": "c339c01b.bin",
+      "bytes": 2005312,
+      "sha256": "ef82f4a8b78c1bba6fbc096414e29f92734a66ad429c2275d3a02bbd418fc826"
+    }
+  ]
+}
